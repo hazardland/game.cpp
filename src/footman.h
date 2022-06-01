@@ -5,12 +5,12 @@ using namespace std;
 #include <iostream>
 
 #include <game/sprite.h>
-#include <game/unit.h>
+#include <game/object.h>
 #include <game/animation.h>
 
 #include <enum.h>
 
-class Footman: public Unit {
+class Footman: public Object {
     public:
         Animation* body;
         Footman(Sprite* sprite) {
@@ -41,9 +41,9 @@ class Footman: public Unit {
             }
             body->update(delta);
         }
-        virtual void render(SDL_Renderer* renderer) {
+        virtual void render() {
             // cout << "Rendering footman\n";
-            body->render(renderer, &position);
+            body->render(&position);
         }
 
 };

@@ -36,8 +36,8 @@ class Animation  {
         // cout << "Default clip "<< defaultClip << " " << clip << "\n";
     }
 
-    virtual void render(SDL_Renderer* renderer, SDL_Rect* position) {
-        image->render(renderer, clip->getFrame(frame)->getRect(), position, clip->getFrame(frame)->getFlip());
+    virtual void render(SDL_Rect* position) {
+        image->render(clip->getFrame(frame)->getRect(), position, clip->getFrame(frame)->getFlip());
     }
 
     virtual void play(int clipName, float slow=0) {

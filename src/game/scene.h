@@ -9,7 +9,7 @@ using namespace std;
 #include <SDL2/SDL_image.h>
 
 #include <game/sprite.h>
-#include <game/unit.h>
+#include <game/object.h>
 #include <game/clock.h>
 #include <game/input.h>
 
@@ -27,7 +27,7 @@ class Scene {
         SDL_Window *window;
 
         map<int, Sprite*> sprites;
-        vector<Unit*> units;
+        vector<Object*> objects;
 
 
         Scene(SDL_Window* window, int width, int height) {
@@ -47,14 +47,19 @@ class Scene {
 
         }
 
+        void setSize(int width, int height) {
+            this->width = width;
+            this->height = height;
+        }
+
         virtual void prepare() {
 
         };
 
 
         virtual void update(Clock *clock, Input* input) {
-            for (auto &unit: units) {
-                unit->update(clock->delta, input);
+            for (auto &object: objects) {
+                object->update(clock->delta, input);
             }
         }
 
@@ -62,8 +67,11 @@ class Scene {
 
             SDL_RenderClear(renderer);
 
-            for (auto &unit: units) {
-                unit->render(renderer);
+            for (auto &object: objects) {
+                if (object->getY()<height && object->getX()<width && 
+                    object->getX()+object->getWidth()>0 && object->getY()+object->getHeight()>0) {
+                    object->render();
+                }
             }
 
             SDL_RenderPresent(renderer);

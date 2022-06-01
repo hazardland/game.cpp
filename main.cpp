@@ -28,12 +28,12 @@ int main(int argc, char** argv){
     Input input;
     const Uint8* keys;
 
-    if(SDL_Init(SDL_INIT_EVERYTHING) < 0){
+    if(SDL_Init(SDL_INIT_EVERYTHING)==-1){
         printf("Failed to SDL: %s", SDL_GetError());
         return 1;
     }
 
-    if (TTF_Init()<0) {
+    if (TTF_Init()==-1) {
         printf("Failed to TTF: %s", SDL_GetError());
         return 1;
     }
@@ -70,6 +70,7 @@ int main(int argc, char** argv){
                 case SDL_WINDOWEVENT:
                     switch (event.window.event){
                         case SDL_WINDOWEVENT_RESIZED:
+                            scene->setSize(event.window.data1, event.window.data2);
                             SDL_Log("Window %d resized to %dx%d",
                                     event.window.windowID, event.window.data1,
                                     event.window.data2);

@@ -27,12 +27,12 @@ class Game : public Scene {
         const int FOOTMAN_BLUE = 1;
 
         virtual void prepare() {
-            font = TTF_OpenFont("assets/fonts/font2.ttf", 24);
+            font = TTF_OpenFont("assets/fonts/ugly.ttf", 72);
             if (font==NULL){
                 printf("Failed to load font: %s", SDL_GetError());
             }
 
-            fps = new Text(renderer, font, "Hi", 100, 100);
+            fps = new Text(renderer, font);
 
             Sprite* sprite = new Sprite(new Image(renderer, "assets/sprites/footman.png", RED, BLUE),
                                         72,
@@ -67,19 +67,21 @@ class Game : public Scene {
 
             sprites[FOOTMAN_BLUE] = sprite;
 
-            // for (int x = 0; x <= 50; ++x)
-            // {
-            //     for (int y = 0; y <= 25; ++y)
-            //     {
-            //         Footman* footman = new Footman(sprites[FOOTMAN_BLUE]);
-            //         footman->setPosition(x*footman->getWidth()/2, y*footman->getHeight()/2);
-            //         units.push_back(footman);
-            //     }
-            // }
+            for (int x = 0; x <= 50; ++x)
+            {
+                for (int y = 0; y <= 25; ++y)
+                {
+                    Footman* footman = new Footman(sprites[FOOTMAN_BLUE]);
+                    footman->setPosition(x*footman->getWidth()/2, y*footman->getHeight()/2);
+                    objects.push_back(footman);
+                }
+            }
 
             footman = new Footman(sprites[FOOTMAN_BLUE]);
-            footman->setPosition(width/2-footman->getWidth()/2, height/2-footman->getHeight()/2);
-            units.push_back(footman);
+            footman->setPosition(100, 100);
+            objects.push_back(footman);
+
+            objects.push_back(fps);
 
         }
 
@@ -91,12 +93,6 @@ class Game : public Scene {
             fps->setText(to_string(clock->fps));
             
             Scene::update(clock, input);
-        }
-
-        virtual void render() {
-            fps->render();
-            
-            Scene::render();
         }
 
 };

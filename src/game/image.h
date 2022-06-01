@@ -48,7 +48,7 @@ class Image {
         int getHeight() {
             return height;
         }
-        void render(SDL_Renderer* renderer, SDL_Rect* frame, SDL_Rect* position, SDL_RendererFlip flip = SDL_FLIP_NONE) {
+        void render(SDL_Rect* frame, SDL_Rect* position, SDL_RendererFlip flip = SDL_FLIP_NONE) {
             // cout << this << " Rendering x:" << _frame->x << " y:" << _frame->y << " w:" << _frame->w << " h:" << _frame->h << " ";
             // cout << "At x:" << position->x << " y:" << position->y << " w:" << position->w << " h:" << position->h << "\n";
             SDL_RenderCopyEx(renderer, texture, frame, position, 0, NULL, flip);
