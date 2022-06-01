@@ -3,6 +3,7 @@ using namespace std;
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_timer.h>
+#include <SDL2/SDL_ttf.h>
 
 #include <string>
 #include <iostream>
@@ -28,7 +29,12 @@ int main(int argc, char** argv){
     const Uint8* keys;
 
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0){
-        printf("Failed to init: %s", SDL_GetError());
+        printf("Failed to SDL: %s", SDL_GetError());
+        return 1;
+    }
+
+    if (TTF_Init()<0) {
+        printf("Failed to TTF: %s", SDL_GetError());
         return 1;
     }
 
@@ -52,7 +58,7 @@ int main(int argc, char** argv){
         clock.tick();
         input.reset();
 
-        SDL_SetWindowTitle(window, to_string(clock.avgFps).c_str());
+        //SDL_SetWindowTitle(window, to_string(clock.avgFps).c_str());
 
         SDL_Event event;
         while(SDL_PollEvent(&event)){

@@ -16,6 +16,7 @@ class Image {
         SDL_Texture* texture;
         int width;
         int height;
+        SDL_Renderer* renderer;
 
         Image (SDL_Renderer* renderer,
                 const char* imagePath,
@@ -23,6 +24,7 @@ class Image {
                 const int toColors[][3] = NULL
                 ) {
 
+            this->renderer = renderer;
             SDL_Surface* surface = IMG_Load(imagePath);
             if (!surface) {
                 // @todo: raise error
