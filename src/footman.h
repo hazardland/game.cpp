@@ -21,18 +21,18 @@ class Footman: public Object {
         virtual void update(uint32_t delta, Input* input) {
             //cout << "Updating footman\n";
             int clip = 0;
-            if (input->up) {
+            if (input->keyboard->up) {
                 clip += UNIT_STAND_UP;
-            } else if (input->down) {
+            } else if (input->keyboard->down) {
                 clip += UNIT_STAND_DOWN;
             }
-            if (input->left) {
+            if (input->keyboard->left) {
                 clip += UNIT_STAND_LEFT;
-            } else if (input->right) {
+            } else if (input->keyboard->right) {
                 clip += UNIT_STAND_RIGHT;
             }
             if (clip>0) {
-                if (input->space) {
+                if (input->keyboard->space) {
                     clip += 100;
                 } else {
                     clip += UNIT_MOVE;

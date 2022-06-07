@@ -14,6 +14,7 @@ using namespace std;
 
 #include <enum.h>
 #include <footman.h>
+#include <selectbox.h>
 
 class Game : public Scene {
 
@@ -21,6 +22,8 @@ class Game : public Scene {
     Footman* footman; 
     TTF_Font* font;
     Text* fps;
+    Text* cursor;
+    Selectbox* selectbox;
 
     public:
 
@@ -33,6 +36,7 @@ class Game : public Scene {
             }
 
             fps = new Text(renderer, font);
+            cursor = new Text(renderer, font);
 
             Sprite* sprite = new Sprite(new Image(renderer, "assets/sprites/footman.png", RED, BLUE),
                                         72,
@@ -77,20 +81,25 @@ class Game : public Scene {
                 }
             }
 
-            footman = new Footman(sprites[FOOTMAN_BLUE]);
-            footman->setPosition(100, 100);
-            objects.push_back(footman);
+            // footman = new Footman(sprites[FOOTMAN_BLUE]);
+            // footman->setPosition(100, 100);
+            // objects.push_back(footman);
+
+            selectbox = new Selectbox(renderer);
 
             objects.push_back(fps);
+            objects.push_back(cursor);
+            objects.push_back(selectbox);
 
         }
 
         virtual void update(Clock *clock, Input* input) {
-            int x, y;
-            SDL_GetMouseState(&x, &y);
-            footman->setPosition(x, y);
+            // footman->setPosition(x, y);
 
             fps->setText(to_string(clock->fps));
+
+            cursor->setPosition(input->mouse->x, input->mouse->y);
+            cursor->setText(to_string(input->mouse->x)+", "+to_string(input->mouse->y));
             
             Scene::update(clock, input);
         }

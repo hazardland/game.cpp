@@ -1,5 +1,5 @@
-#ifndef GAME_FONT_H
-#define GAME_FONT_H
+#ifndef GAME_TEXT_H
+#define GAME_TEXT_H
 
 using namespace std;
 #include <string>
@@ -30,7 +30,7 @@ class Text: public Object {
         }
         this->text = text;
         SDL_DestroyTexture(texture);
-        SDL_Surface* surface = TTF_RenderText_Solid(font, text.c_str(), color);
+        SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
         if (surface==NULL) {
             printf("Failed to render text: %s", SDL_GetError());            
         }

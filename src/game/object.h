@@ -23,22 +23,34 @@ class Object {
 
         }
 
-        void setPosition (int x, int y) {
+        virtual void setPosition (int x, int y) {
             position.x = x;
             position.y = y;
         }
-        void setSize (int width, int height) {
+        virtual void setSize (int width, int height) {
             position.w = width;
             position.h = height;
+        }
+        virtual void setX (int x) {
+            position.x = x;
         }
         virtual int getX() {
             return position.y;
         }        
+        virtual void setY (int y) {
+            position.y = y;
+        }
         virtual int getY() {
             return position.y;
         }
+        virtual void setWidth (int width) {
+            position.w = width;
+        }
         virtual int getWidth() {
             return position.w;
+        }
+        virtual void setHeight (int height) {
+            position.h = height;
         }
         virtual int getHeight() {
             return position.h;
