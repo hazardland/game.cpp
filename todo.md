@@ -33,3 +33,4 @@
 . Draw Map
 . Implement Camera
 . How to use SDL_SetPaletteColors(surface->format->palette, newColors, startIndex, endIndex)
+. Make better Rectangle class with fill and border

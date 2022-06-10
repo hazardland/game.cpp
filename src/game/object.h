@@ -3,10 +3,10 @@
 
 using namespace std;
 #include <iostream>
-
 #include <vector>
 
 #include <SDL2/SDL_image.h>
+
 #include <game/input.h>
 
 class Object {
@@ -35,7 +35,7 @@ class Object {
             position.x = x;
         }
         virtual int getX() {
-            return position.y;
+            return position.x;
         }        
         virtual void setY (int y) {
             position.y = y;

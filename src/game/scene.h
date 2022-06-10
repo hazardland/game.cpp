@@ -13,9 +13,6 @@ using namespace std;
 #include <game/clock.h>
 #include <game/input.h>
 
-#include <enum.h>
-#include <footman.h>
-
 class Scene {
 
     public:
@@ -30,7 +27,7 @@ class Scene {
         vector<Object*> objects;
 
 
-        Scene(SDL_Window* window, int width, int height) {
+        Scene(SDL_Window* window, int width=0, int height=0) {
 
             this->window = window;
             this->width = width;
@@ -44,6 +41,8 @@ class Scene {
                 SDL_DestroyWindow(window);
                 SDL_Quit();
             }
+
+            SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
         }
 

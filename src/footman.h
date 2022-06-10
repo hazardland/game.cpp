@@ -7,16 +7,21 @@ using namespace std;
 #include <game/sprite.h>
 #include <game/object.h>
 #include <game/animation.h>
+#include <game/rectangle.h>
 
 #include <enum.h>
 
 class Footman: public Object {
     public:
         Animation* body;
+        Rectangle* health;
         Footman(Sprite* sprite) {
             // cout << "Creating footman\n";
             setSize(72, 72);
             body = new Animation(sprite, UNIT_STAND_DOWN);
+            health = new Rectangle(sprite->image->renderer);
+            health->setSize(getWidth()*0.4, 5);
+            health->color = SDL_Color{161, 195, 69, 100};
         }
         virtual void update(uint32_t delta, Input* input) {
             //cout << "Updating footman\n";
@@ -40,10 +45,12 @@ class Footman: public Object {
                 body->play(clip);
             }
             body->update(delta);
+            health->setPosition(getX()+getWidth()/2-health->getWidth()/2, getY()+10);
         }
         virtual void render() {
             // cout << "Rendering footman\n";
             body->render(&position);
+            health->render();
         }
 
 };

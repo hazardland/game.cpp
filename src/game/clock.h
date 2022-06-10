@@ -7,8 +7,10 @@
  * @brief Simple clock for fps tracking
  * 
  */
-struct Clock
+class Clock
 {
+    public:
+
     uint32_t previousTicks = 0;
     uint32_t delta = 0;
     uint32_t fps = 0;
