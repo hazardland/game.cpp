@@ -46,7 +46,7 @@ class Scene {
             }            
 
             // renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-            renderer = SDL_CreateRenderer(window, 3, SDL_RENDERER_ACCELERATED);
+            renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
             if (SDL_GetRendererInfo(renderer, &info)==0) {
                     printf("Chosen driver: %s\n", info.name);
             }

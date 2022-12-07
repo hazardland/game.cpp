@@ -1,5 +1,7 @@
 # Setup things
 This is for me because I every time forget how to setup dev env on windows
+![](/doc/images/main.png)
+
 ## Windows
 1. Follow msys64 installation instructions here https://code.visualstudio.com/docs/languages/cpp#_example-install-mingwx64
 
