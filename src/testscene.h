@@ -1,5 +1,5 @@
-#ifndef WAR2_SCENE_H
-#define WAR2_SCENE_H
+#ifndef TEST_SCENE_H
+#define TEST_SCENE_H
 
 using namespace std;
 #include <iostream>
@@ -16,7 +16,7 @@ using namespace std;
 #include <footman.h>
 #include <selectbox.h>
 
-class Game : public Scene {
+class TestScene : public Scene {
 
     using Scene::Scene;
     Footman* footman; 
@@ -90,6 +90,8 @@ class Game : public Scene {
             objects.push_back(fps);
             objects.push_back(cursor);
             objects.push_back(selectbox);
+
+            printf("Object count: %d", objects.size());
 
         }
 

@@ -11,13 +11,16 @@ using namespace std;
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_ttf.h>
 
+#include <game/view.h>
 #include <game/clock.h>
 #include <game/input.h>
 #include <game/scene.h>
+#include <game/camera.h>
+
 
 bool SDL_STARTED = false;
 
-class Window {
+class Window: public View {
 
     public:
 
@@ -26,6 +29,13 @@ class Window {
     Clock* clock;
     Scene* scene;
     Input* input;
+    Camera* camera;
+
+    bool closed = false;
+    bool resized = false;
+    int width;
+    int height;
+
 
     Window(const char* title,
            const int width,
@@ -55,7 +65,7 @@ class Window {
         }
 
         clock = new Clock();
-
+        
     }
 
     void setScene(Scene* scene) {
@@ -65,8 +75,24 @@ class Window {
 
     void setInput(Input* input) {
         this->input = input;
-        input->width = &scene->width;
-        input->height = &scene->height;
+        this->input->setWindow(this);
+    }
+
+    void setCamera(Camera* camera) {
+        this->camera = camera;
+    }
+
+    virtual void onResized(int width, int height) {
+
+        printf("Resized\n");
+        this->width = width;
+        this->height = height;
+        this->scene->width = this->width;
+        this->scene->height = this->height;
+        // this->camera->width = this->width;
+        // this->camera->height = this->height;
+        printf("Done resize\n");
+
     }
 
     // virtual void prepare () {
@@ -77,7 +103,7 @@ class Window {
 
         scene->prepare();
 
-        while(!input->quit){
+        while(!input->closed){
             clock->tick();
             input->update();
             scene->update(clock, input);

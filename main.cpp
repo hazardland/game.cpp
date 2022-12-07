@@ -1,15 +1,19 @@
 using namespace std;
 
-#include <game/window.h>
 #include <game/input.h>
+#include <game/camera.h>
+#include <game/window.h>
 
-#include <war2.h>
+#include <testscene.h>
 
 int main(int argc, char** argv){
 
     Window* window = new Window("Game Title", 500, 500);
-    window->setScene(new Game(window->window));
+    // Window can take custom scene
+    window->setScene(new TestScene(window->window));
+    // Window can take custom input
     window->setInput(new Input());
+    window->setCamera(new Camera());
     return window->run();
 
 }

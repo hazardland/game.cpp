@@ -7,6 +7,8 @@ using namespace std;
 
 #include <SDL2/SDL.h>
 
+#include <game/view.h>
+
 class Keyboard {
     public:
     bool up = false;
@@ -47,11 +49,15 @@ class Mouse {
 
 class Input {
     public:
-    int* width;
-    int* height;
-    bool quit = false;
+    bool closed = false;
     Keyboard* keyboard = new Keyboard();
     Mouse* mouse = new Mouse();
+    View* view;
+
+    void setWindow(View* view) {
+        this->view = view;
+    }
+    
 
     void update() {
         keyboard->reset();
@@ -95,13 +101,14 @@ class Input {
 
             switch(event.type){
                 case SDL_QUIT:
-                    quit = true;
+                    closed = true;
                     break;
                 case SDL_WINDOWEVENT:
                     switch (event.window.event){
                         case SDL_WINDOWEVENT_RESIZED:
-                            *width = event.window.data1;
-                            *height = event.window.data2;
+                            // window->width = event.window.data1;
+                            // window->height = event.window.data2;
+                            view->onResized(event.window.data1, event.window.data2);
                             //SDL_Log("Window %d resized to %dx%d",
                             //        event.window.windowID, event.window.data1, event.window.data2);
                         break;
