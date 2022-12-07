@@ -30,7 +30,7 @@ class TestScene : public Scene {
         const int FOOTMAN_BLUE = 1;
 
         virtual void prepare() {
-            font = TTF_OpenFont("assets/fonts/ugly.ttf", 72);
+            font = TTF_OpenFont("assets/fonts/titillium.ttf", 64);
             if (font==NULL){
                 printf("Failed to load font: %s", SDL_GetError());
             }
@@ -74,9 +74,10 @@ class TestScene : public Scene {
             for (int x = 0; x <= 50; ++x)
             {
                 for (int y = 0; y <= 25; ++y)
-                {
+                {                    
                     Footman* footman = new Footman(sprites[FOOTMAN_BLUE]);
-                    footman->setPosition(x*footman->getWidth()/2, y*footman->getHeight()/2);
+                    footman->x = x*footman->getWidth()/2;
+                    footman->y = y*footman->getHeight()/2;                    
                     objects.push_back(footman);
                 }
             }
@@ -95,7 +96,7 @@ class TestScene : public Scene {
 
         }
 
-        virtual void update(Clock *clock, Input* input) {
+        virtual void update(Clock *clock, Input* input, Camera* camera) {
             // footman->setPosition(x, y);
 
             fps->setText(to_string(clock->fps));
@@ -103,7 +104,23 @@ class TestScene : public Scene {
             cursor->setPosition(input->mouse->x, input->mouse->y);
             cursor->setText(to_string(input->mouse->x)+", "+to_string(input->mouse->y));
             
-            Scene::update(clock, input);
+            if (input->keyboard->down) {
+                camera->y += 10;
+            }
+
+            if (input->keyboard->up) {
+                camera->y -= 10;
+            }
+
+            if (input->keyboard->right) {
+                camera->x += 10;
+            }
+
+            if (input->keyboard->left) {
+                camera->x -= 10;
+            }
+
+            Scene::update(clock, input, camera);
         }
 
 };

@@ -12,6 +12,7 @@ using namespace std;
 #include <game/object.h>
 #include <game/clock.h>
 #include <game/input.h>
+#include <game/camera.h>
 
 class Scene {
 
@@ -72,21 +73,18 @@ class Scene {
         };
 
 
-        virtual void update(Clock *clock, Input* input) {
+        virtual void update(Clock *clock, Input* input, Camera* camera) {
             for (auto &object: objects) {
                 object->update(clock->delta, input);
             }
         }
 
-        virtual void render() {
+        virtual void render(Camera* camera) {
 
             SDL_RenderClear(renderer);
 
             for (auto &object: objects) {
-                if (object->getY()<height && object->getX()<width && 
-                    object->getX()+object->getWidth()>0 && object->getY()+object->getHeight()>0) {
-                    object->render();
-                }
+                object->render(camera);
             }
 
             SDL_RenderPresent(renderer);

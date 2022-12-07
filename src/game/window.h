@@ -29,7 +29,7 @@ class Window: public View {
     Clock* clock;
     Scene* scene;
     Input* input;
-    Camera* camera;
+    Camera* camera = NULL;
 
     bool closed = false;
     bool resized = false;
@@ -80,6 +80,7 @@ class Window: public View {
 
     void setCamera(Camera* camera) {
         this->camera = camera;
+        SDL_GetWindowSize(window, &camera->width, &camera->height);
     }
 
     virtual void onResized(int width, int height) {
@@ -89,8 +90,10 @@ class Window: public View {
         this->height = height;
         this->scene->width = this->width;
         this->scene->height = this->height;
-        // this->camera->width = this->width;
-        // this->camera->height = this->height;
+        if (this->camera!=NULL){
+            this->camera->width = this->width;
+            this->camera->height = this->height;
+        }
         printf("Done resize\n");
 
     }
@@ -106,8 +109,8 @@ class Window: public View {
         while(!input->closed){
             clock->tick();
             input->update();
-            scene->update(clock, input);
-            scene->render();
+            scene->update(clock, input, camera);
+            scene->render(camera);
         }
 
         return 0;

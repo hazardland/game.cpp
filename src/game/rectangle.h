@@ -7,6 +7,7 @@ using namespace std;
 #include <SDL2/SDL_image.h>
 
 #include <game/object.h>
+#include <game/camera.h>
 
 class Rectangle: public Object {
     public:
@@ -23,7 +24,7 @@ class Rectangle: public Object {
     void hide() {
         visible = false;
     }
-    void render() {
+    void render(Camera* camera) {
         if (visible) {
             //SDL_RenderSetScale(renderer, 5, 5);
             // cout << "Drawing rectangle "<< position.x << " " << position.y << " " << position.w << " " << position.h << "\n";

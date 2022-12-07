@@ -40,7 +40,7 @@ class Text: public Object {
         SDL_FreeSurface(surface);
     }
     
-    void render() {
+    void render(Camera* camera) {
         SDL_RenderCopy(renderer, texture, NULL, &position);
     }  
 
