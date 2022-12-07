@@ -33,8 +33,24 @@ class Scene {
             this->width = width;
             this->height = height;
 
+            int driverCount = SDL_GetNumRenderDrivers();
+            printf("Number of renderer drivers: %d\n", driverCount);
+
+            SDL_RendererInfo info;
+            for(auto i=0; i<driverCount; ++i)
+            {
+                if(SDL_GetRenderDriverInfo(i, &info) == 0)
+                {
+                    printf("Driver %d: %s\n", i, info.name);
+                }
+            }            
+
             // renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-            renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+            renderer = SDL_CreateRenderer(window, 3, SDL_RENDERER_ACCELERATED);
+            if (SDL_GetRendererInfo(renderer, &info)==0) {
+                    printf("Chosen driver: %s\n", info.name);
+            }
+
 
             if(!renderer){
                 printf("Failed to create renderer: %s", SDL_GetError());

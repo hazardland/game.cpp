@@ -65,7 +65,7 @@ class Input {
             mouse->rightDragEnded = false;
             mouse->rightDragStartX = -1;
             mouse->rightDragStartY = -1;
-            cout << "Cleaning right drag\n";
+            // cout << "Cleaning right drag\n";
         // So basically if muose was down startX becomes>-1
         // If startX != x means we moved
         // So it can be treated as drag start
@@ -74,20 +74,20 @@ class Input {
                    && (mouse->rightDragStartX!=mouse->x
                        || mouse->rightDragStartY!=mouse->y)) {
             mouse->rightDragActive = true;
-            cout << "Activating right drag\n";
+            // cout << "Activating right drag\n";
         }
 
         if (mouse->leftDragEnded) {
             mouse->leftDragEnded = false;
             mouse->leftDragStartX = -1;
             mouse->leftDragStartY = -1;
-            cout << "Cleaning left drag\n";
+            // cout << "Cleaning left drag\n";
         } else if (!mouse->leftDragActive
                    && mouse->leftDragStartX>-1
                    && (mouse->leftDragStartX!=mouse->x
                        || mouse->leftDragStartY!=mouse->y)) {
             mouse->leftDragActive = true;
-            cout << "Activating left drag\n";
+            // cout << "Activating left drag\n";
         }
 
         SDL_Event event;
@@ -102,8 +102,8 @@ class Input {
                         case SDL_WINDOWEVENT_RESIZED:
                             *width = event.window.data1;
                             *height = event.window.data2;
-                            SDL_Log("Window %d resized to %dx%d",
-                                    event.window.windowID, event.window.data1, event.window.data2);
+                            //SDL_Log("Window %d resized to %dx%d",
+                            //        event.window.windowID, event.window.data1, event.window.data2);
                         break;
                     }
                     break;
@@ -133,11 +133,11 @@ class Input {
                     if (event.button.button==SDL_BUTTON_RIGHT) {
                         mouse->rightDragStartX = mouse->x;
                         mouse->rightDragStartY = mouse->y;
-                        cout << "Right mouse down\n";
+                        // cout << "Right mouse down\n";
                     } else if (event.button.button==SDL_BUTTON_LEFT) {
                         mouse->leftDragStartX = mouse->x;
                         mouse->leftDragStartY = mouse->y;
-                        cout << "Left mouse down\n";
+                        // cout << "Left mouse down\n";
                     }
                     break;
                 case SDL_MOUSEBUTTONUP:
@@ -147,25 +147,25 @@ class Input {
                         if (mouse->rightDragActive) {
                             mouse->rightDragEnded = true;
                             mouse->rightDragActive = false;
-                            cout << "Right drag end\n";
+                            // cout << "Right drag end\n";
                         // So if drag is not active
                         } else {
                             mouse->rightClick = true;
                             mouse->rightDragStartX = -1;
                             mouse->rightDragStartY = -1;
-                            cout << "Right click\n";
+                            // cout << "Right click\n";
                         }
                     // I believe this event come separately
                     } else if (event.button.button==SDL_BUTTON_LEFT) {
                         if (mouse->leftDragActive) {
                             mouse->leftDragEnded = true;
                             mouse->leftDragActive = false;
-                            cout << "Left drag end\n";
+                            // cout << "Left drag end\n";
                         } else {
                             mouse->leftClick = true;
                             mouse->leftDragStartX = -1;
                             mouse->leftDragStartY = -1;
-                            cout << "Left click\n";
+                            // cout << "Left click\n";
                         }
                     }
                     // if any of drags active we just ended drag
