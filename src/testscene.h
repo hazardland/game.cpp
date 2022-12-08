@@ -11,14 +11,20 @@ using namespace std;
 
 #include <game/scene.h>
 #include <game/text.h>
+#include <game/map.h>
 
 #include <enum.h>
 #include <footman.h>
 #include <selectbox.h>
 
+
+
 class TestScene : public Scene {
 
     using Scene::Scene;
+    
+    Map* map;
+    
     Footman* footman; 
     TTF_Font* font;
     Text* fps;
@@ -27,6 +33,10 @@ class TestScene : public Scene {
 
     public:
 
+        int random(int min, int max) {
+            return rand()%(max-min + 1) + min;
+        }
+
         const int FOOTMAN_BLUE = 1;
 
         virtual void prepare() {
@@ -34,6 +44,19 @@ class TestScene : public Scene {
             if (font==NULL){
                 printf("Failed to load font: %s", SDL_GetError());
             }
+
+            map = new Map(new Image(renderer, "assets/sprites/terrain_sol.png"), 16, 16, 500, 500);
+            int mapFrameCount = map->tiles->getFrameCount();
+            for (size_t x = 0; x < map->mapWidth; x++)
+            {
+                for (size_t y = 0; y < map->mapHeight; y++)
+                {
+                    map->grid[x][y] = random(0, mapFrameCount-1);
+                }
+                
+            }
+            
+            objects.push_back(map);
 
             fps = new Text(renderer, font);
             cursor = new Text(renderer, font);
