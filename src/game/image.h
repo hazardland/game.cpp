@@ -28,7 +28,7 @@ class Image {
             SDL_Surface* surface = IMG_Load(imagePath);
             if (!surface) {
                 // @todo: raise error
-                printf("Failed to create surface: %s", SDL_GetError());
+                printf("Failed to load image %s: %s", imagePath, SDL_GetError());
             }
 
             // Works onlo on 8 bit colors

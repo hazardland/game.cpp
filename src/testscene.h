@@ -45,8 +45,9 @@ class TestScene : public Scene {
                 printf("Failed to load font: %s", SDL_GetError());
             }
 
-            map = new Map(new Image(renderer, "assets/sprites/terrain_sol.png"), 16, 16, 500, 500);
+            map = new Map(new Image(renderer, "assets/sprites/tileset_compressed.png"), 16, 16, 500, 500, 4);
             int mapFrameCount = map->tiles->getFrameCount();
+            printf("map frame count %d\n", mapFrameCount);
             for (size_t x = 0; x < map->mapWidth; x++)
             {
                 for (size_t y = 0; y < map->mapHeight; y++)
