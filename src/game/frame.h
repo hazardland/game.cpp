@@ -13,6 +13,7 @@ class Frame {
         // int pause;
         bool flipX = false;
         bool flipY = false;
+        SDL_RendererFlip flip;
         Frame() {
             rect.x = 0;
             rect.y = 0;
@@ -20,14 +21,19 @@ class Frame {
             rect.h = 0;
         }
         SDL_RendererFlip getFlip(){
+            return flip;
+        }
+
+        void cacheFlip(){
             if (flipX && flipY) {
-                return (SDL_RendererFlip) (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL);
+                flip = (SDL_RendererFlip) (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL);
             } else if (flipX) {
-                return SDL_FLIP_HORIZONTAL;
+                flip = SDL_FLIP_HORIZONTAL;
             } else if (flipY) {
-                return SDL_FLIP_VERTICAL;
+                flip =  SDL_FLIP_VERTICAL;
+            } else {
+                flip = SDL_FLIP_NONE;
             }
-            return SDL_FLIP_NONE;
         }
 
         SDL_Rect* getRect(){

@@ -14,9 +14,9 @@ class Clock
     uint32_t previousTicks = 0;
     uint32_t delta = 0;
     uint32_t fps = 0;
-    uint32_t lowFps = -1;
-    uint32_t highFps = 0;
-    uint32_t avgFps = 0;
+    // uint32_t lowFps = -1;
+    // uint32_t highFps = 0;
+    // uint32_t avgFps = 0;
 
     void tick()
     {
@@ -24,13 +24,13 @@ class Clock
         delta = ticks - previousTicks;
         previousTicks = ticks;
         fps = 1000/delta;
-        if (fps>highFps) {
-            highFps = fps;
-        }
-        if (fps<lowFps && fps>10) {
-            lowFps = fps;
-        }
-        avgFps = (avgFps + fps) / 2; 
+        // if (fps>highFps) {
+        //     highFps = fps;
+        // }
+        // if (fps<lowFps && fps>10) {
+        //     lowFps = fps;
+        // }
+        // avgFps = (avgFps + fps) / 2; 
     }
 };
 

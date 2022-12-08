@@ -46,9 +46,9 @@ class Animation  {
         }
         clip = sprite->clips[clipName];
         if (slow>0) {
-            pause = clip->getPause()*slow;
+            pause = clip->getFramePause()*slow;
         } else {
-            pause = clip->getPause();
+            pause = clip->getFramePause();
         }
         activeClip = clipName;
         // cout << "Set clip "<< clipName << " " << clip << "\n";

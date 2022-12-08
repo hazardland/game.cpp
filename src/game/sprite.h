@@ -18,31 +18,37 @@ using namespace std;
  */
 class Sprite {
     public:
-    int width;
-    int height;
-    int pause;
+    int frameWidth;
+    int frameHeight;
+    int framePause;
     bool readVertically;
     Image* image; // Default image
     map<int, Clip*> clips;
     Sprite (Image* image,
-            int width,
-            int height,
-            int pause,
+            int frameWidth,
+            int frameHeight,
+            int framePause,
             bool readVertically = false
             ) {
-        this->width = width;
-        this->height = height;
-        this->pause = pause;
+        this->frameWidth = frameWidth;
+        this->frameHeight = frameHeight;
+        this->framePause = framePause;
         this->image = image;
         this->readVertically = readVertically;
     }
     void add(int clipName,
-                 int row,
-                 int cell,
-                 int count,
+                 int startRow,
+                 int startCell,
+                 int frameCount,
                  bool flipX=false,
                  bool flipY=false) {
-        clips[clipName] = new Clip(image, width, height, row, cell, count, pause, flipX, flipY, readVertically);
+        clips[clipName] = new Clip(image, 
+                                   frameWidth, 
+                                   frameHeight, 
+                                   startRow, startCell, 
+                                   frameCount, 
+                                   framePause, 
+                                   flipX, flipY, readVertically);
         // cout << "Adding clip " << clipName << " " << clips.size() << "\n";
     }
     ~Sprite() {

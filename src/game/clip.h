@@ -15,40 +15,43 @@ class Clip {
     public:
         Frame* frames;
         int frameCount;
-        int pause = 60;
+        int framePause = 60;
         // int width;
         // int height;
 
         Clip(Image* image,
-                  int width,
-                  int height,
-                  int cell,
-                  int row,
-                  int count=1,
-                  int pause=60,
+                  int frameWidth,
+                  int frameHeight,
+                  int startCell,
+                  int startRow,
+                  int frameCount=1,
+                  int framePause=60,
                   bool flipX=false,
                   bool flipY=false,
                   bool readVertically=false) {
 
             // cout << "Creating clip\n";
 
-            this->pause = pause;
-            frameCount = count;
-            frames = new Frame[count];
-            int cellCount = image->getWidth()/width;
-            int rowCount = image->getHeight()/height;
-            for (size_t i = 0; i < count; i++)
+            this->framePause = framePause;
+            this->frameCount = frameCount;
+            frames = new Frame[frameCount];
+            int cellCount = image->getWidth()/frameWidth;
+            int rowCount = image->getHeight()/frameHeight;
+            int cell = startCell;
+            int row = startRow;
+            for (size_t i = 0; i < frameCount; i++)
             {
-                frames[i].rect.x = (cell-1) * width;
-                frames[i].rect.y = (row-1) * height;
-                frames[i].rect.w = width;
-                frames[i].rect.h = height;
+                frames[i].rect.x = (cell-1) * frameWidth;
+                frames[i].rect.y = (row-1) * frameHeight;
+                frames[i].rect.w = frameWidth;
+                frames[i].rect.h = frameHeight;
                 frames[i].flipX = flipX;
                 frames[i].flipY = flipY;
+                frames[i].cacheFlip();
 
                 // cout << image << " Frame "<< i << " vertical: " <<  readVertically << " x:" << frames[i].rect.x << " y:" << frames[i].rect.y << " w:" << frames[i].rect.w << " h:" << frames[i].rect.h << "\n";
 
-                if (i+1==count) {
+                if (i+1==frameCount) {
                     break;
                 }
 
@@ -71,12 +74,12 @@ class Clip {
         int getFrameCount() {
             return frameCount;
         }
-        Frame* getFrame(int frame){
+        Frame* getFrame(int frameIndex){
             //cout << frame << " ";
-            return &frames[frame];
+            return &frames[frameIndex];
         }
-        int getPause() {
-            return pause;
+        int getFramePause() {
+            return framePause;
         }
         ~Clip() {
             // cout << "Clip is being destroyed";

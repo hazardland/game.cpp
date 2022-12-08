@@ -105,19 +105,16 @@ class TestScene : public Scene {
             cursor->setText(to_string(input->mouse->x)+", "+to_string(input->mouse->y));
             
             if (input->keyboard->down) {
-                camera->y += 10;
+                camera->y += 5;
             }
-
             if (input->keyboard->up) {
-                camera->y -= 10;
+                camera->y -= 5;
             }
-
             if (input->keyboard->right) {
-                camera->x += 10;
+                camera->x += 5;
             }
-
             if (input->keyboard->left) {
-                camera->x -= 10;
+                camera->x -= 5;
             }
 
             Scene::update(clock, input, camera);
