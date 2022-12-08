@@ -36,7 +36,7 @@ class Sprite {
         this->image = image;
         this->readVertically = readVertically;
     }
-    void add(int clipName,
+    void addClip(int clipName,
                  int startRow,
                  int startCell,
                  int frameCount,
