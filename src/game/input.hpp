@@ -1,5 +1,5 @@
-#ifndef GAME_INPUT_H
-#define GAME_INPUT_H
+#ifndef GAME_INPUT
+#define GAME_INPUT
 
 using namespace std;
 
@@ -7,7 +7,7 @@ using namespace std;
 
 #include <SDL2/SDL.h>
 
-#include <game/view.h>
+#include <game/screen.hpp>
 
 class Keyboard {
     public:
@@ -49,13 +49,13 @@ class Mouse {
 
 class Input {
     public:
-    bool closed = false;
+    bool close = false;
     Keyboard* keyboard = new Keyboard();
     Mouse* mouse = new Mouse();
-    View* view;
+    Screen* screen;
 
-    void setWindow(View* view) {
-        this->view = view;
+    void setWindow(Screen* screen) {
+        this->screen = screen;
     }
     
 
@@ -101,14 +101,14 @@ class Input {
 
             switch(event.type){
                 case SDL_QUIT:
-                    closed = true;
+                    close = true;
                     break;
                 case SDL_WINDOWEVENT:
                     switch (event.window.event){
                         case SDL_WINDOWEVENT_RESIZED:
                             // window->width = event.window.data1;
                             // window->height = event.window.data2;
-                            view->onResized(event.window.data1, event.window.data2);
+                            screen->onResize(event.window.data1, event.window.data2);
                             //SDL_Log("Window %d resized to %dx%d",
                             //        event.window.windowID, event.window.data1, event.window.data2);
                         break;

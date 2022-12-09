@@ -1,12 +1,13 @@
-#ifndef GAME_MAP_H
-#define GAME_MAP_H
+#ifndef GAME_MAP
+#define GAME_MAP
 
 using namespace std;
+
 #include <stdio.h>
 
-#include <game/object.h>
-#include <game/image.h>
-#include <game/clip.h>
+#include <game/object.hpp>
+#include <game/image.hpp>
+#include <game/clip.hpp>
 
 /**
  * @brief Map

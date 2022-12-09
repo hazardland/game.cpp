@@ -1,5 +1,5 @@
-#ifndef WAR2_ENUM_H
-#define WAR2_ENUM_H
+#ifndef TEST_ENUM
+#define TEST_ENUM
 
 int RED[][3] = {{164, 0, 0}, {124, 0, 0}, {92, 4, 0}, {68, 4, 0}, -1};
 int BLUE[][3] = {{12, 72, 204}, {4, 40, 160}, {0, 20, 116}, {0, 4, 76}, -1};

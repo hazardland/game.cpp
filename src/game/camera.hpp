@@ -1,10 +1,10 @@
-#ifndef GAME_CAMERA_H
-#define GAME_CAMERA_H
+#ifndef GAME_CAMERA
+#define GAME_CAMERA
 
 #include <SDL2/SDL_image.h>
 
 /**
- * @brief Simple clock for fps tracking
+ * @brief Camera tracking object
  * 
  */
 class Camera

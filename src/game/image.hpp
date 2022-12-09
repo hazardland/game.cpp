@@ -1,10 +1,10 @@
-#ifndef GAME_IMAGE_H
-#define GAME_IMAGE_H
+#ifndef GAME_IMAGE
+#define GAME_IMAGE
 
 #include <stdio.h>
 #include <SDL2/SDL_image.h>
 
-#include <game/util.h>
+#include <game/util.hpp>
 
 /**
  * @brief Image class is a base class for preparing textures into GPU RAM

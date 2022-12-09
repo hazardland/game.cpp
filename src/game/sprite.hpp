@@ -1,5 +1,5 @@
-#ifndef GAME_SPRITE_H
-#define GAME_SPRITE_H
+#ifndef GAME_SPRITE
+#define GAME_SPRITE
 
 using namespace std;
 
@@ -9,8 +9,8 @@ using namespace std;
 
 #include <SDL2/SDL_image.h>
 
-#include <game/clip.h>
-#include <game/image.h>
+#include <game/clip.hpp>
+#include <game/image.hpp>
 
 /**
  * @brief Stores clips grouping frames and texture image

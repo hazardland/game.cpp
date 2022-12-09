@@ -1,5 +1,5 @@
-#ifndef GAME_FRAME_H
-#define GAME_FRAME_H
+#ifndef GAME_FRAME
+#define GAME_FRAME
 
 #include <SDL2/SDL_image.h>
 

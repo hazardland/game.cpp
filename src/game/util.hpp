@@ -1,10 +1,13 @@
-#ifndef GAME_UTIL_H
-#define GAME_UTIL_H
+#ifndef GAME_UTIL
+#define GAME_UTIL
 
 using namespace std;
+
 #include <stdio.h>
+
 #include <SDL2/SDL_image.h>
-#include <game/input.h>
+
+#include <game/input.hpp>
 
 void replaceColors(SDL_Surface* surface, const int fromColors[][3], const int toColors[][3]) {
 

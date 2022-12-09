@@ -1,12 +1,13 @@
-#ifndef GAME_TEXT_H
-#define GAME_TEXT_H
+#ifndef GAME_TEXT
+#define GAME_TEXT
 
 using namespace std;
 #include <string>
+
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
-#include <game/object.h>
+#include <game/object.hpp>
 
 class Text: public Object {
     SDL_Texture* texture = NULL;

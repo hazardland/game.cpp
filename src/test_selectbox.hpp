@@ -1,7 +1,7 @@
-#ifndef WAR2_SELECTBOX_H
-#define WAR2_SELECTBOX_H
+#ifndef TEST_SELECTBOX_H
+#define TEST_SELECTBOX_H
 
-#include <game/rectangle.h>
+#include <game/rectangle.hpp>
 
 class Selectbox: public Rectangle {
 using Rectangle::Rectangle;

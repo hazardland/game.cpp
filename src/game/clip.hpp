@@ -1,11 +1,12 @@
-#ifndef GAME_CLIP_H
-#define GAME_CLIP_H
+#ifndef GAME_CLIP
+#define GAME_CLIP
 
 using namespace std;
+
 #include <iostream>
 
-#include <game/image.h>
-#include <game/frame.h>
+#include <game/image.hpp>
+#include <game/frame.hpp>
 
 /**
  * @brief Stores frame data which are later animated from animation using sprite

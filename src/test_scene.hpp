@@ -9,13 +9,13 @@ using namespace std;
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
-#include <game/scene.h>
-#include <game/text.h>
-#include <game/map.h>
+#include <game/scene.hpp>
+#include <game/text.hpp>
+#include <game/map.hpp>
 
-#include <enum.h>
-#include <footman.h>
-#include <selectbox.h>
+#include <test_enum.hpp>
+#include <test_unit.hpp>
+#include <test_selectbox.hpp>
 
 
 

@@ -2,17 +2,18 @@
 #define GAME_SCENE_H
 
 using namespace std;
+
 #include <map>
 #include <iostream>
 #include <vector>
 
 #include <SDL2/SDL_image.h>
 
-#include <game/sprite.h>
-#include <game/object.h>
-#include <game/clock.h>
-#include <game/input.h>
-#include <game/camera.h>
+#include <game/sprite.hpp>
+#include <game/object.hpp>
+#include <game/clock.hpp>
+#include <game/input.hpp>
+#include <game/camera.hpp>
 
 class Scene {
 

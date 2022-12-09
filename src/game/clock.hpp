@@ -1,5 +1,5 @@
-#ifndef GAME_CLOCK_H
-#define GAME_CLOCK_H
+#ifndef GAME_CLOCK
+#define GAME_CLOCK
 
 #include <SDL2/SDL_timer.h>
 

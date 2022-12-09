@@ -1,5 +1,5 @@
-#ifndef GAME_WINDOW_H
-#define GAME_WINDOW_H
+#ifndef GAME_WINDOW
+#define GAME_WINDOW
 
 using namespace std;
 
@@ -11,31 +11,27 @@ using namespace std;
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_ttf.h>
 
-#include <game/view.h>
-#include <game/clock.h>
-#include <game/input.h>
-#include <game/scene.h>
-#include <game/camera.h>
+#include <game/screen.hpp>
+#include <game/clock.hpp>
+#include <game/input.hpp>
+#include <game/scene.hpp>
+#include <game/camera.hpp>
 
 
 bool SDL_STARTED = false;
 
-class Window: public View {
+class Window: public Screen {
 
     public:
 
+    // SDL_Window object
     SDL_Window *window;
 
-    Clock* clock;
     Scene* scene;
+
+    Clock* clock;
     Input* input;
     Camera* camera = NULL;
-
-    bool closed = false;
-    bool resized = false;
-    int width;
-    int height;
-
 
     Window(const char* title,
            const int width,
@@ -83,19 +79,13 @@ class Window: public View {
         SDL_GetWindowSize(window, &camera->width, &camera->height);
     }
 
-    virtual void onResized(int width, int height) {
-
-        printf("Resized\n");
-        this->width = width;
-        this->height = height;
-        this->scene->width = this->width;
-        this->scene->height = this->height;
+    virtual void onResize(int width, int height) {
+        this->scene->width = width;
+        this->scene->height = height;
         if (this->camera!=NULL){
-            this->camera->width = this->width;
-            this->camera->height = this->height;
+            this->camera->width = width;
+            this->camera->height = height;
         }
-        printf("Done resize\n");
-
     }
 
     // virtual void prepare () {
@@ -106,7 +96,7 @@ class Window: public View {
 
         scene->prepare();
 
-        while(!input->closed){
+        while(!input->close){
             clock->tick();
             input->update();
             scene->update(clock, input, camera);

@@ -1,13 +1,14 @@
-#ifndef GAME_RECGANGLE_H
-#define GAME_RECGANGLE_H
+#ifndef GAME_RECGANGLE
+#define GAME_RECGANGLE
 
 using namespace std;
+
 #include <iostream>
 
 #include <SDL2/SDL_image.h>
 
-#include <game/object.h>
-#include <game/camera.h>
+#include <game/object.hpp>
+#include <game/camera.hpp>
 
 class Rectangle: public Object {
     public:

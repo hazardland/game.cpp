@@ -1,13 +1,15 @@
-#ifndef GAME_ANIMATION_H
-#define GAME_ANIMATION_H
+#ifndef GAME_ANIMATION
+#define GAME_ANIMATION
 
 using namespace std;
+
 #include <stdio.h>
 
 #include <SDL2/SDL_image.h>
-#include <game/sprite.h>
-#include <game/image.h>
-#include <game/clip.h>
+
+#include <game/sprite.hpp>
+#include <game/image.hpp>
+#include <game/clip.hpp>
 
 /**
  * @brief Tracks animation and uses sprite to render selected clip

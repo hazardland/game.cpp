@@ -1,15 +1,16 @@
-#ifndef WAR2_FOOTMAN_H
-#define WAR2_FOOTMAN_H
+#ifndef TEST_UNIT_H
+#define TEST_UNIT_H
 
 using namespace std;
+
 #include <iostream>
 
-#include <game/sprite.h>
-#include <game/object.h>
-#include <game/animation.h>
-#include <game/rectangle.h>
+#include <game/sprite.hpp>
+#include <game/object.hpp>
+#include <game/animation.hpp>
+#include <game/rectangle.hpp>
 
-#include <enum.h>
+#include <test_enum.hpp>
 
 class Footman: public Object {
     public:

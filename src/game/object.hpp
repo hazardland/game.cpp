@@ -2,13 +2,14 @@
 #define GAME_OBJECT_H
 
 using namespace std;
+
 #include <iostream>
 #include <vector>
 
 #include <SDL2/SDL_image.h>
 
-#include <game/input.h>
-#include <game/camera.h>
+#include <game/input.hpp>
+#include <game/camera.hpp>
 
 class Object {
     protected:
