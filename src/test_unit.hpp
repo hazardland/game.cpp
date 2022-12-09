@@ -53,8 +53,7 @@ class Footman: public Object {
             body->update(state->clock->delta);
         }
         virtual void render(State* state) {
-            // cout << "Rendering footman\n";
-            if (state->camera->isVisible(x, y, getWidth(), getHeight())) {
+            if (state->camera->isVisible(x, y, &position)) {
                 state->camera->translate(x, y, &position);
                 body->render(&position);
                 health->setPosition(getX()+getWidth()/2-health->getWidth()/2, getY()+10);                

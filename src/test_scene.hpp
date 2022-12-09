@@ -63,7 +63,7 @@ class TestScene : public Scene {
             fps = new Text(renderer, font);
             cursor = new Text(renderer, font);
 
-            Sprite* sprite = new Sprite(new Image(renderer, "assets/sprites/footman.png", RED, BLUE),
+            Sprite* sprite = new Sprite(new Image(renderer, "assets/sprites/footman.png"),
                                         72,
                                         72,
                                         100,
@@ -102,7 +102,8 @@ class TestScene : public Scene {
                 {                    
                     Footman* footman = new Footman(sprites[FOOTMAN_BLUE]);
                     footman->x = x*footman->getWidth()/2;
-                    footman->y = y*footman->getHeight()/2;                    
+                    footman->y = y*footman->getHeight()/2;
+                    // footman->setPosition(x*footman->getWidth()/2, y*footman->getHeight()/2);                    
                     objects.push_back(footman);
                 }
             }

@@ -4,8 +4,6 @@
 #include <stdio.h>
 #include <SDL2/SDL_image.h>
 
-#include <game/util.hpp>
-
 /**
  * @brief Image class is a base class for preparing textures into GPU RAM
  * It will render region of image at provided position
@@ -25,20 +23,23 @@ class Image {
                 ) {
 
             this->renderer = renderer;
-            SDL_Surface* surface = IMG_Load(imagePath);
-            if (!surface) {
-                // @todo: raise error
-                printf("Failed to load image %s: %s", imagePath, SDL_GetError());
-            }
 
-            // Works onlo on 8 bit colors
-            if (fromColors!=NULL && toColors!=NULL) {
-                replaceColors(surface, fromColors, toColors);
-            }
+            // SDL_Surface* surface = IMG_Load(imagePath);
+            // if (!surface) {
+            //     // @todo: raise error
+            //     printf("Failed to load image %s: %s", imagePath, SDL_GetError());
+            // }
 
-            texture = SDL_CreateTextureFromSurface(renderer, surface);
-            SDL_FreeSurface(surface);
+            // // Works onlo on 8 bit colors
+            // if (fromColors!=NULL && toColors!=NULL) {
+            //     replaceColors(surface, fromColors, toColors);
+            // }
 
+            // texture = SDL_CreateTextureFromSurface(renderer, surface);
+            // SDL_FreeSurface(surface);
+
+            texture = IMG_LoadTexture (this->renderer, imagePath);
+            
             SDL_QueryTexture(texture, NULL, NULL, &width, &height);
         }
 
@@ -49,8 +50,6 @@ class Image {
             return height;
         }
         void render(SDL_Rect* frame, SDL_Rect* position, SDL_RendererFlip flip = SDL_FLIP_NONE) {
-            // cout << this << " Rendering x:" << _frame->x << " y:" << _frame->y << " w:" << _frame->w << " h:" << _frame->h << " ";
-            // cout << "At x:" << position->x << " y:" << position->y << " w:" << position->w << " h:" << position->h << "\n";
             SDL_RenderCopyEx(renderer, texture, frame, position, 0, NULL, flip);
         }
         ~Image() {

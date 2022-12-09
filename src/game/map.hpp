@@ -65,10 +65,10 @@ class Map: public Object {
                 for (size_t y = 0; y < mapHeight; y++)
                 {
                     //grid[x][y]
-                    position.x = x*tileWidth*tileScale;
-                    position.y = y*tileHeight*tileScale;
-                    if (state->camera->isVisible(&position)) {
-                        state->camera->translate(&position);
+                    // position.x = x*tileWidth*tileScale;
+                    // position.y = y*tileHeight*tileScale;
+                    if (state->camera->isVisible(x*tileWidth*tileScale, y*tileHeight*tileScale, &position)) {
+                        state->camera->translate(x*tileWidth*tileScale, y*tileHeight*tileScale, &position);
                         image->render(&tiles->getFrame(grid[x][y])->rect, &position);
                     }
                 }

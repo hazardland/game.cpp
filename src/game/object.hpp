@@ -11,10 +11,15 @@ using namespace std;
 #include <game/state.hpp>
 #include <game/camera.hpp>
 
+/*
+    All methods here work only for on screen position
+    Have your own int x, int y to track object's game world position 
+*/
 class Object {
 
     protected:
-
+        // Warrning: This position indicates where to render the object on screen
+        // But it does not indicate where your object is actually in your game world
         SDL_Rect position;
 
     public:

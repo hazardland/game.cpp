@@ -85,10 +85,8 @@ class Window: public Screen {
     virtual void onResize(int width, int height) {
         scene->width = width;
         scene->height = height;
-        if (state->camera!=NULL){
-            state->camera->width = width;
-            state->camera->height = height;
-        }
+        state->camera->width = width;
+        state->camera->height = height;
     }
 
     // virtual void prepare () {
