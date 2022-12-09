@@ -29,36 +29,36 @@ class Footman: public Object {
             health->setSize(getWidth()*0.4, 5);
             health->color = SDL_Color{161, 195, 69, 100};
         }
-        virtual void update(uint32_t delta, Input* input) {
+        virtual void update(State* state) {
             //cout << "Updating footman\n";
             int clip = 0;
-            if (input->keyboard->up) {
+            if (state->event->keyboard->up) {
                 clip += UNIT_STAND_UP;
-            } else if (input->keyboard->down) {
+            } else if (state->event->keyboard->down) {
                 clip += UNIT_STAND_DOWN;
             }
-            if (input->keyboard->left) {
+            if (state->event->keyboard->left) {
                 clip += UNIT_STAND_LEFT;
-            } else if (input->keyboard->right) {
+            } else if (state->event->keyboard->right) {
                 clip += UNIT_STAND_RIGHT;
             }
             if (clip>0) {
-                if (input->keyboard->space) {
+                if (state->event->keyboard->space) {
                     clip += 100;
                 } else {
                     clip += UNIT_MOVE;
                 }
                 body->play(clip);
             }
-            body->update(delta);
+            body->update(state->clock->delta);
         }
-        virtual void render(Camera* camera) {
+        virtual void render(State* state) {
             // cout << "Rendering footman\n";
-            if (camera->isVisible(x, y, getWidth(), getHeight())) {
-                camera->translate(x, y, &position);
+            if (state->camera->isVisible(x, y, getWidth(), getHeight())) {
+                state->camera->translate(x, y, &position);
                 body->render(&position);
                 health->setPosition(getX()+getWidth()/2-health->getWidth()/2, getY()+10);                
-                health->render(camera);
+                health->render(state);
             }
         }
 

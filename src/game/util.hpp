@@ -7,8 +7,6 @@ using namespace std;
 
 #include <SDL2/SDL_image.h>
 
-#include <game/input.hpp>
-
 void replaceColors(SDL_Surface* surface, const int fromColors[][3], const int toColors[][3]) {
 
     int size = 0;

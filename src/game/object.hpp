@@ -1,5 +1,5 @@
-#ifndef GAME_OBJECT_H
-#define GAME_OBJECT_H
+#ifndef GAME_OBJECT
+#define GAME_OBJECT
 
 using namespace std;
 
@@ -8,29 +8,21 @@ using namespace std;
 
 #include <SDL2/SDL_image.h>
 
-#include <game/input.hpp>
+#include <game/state.hpp>
 #include <game/camera.hpp>
 
 class Object {
+
     protected:
-        // Game world position
-        // Do we need actual position at all?
-        // During render it should be decided 
-        // where it should be rendered
-        // Or if it should be rendered at all
-        // int x;
-        // int y;
-        // Render position (Camera and game world position might differ)
+
         SDL_Rect position;
 
     public:
 
-        virtual void update(uint32_t delta, Input* input) {
+        virtual void update(State* state) {
 
         }
-        // The render method should decide to render or not and where to render
-        // By updating position
-        virtual void render(Camera* camera) {
+        virtual void render(State* state) {
 
         }
         virtual void setPosition (int x, int y) {

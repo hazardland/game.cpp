@@ -23,7 +23,9 @@ class Clock
         uint32_t ticks = SDL_GetTicks();
         delta = ticks - previousTicks;
         previousTicks = ticks;
-        fps = 1000/delta;
+        // fps = 1000/delta;
+        fps = (delta > 0) ? 1000.0f / delta : 0.0f;
+
         // if (fps>highFps) {
         //     highFps = fps;
         // }

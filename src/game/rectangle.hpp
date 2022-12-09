@@ -8,13 +8,16 @@ using namespace std;
 #include <SDL2/SDL_image.h>
 
 #include <game/object.hpp>
-#include <game/camera.hpp>
+#include <game/state.hpp>
 
 class Rectangle: public Object {
+
     public:
+
     SDL_Renderer* renderer;
     SDL_Color color;
     bool visible = true;
+
     Rectangle(SDL_Renderer* renderer, SDL_Color color={255, 255, 255, 100}) {
         this->renderer = renderer;
         this->color = color;
@@ -25,7 +28,7 @@ class Rectangle: public Object {
     void hide() {
         visible = false;
     }
-    void render(Camera* camera) {
+    void render(State* state) {
         if (visible) {
             //SDL_RenderSetScale(renderer, 5, 5);
             // cout << "Drawing rectangle "<< position.x << " " << position.y << " " << position.w << " " << position.h << "\n";

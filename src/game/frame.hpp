@@ -10,7 +10,6 @@
 class Frame {
     public:
         SDL_Rect rect;
-        // int pause;
         bool flipX = false;
         bool flipY = false;
         SDL_RendererFlip flip;

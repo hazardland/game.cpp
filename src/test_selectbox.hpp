@@ -6,23 +6,24 @@
 class Selectbox: public Rectangle {
 using Rectangle::Rectangle;
     public:
-        virtual void update(uint32_t delta, Input* input) {
+        virtual void update(State* state) {
 
-            if (input->mouse->leftDragActive) {
+            Mouse* mouse = state->event->mouse; 
+            if (mouse->leftDragActive) {
                 show();
-                if (input->mouse->x > input->mouse->leftDragStartX) {
-                    setX(input->mouse->leftDragStartX);              
-                    setWidth(input->mouse->x - input->mouse->leftDragStartX);
+                if (mouse->x > mouse->leftDragStartX) {
+                    setX(mouse->leftDragStartX);              
+                    setWidth(mouse->x - mouse->leftDragStartX);
                 } else {
-                    setX(input->mouse->x);
-                    setWidth(input->mouse->leftDragStartX- input->mouse->x);
+                    setX(mouse->x);
+                    setWidth(mouse->leftDragStartX- mouse->x);
                 }
-                if (input->mouse->y > input->mouse->leftDragStartY) {
-                    setY(input->mouse->leftDragStartY);              
-                    setHeight(input->mouse->y - input->mouse->leftDragStartY);
+                if (mouse->y > mouse->leftDragStartY) {
+                    setY(mouse->leftDragStartY);              
+                    setHeight(mouse->y - mouse->leftDragStartY);
                 } else {
-                    setY(input->mouse->y);
-                    setHeight(input->mouse->leftDragStartY- input->mouse->y);
+                    setY(mouse->y);
+                    setHeight(mouse->leftDragStartY - mouse->y);
                 }                
                 // cout << "Drawing rectangle "<< getX() << " " << getY() << " " << getWidth() << " " << getHeight() << "\n";
             } else {

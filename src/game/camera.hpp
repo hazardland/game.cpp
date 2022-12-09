@@ -22,9 +22,23 @@ class Camera
         }
         return false;
     }
+    virtual bool isVisible(SDL_Rect* position) {
+        if (position->x + position->w > this->x && 
+            position->y + position->h > this->y &&
+            position->x < this->x + this->width && 
+            position->y < this->y + this->height
+        ) {
+            return true;
+        }
+        return false;
+    }
     virtual void translate(int x, int y, SDL_Rect* position) {
         position->x = x - this->x; 
         position->y = y - this->y; 
+    }
+    virtual void translate(SDL_Rect* position) {
+        position->x -= this->x; 
+        position->y -= this->y; 
     }
 };
 

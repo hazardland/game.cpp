@@ -12,6 +12,7 @@ using namespace std;
 #include <game/scene.hpp>
 #include <game/text.hpp>
 #include <game/map.hpp>
+#include <game/state.hpp>
 
 #include <test_enum.hpp>
 #include <test_unit.hpp>
@@ -120,28 +121,28 @@ class TestScene : public Scene {
 
         }
 
-        virtual void update(Clock *clock, Input* input, Camera* camera) {
+        virtual void update(State* state) {
             // footman->setPosition(x, y);
 
-            fps->setText(to_string(clock->fps));
+            fps->setText((state->clock->fps>=100?"":" ") + to_string(state->clock->fps));
 
-            cursor->setPosition(input->mouse->x, input->mouse->y);
-            cursor->setText(to_string(input->mouse->x)+", "+to_string(input->mouse->y));
+            cursor->setPosition(state->event->mouse->x, state->event->mouse->y);
+            cursor->setText(to_string(state->event->mouse->x)+", "+to_string(state->event->mouse->y));
             
-            if (input->keyboard->down) {
-                camera->y += 5;
+            if (state->event->keyboard->down) {
+                state->camera->y += 5;
             }
-            if (input->keyboard->up) {
-                camera->y -= 5;
+            if (state->event->keyboard->up) {
+                state->camera->y -= 5;
             }
-            if (input->keyboard->right) {
-                camera->x += 5;
+            if (state->event->keyboard->right) {
+                state->camera->x += 5;
             }
-            if (input->keyboard->left) {
-                camera->x -= 5;
+            if (state->event->keyboard->left) {
+                state->camera->x -= 5;
             }
 
-            Scene::update(clock, input, camera);
+            Scene::update(state);
         }
 
 };

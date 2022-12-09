@@ -8,6 +8,7 @@ using namespace std;
 #include <game/object.hpp>
 #include <game/image.hpp>
 #include <game/clip.hpp>
+#include <game/state.hpp>
 
 /**
  * @brief Map
@@ -55,7 +56,7 @@ class Map: public Object {
             return mapHeight*tileHeight*tileScale;
         }
 
-        virtual void render(Camera* camera) {
+        virtual void render(State* state) {
             SDL_Rect position;
             position.w = tileWidth*tileScale;
             position.h = tileHeight*tileScale;
@@ -66,8 +67,8 @@ class Map: public Object {
                     //grid[x][y]
                     position.x = x*tileWidth*tileScale;
                     position.y = y*tileHeight*tileScale;
-                    if (camera->isVisible(position.x, position.y, tileWidth*tileScale, tileHeight*tileScale)) {
-                        camera->translate(position.x, position.y, &position);
+                    if (state->camera->isVisible(&position)) {
+                        state->camera->translate(&position);
                         image->render(&tiles->getFrame(grid[x][y])->rect, &position);
                     }
                 }

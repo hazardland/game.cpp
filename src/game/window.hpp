@@ -12,10 +12,10 @@ using namespace std;
 #include <SDL2/SDL_ttf.h>
 
 #include <game/screen.hpp>
-#include <game/clock.hpp>
-#include <game/input.hpp>
+// #include <game/clock.hpp>
+// #include <game/event.hpp>
 #include <game/scene.hpp>
-#include <game/camera.hpp>
+#include <game/state.hpp>
 
 
 bool SDL_STARTED = false;
@@ -29,13 +29,15 @@ class Window: public Screen {
 
     Scene* scene;
 
-    Clock* clock;
-    Input* input;
-    Camera* camera = NULL;
+    // Clock* clock;
+    // Input* input;
+    // Camera* camera = NULL;
+    State* state;
 
     Window(const char* title,
            const int width,
-           const int height) {
+           const int height,
+           State* state = NULL) {
 
         if (!SDL_STARTED) {
 
@@ -57,10 +59,16 @@ class Window: public Screen {
                                   SDL_WINDOW_RESIZABLE);
 
         if(!window){
-            printf("Failed to open window: %s", SDL_GetError());
+            printf("Failed to create window: %s", SDL_GetError());
         }
 
-        clock = new Clock();
+
+        if (state==NULL) {
+            this->state = new State();
+        }
+        this->state->event->setScreen(this);
+        printf("preping");
+        SDL_GetWindowSize(window, &this->state->camera->width, &this->state->camera->height);
         
     }
 
@@ -69,22 +77,17 @@ class Window: public Screen {
         SDL_GetWindowSize(window, &scene->width, &scene->height);
     }
 
-    void setInput(Input* input) {
-        this->input = input;
-        this->input->setWindow(this);
-    }
-
-    void setCamera(Camera* camera) {
-        this->camera = camera;
-        SDL_GetWindowSize(window, &camera->width, &camera->height);
-    }
+    // void setState(State* state) {
+    //     this->state->event->setScreen(this);
+    //     SDL_GetWindowSize(window, &camera->width, &camera->height);
+    // }
 
     virtual void onResize(int width, int height) {
-        this->scene->width = width;
-        this->scene->height = height;
-        if (this->camera!=NULL){
-            this->camera->width = width;
-            this->camera->height = height;
+        scene->width = width;
+        scene->height = height;
+        if (state->camera!=NULL){
+            state->camera->width = width;
+            state->camera->height = height;
         }
     }
 
@@ -96,11 +99,11 @@ class Window: public Screen {
 
         scene->prepare();
 
-        while(!input->close){
-            clock->tick();
-            input->update();
-            scene->update(clock, input, camera);
-            scene->render(camera);
+        while(!state->event->close){
+            state->clock->tick();
+            state->event->fetch();
+            scene->update(state);
+            scene->render(state);
         }
 
         return 0;

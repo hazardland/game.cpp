@@ -49,7 +49,6 @@ class Sprite {
                                    frameCount, 
                                    framePause, 
                                    flipX, flipY, readVertically);
-        // cout << "Adding clip " << clipName << " " << clips.size() << "\n";
     }
     ~Sprite() {
         delete image;

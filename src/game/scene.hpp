@@ -11,9 +11,10 @@ using namespace std;
 
 #include <game/sprite.hpp>
 #include <game/object.hpp>
-#include <game/clock.hpp>
-#include <game/input.hpp>
-#include <game/camera.hpp>
+#include <game/state.hpp>
+// #include <game/clock.hpp>
+// #include <game/input.hpp>
+// #include <game/camera.hpp>
 
 class Scene {
 
@@ -74,18 +75,18 @@ class Scene {
         };
 
 
-        virtual void update(Clock *clock, Input* input, Camera* camera) {
+        virtual void update(State* state) {
             for (auto &object: objects) {
-                object->update(clock->delta, input);
+                object->update(state);
             }
         }
 
-        virtual void render(Camera* camera) {
+        virtual void render(State* state) {
 
             SDL_RenderClear(renderer);
 
             for (auto &object: objects) {
-                object->render(camera);
+                object->render(state);
             }
 
             SDL_RenderPresent(renderer);

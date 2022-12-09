@@ -1,5 +1,5 @@
-#ifndef GAME_INPUT
-#define GAME_INPUT
+#ifndef GAME_EVENT
+#define GAME_EVENT
 
 using namespace std;
 
@@ -40,26 +40,26 @@ class Mouse {
     int leftDragStartY = -1;
     bool leftClick = false;
 
-
     void reset() {
         rightClick = leftClick =  false;
     }
 
 };
 
-class Input {
+class Event {
+    
     public:
+    
     bool close = false;
     Keyboard* keyboard = new Keyboard();
     Mouse* mouse = new Mouse();
     Screen* screen;
 
-    void setWindow(Screen* screen) {
+    void setScreen(Screen* screen) {
         this->screen = screen;
     }
     
-
-    void update() {
+    void fetch() {
         keyboard->reset();
         mouse->reset();
 
@@ -72,7 +72,7 @@ class Input {
             mouse->rightDragStartX = -1;
             mouse->rightDragStartY = -1;
             // cout << "Cleaning right drag\n";
-        // So basically if muose was down startX becomes>-1
+        // So basically if mause was down startX becomes>-1
         // If startX != x means we moved
         // So it can be treated as drag start
         } else if (!mouse->rightDragActive
