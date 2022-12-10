@@ -39,19 +39,27 @@ class Scene {
             int driverCount = SDL_GetNumRenderDrivers();
             printf("Number of renderer drivers: %d\n", driverCount);
 
-            SDL_RendererInfo info;
-            for(auto i=0; i<driverCount; ++i)
+            SDL_RendererInfo driverInfo;
+            const char* preferedDriverName = "opengl";
+            int preferedDriverId = -1;
+            for(int i=0; i<driverCount; ++i)
             {
-                if(SDL_GetRenderDriverInfo(i, &info) == 0)
+                if(SDL_GetRenderDriverInfo(i, &driverInfo) == 0)
                 {
-                    printf("Driver %d: %s\n", i, info.name);
+                    if (strcmp(driverInfo.name, preferedDriverName)==0) {
+                        preferedDriverId = i;
+                        printf("[Driver match %d]\n", preferedDriverId);
+                    }
+                    printf("Driver %d: %s\n", i, driverInfo.name);
                 }
             }            
 
+            preferedDriverId = -1;
+
             // renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-            renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-            if (SDL_GetRendererInfo(renderer, &info)==0) {
-                    printf("Chosen driver: %s\n", info.name);
+            renderer = SDL_CreateRenderer(window, preferedDriverId, SDL_RENDERER_ACCELERATED);
+            if (SDL_GetRendererInfo(renderer, &driverInfo)==0) {
+                    printf("Chosen driver: %s\n", driverInfo.name);
             }
 
 

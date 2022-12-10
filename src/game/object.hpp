@@ -17,12 +17,11 @@ using namespace std;
 */
 class Object {
 
-    protected:
+    public:
+
         // Warrning: This position indicates where to render the object on screen
         // But it does not indicate where your object is actually in your game world
         SDL_Rect position;
-
-    public:
 
         virtual void update(State* state) {
 
