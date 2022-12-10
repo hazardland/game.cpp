@@ -107,7 +107,7 @@ animation->render(&position);
 ```
 
 # Map generation
-Just generate map with x,y for cycle and random appeared to be to complex task, first of all big title games use procedural map generation using random noise which in its turn is a complex algorithm which was invented buy some guy named Perlin for movie Tron and the algorithm was called Perlin Noise but eventually it was slow so he came up with new version of algorithm called Simplex Noise but patented it for 3 dimensional use, after which some dudes made OpenSimplexNoise
+Just generate map with x,y for cycle and random appeared to be too complex task, first of all big title games use procedural map generation using random noise which in its turn is a complex algorithm which was invented by some guy named Perlin for movie Tron and the algorithm was called Perlin Noise but eventually it was slow so he came up with new version of algorithm called Simplex Noise but patented it for 3 dimensional use, after which some dudes made OpenSimplexNoise
 
 So first I searched C++ implementations of it, basically none of them work or did not work with C++ 17 standard or had to many dependencies, then after trials and errors one repo with 21 stars appeared to be promising but lacking examples
 
