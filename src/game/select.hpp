@@ -1,9 +1,9 @@
-#ifndef TEST_SELECTBOX
-#define TEST_SELECTBOX
+#ifndef GAME_SELECT
+#define GAME_SELECT
 
 #include <game/rectangle.hpp>
 
-class Selectbox: public Rectangle {
+class Select: public Rectangle {
 using Rectangle::Rectangle;
     public:
         virtual void update(State* state) {

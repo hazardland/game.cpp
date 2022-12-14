@@ -29,6 +29,9 @@ class Terrain: public Object {
     int height;
     float scale;
 
+    int variations;
+    vector<vector<int>> colors;
+
     bool modified = false;
 
     Drag* drag;
@@ -37,7 +40,24 @@ class Terrain: public Object {
     
     vector<vector<int>> grid;
 
-    Terrain(SDL_Renderer* renderer, int width, int height, float scale) {
+    /**
+     * @brief Stores general data about terrain and helps to generate it
+     * @param width tile count in horizontal 
+     * @param height tile count in vertical
+     * @param scale is just a zoom during draw
+     * @param variations Terrain variation count. ex.: 3 (1:Water, 2:Grass, 3:Trees)
+     * @param colors Terrain variation rbg colors ex {{0,255,255}, {76,30,0}, {15,255,0}}
+    */
+    Terrain(SDL_Renderer* renderer, 
+            int width, 
+            int height, 
+            float scale,
+            int variations,
+            vector<vector<int>> colors
+            ) {
+
+        this->variations = variations;
+        this->colors = colors;
 
         this->width = width;
         this->height = height;
@@ -77,15 +97,6 @@ class Terrain: public Object {
         SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, red, blue, green));
         modified = true;
     }
-    void setPixel(int x, int y, int color[3]) {
-        SDL_Rect rect;
-        rect.x = x*scale;
-        rect.y = y*scale;
-        rect.h = scale<1?1:scale;
-        rect.w = scale<1?1:scale;
-        SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, color[0], color[1], color[2]));
-        modified = true;
-    }
     void setPixel(int x, int y, int red, int blue, int green, int alpha) {
         SDL_Rect rect;
         rect.x = x*scale;
@@ -93,6 +104,18 @@ class Terrain: public Object {
         rect.h = scale<1?1:scale;
         rect.w = scale<1?1:scale;
         SDL_FillRect(surface, &rect, SDL_MapRGBA(surface->format, red, blue, green, alpha));
+        modified = true;
+    }
+
+    void set(int x, int y, int terrain) {
+        grid[x][y] = terrain;
+        vector<int> color = colors[terrain];
+        SDL_Rect rect;
+        rect.x = x*scale;
+        rect.y = y*scale;
+        rect.h = scale<1?1:scale;
+        rect.w = scale<1?1:scale;
+        SDL_FillRect(surface, &rect, SDL_MapRGB(surface->format, color[0], color[1], color[2]));
         modified = true;
     }
 
@@ -154,16 +177,13 @@ class Terrain: public Object {
      * Generates terrain using Open Simplex Noise algorithm
      * @param seed Noise seed
      * @param intensity Noise intensity. ex.: 0.01 (Lower is smoother higher is intense)
-     * @param variations Terrain variation count. ex.: 3 (1:Water, 2:Grass, 3:Trees)
      * @param ranges Terrain ranges per variation between ex.: {0.3, 0.5, 1} (0 - 0.3: Water, 0.3 - 0.5: Grass, 0.5 - 1: Trees)
+     * @param variations Terrain variation count. ex.: 3 (1:Water, 2:Grass, 3:Trees)
      * @param colors Terrain variation rbg colors ex {{0,255,255}, {76,30,0}, {15,255,0}}
     */
-    void generate1(
-                 int seed, 
-                 float intensity,
-                 int variations,
-                 float ranges[],
-                 int colors[][3]) {
+    void generate1(int seed, 
+                   float intensity,
+                   vector<float> ranges) {
 
         OpenSimplexNoise::Noise noise{seed};
         for (int x=0; x<width; x++) {
@@ -171,11 +191,10 @@ class Terrain: public Object {
             {
                 // alpha = (noise.eval(x*0.01, y*0.01) + 1) / 2.0  * 255.0;
                 // minimap->setPixel(x, y, 255, 255, 255, alpha);       
-                float height = (noise.eval(x*intensity, y*intensity) + 1) / 2.0;
+                float depth = (noise.eval(x*intensity, y*intensity) + 1) / 2.0;
                 for (int terrain=0; terrain<variations; terrain++){
-                    if (height<=ranges[terrain]) {
-                        setPixel(x, y, colors[terrain]);
-                        grid[x][y] = terrain;
+                    if (depth<=ranges[terrain]) {
+                        set(x, y, terrain);
                         break;
                     }
                 }
@@ -183,12 +202,20 @@ class Terrain: public Object {
         }
     }
 
-    void generate(
+    void import(vector<vector<int>> data) {
+        int height = data.size();
+        int width = data[0].size();
+        for (int y=0; y<height; y++)
+        for (int x=0; x<width; x++)
+        {
+            set(x, y, data[y][x]);
+        }
+    }
+
+    void generate2(
                  int seed, 
                  float intensity,
-                 int variations,
-                 float ranges[],
-                 int colors[][3]) {
+                 vector<float> ranges) {
 
         OpenSimplexNoise::Noise noise{seed};
         for (int x=0; x<width; x+=2) {
@@ -199,15 +226,10 @@ class Terrain: public Object {
                 float depth = (noise.eval(x*intensity, y*intensity) + 1) / 2.0;
                 for (int terrain=0; terrain<variations; terrain++){
                     if (depth<=ranges[terrain]) {
-                        setPixel(x, y, colors[terrain]);
-                        setPixel(x+1, y, colors[terrain]);
-                        setPixel(x, y+1, colors[terrain]);
-                        setPixel(x+1, y+1, colors[terrain]);
-                        grid[x][y] = terrain;
-                        grid[x+1][y] = terrain;
-                        grid[x][y+1] = terrain;
-                        grid[x+1][y+1] = terrain;
-
+                        set(x, y, terrain);
+                        set(x+1, y, terrain);
+                        set(x, y+1, terrain);
+                        set(x+1, y+1, terrain);
                         break;
                     }
                 }

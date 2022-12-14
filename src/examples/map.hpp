@@ -14,36 +14,20 @@ using namespace std;
 int WIDTH = 512;
 int HEIGHT = 512;
 
-
-int TERRAIN_VARIATIONS = 3;
-
-int TERRAIN_COLORS[3][3] = {
-    {51, 51, 255},
-    {102, 178, 215},
-    {255, 255, 255}
-};
-
-float TERRAIN_RANGES[3] = {
-    0.3,
-    0.55,
-    1
-};
-
-int TERRAIN_SCALE = 2;
-int MAP_SCALE = 32;
-
-class TestScenePerlin : public Scene {
+class MapScene : public Scene {
     using Scene::Scene;
     Terrain* terrain;
     Map* map;
     Image* tileset;
-    TTF_Font* font = TTF_OpenFont("assets/fonts/titillium.ttf", 32);
+    TTF_Font* font = TTF_OpenFont("assets/fonts/titillium.ttf", 12);
+    Text* fps;
     vector<Tile*> tiles;
     int ticks;
 
     public:
 
     virtual void prepare() {
+        fps = new Text(renderer, font);
         tiles = {
             new Tile(
                 {
@@ -106,20 +90,51 @@ class TestScenePerlin : public Scene {
             )
         };
         tileset = new Image(renderer, "assets/sprites/winter.png");
-        terrain = new Terrain(renderer, WIDTH, HEIGHT, 1);
+        terrain = new Terrain(renderer, WIDTH, HEIGHT, 1, 3, 
+            {
+                {51, 51, 255},
+                {102, 178, 215},
+                {255, 255, 255}
+            }
+        );
         map = new Map(tileset, 32, 32, WIDTH, HEIGHT, 1);
         terrain->setMap(map);
         terrain->setPosition(0, 0);
 
         objects.push_back(map);
         objects.push_back(terrain);
+        objects.push_back(fps);
 
         generate();
     }
 
     virtual void generate() {
         srand(clock());
-        terrain->generate(rand(), 0.05, TERRAIN_VARIATIONS, TERRAIN_RANGES, TERRAIN_COLORS);
+        terrain->generate1(rand(), 0.05, {0.3, 0.55, 1});
+        terrain->import(
+            {
+                {0,1,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,1,0,0,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0},
+                {0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0},
+                {0,0,0,0,0,0,1,1,0,0,0,1,1,1,1,1,1,1,1,0,0},
+                {1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,0,0},
+                {1,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,1,0,0,0,1,1,1,1,0,0,0,0},
+                {0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,1,0,0,0,0,1,1,1,1,0,0,0,0},
+                {0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,1,0,0,0,0},
+                {0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+            }
+        );
         for (int x=0; x<WIDTH; x++) {
             for (int y=0; y<HEIGHT; y++) {
                 if (terrain->grid[x][y]==0) {
@@ -135,10 +150,11 @@ class TestScenePerlin : public Scene {
     }
 
     virtual void update(State* state) {
-        // if (SDL_GetTicks()-ticks>1000) {
-        //     tile++;
-        //     ticks = SDL_GetTicks();
-        // }
+        if (SDL_GetTicks()-ticks>1000) {
+            fps->setText(to_string(state->clock->fps) + " FPS");
+            fps->position.x = width-fps->getWidth()-5;
+            ticks = SDL_GetTicks();
+        }
 
         Keyboard* keyboard = state->event->keyboard; 
 

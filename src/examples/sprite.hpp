@@ -13,10 +13,10 @@ using namespace std;
 #include <game/text.hpp>
 #include <game/map.hpp>
 #include <game/state.hpp>
+#include <game/select.hpp>
 
-#include <example_inc_enum.hpp>
-#include <example_inc_selectbox.hpp>
-#include <example_inc_unit.hpp>
+#include <examples/enum.h>
+#include <examples/unit.hpp>
 
 
 class TestScene : public Scene {
@@ -111,7 +111,7 @@ class TestScene : public Scene {
             // footman->setPosition(100, 100);
             // objects.push_back(footman);
 
-            selectbox = new Selectbox(renderer);
+            selectbox = new Select(renderer);
 
             objects.push_back(fps);
             objects.push_back(cursor);
