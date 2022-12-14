@@ -199,3 +199,5 @@ So I came up with complicated but nice algorithm I was lazy to check all cases a
 So the map has 3 type of tiles water, ice and snowy ground and the algorithm calculates transitions between them and picks right tiles for it
 
 The algirithm can be found in ```src/game/tile.hpp``` class
+
+It took like couple of days but it was totally worth it, before commiting myself into it I made sure that it was a problem worth solving and I checked if other devs had trouble implementing it, it appears it is significant problem in 2d game developement and Factorio developers had various attempts to solve it https://www.factorio.com/blog/post/fff-344 here you can read more about their adventure
