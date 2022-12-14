@@ -130,6 +130,7 @@ class Tile {
         // x, y, corner, borders[0],borders[1], borders[2], borders[3], borders[4], borders[5], borders[6], borders[7], borders[8]        
         // );
         
+        // Mark bad tile
         if (result=="1001") {
             terrain->setPixel(x, y, 0, 0, 0, 255);
         }
