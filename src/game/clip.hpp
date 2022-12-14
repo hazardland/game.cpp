@@ -40,7 +40,7 @@ class Clip {
             int rowCount = image->getHeight()/frameHeight;
             int cell = startCell;
             int row = startRow;
-            for (size_t i = 0; i < frameCount; i++)
+            for (int i = 0; i < frameCount; i++)
             {
                 frames[i].rect.x = (cell-1) * frameWidth;
                 frames[i].rect.y = (row-1) * frameHeight;
@@ -52,23 +52,36 @@ class Clip {
 
                 // cout << image << " Frame "<< i << " vertical: " <<  readVertically << " x:" << frames[i].rect.x << " y:" << frames[i].rect.y << " w:" << frames[i].rect.w << " h:" << frames[i].rect.h << "\n";
 
-                if (i+1==frameCount) {
+                // if (i+1==frameCount) {
+                if (!(i<frameCount)) {
                     break;
                 }
 
                 if (readVertically) {
-                    if (row+1 > rowCount) {
+                    // if (row+1 > rowCount) {
+                    //     row = 1;
+                    //     cell += 1;
+                    // }
+                    // row += 1;
+                    if (row == rowCount) {
                         row = 1;
                         cell += 1;
-                    }
-                    row += 1;
-                }
-                else {
-                    if (cell+1 > cellCount) {
-                        cell = 1;
+                    } else {
                         row += 1;
                     }
-                    cell += 1;
+                }
+                else {
+                    // if (cell+1 > cellCount) {
+                    //     cell = 1;
+                    //     row += 1;
+                    // }
+                    // cell += 1;
+                    if (cell == cellCount) {
+                        cell = 1;
+                        row += 1;
+                    } else {
+                        cell += 1;
+                    }
                 }
             }
         }

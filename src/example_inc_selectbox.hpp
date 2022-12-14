@@ -1,5 +1,5 @@
-#ifndef TEST_SELECTBOX_H
-#define TEST_SELECTBOX_H
+#ifndef TEST_SELECTBOX
+#define TEST_SELECTBOX
 
 #include <game/rectangle.hpp>
 

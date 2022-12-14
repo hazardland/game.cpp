@@ -15,13 +15,22 @@ class Rectangle: public Object {
     public:
 
     SDL_Renderer* renderer;
-    SDL_Color color;
+    SDL_Color background;
+    SDL_Color border;
+    int alpha;
     bool visible = true;
 
-    Rectangle(SDL_Renderer* renderer, SDL_Color color={255, 255, 255, 100}) {
+    Rectangle(SDL_Renderer* renderer, SDL_Color background, SDL_Color border={}) {
         this->renderer = renderer;
-        this->color = color;
+        //this->color = SDL_Color(red, blue, green, alpha);
+        this->background = background;
+        this->border = border;
+
     }
+    // Rectangle(SDL_Renderer* renderer, SDL_Color* color={255, 255, 255, 100}) {
+    //     this->renderer = renderer;
+    //     this->color = color;
+    // }
     void show() {
         visible = true;
     }
@@ -34,14 +43,13 @@ class Rectangle: public Object {
             // cout << "Drawing rectangle "<< position.x << " " << position.y << " " << position.w << " " << position.h << "\n";
             // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
-            SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+            SDL_SetRenderDrawColor(renderer, background.r, background.g, background.b, background.a);
             SDL_RenderFillRect(renderer, &position);
 
-            if (color.a<255){
-                SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
+            if (border.a>0){
+                SDL_SetRenderDrawColor(renderer, border.r, border.g, border.b, border.a);
                 SDL_RenderDrawRect(renderer, &position);
             }
-
 
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
             //SDL_RenderSetScale(renderer, 1, 1);

@@ -10,13 +10,13 @@ using namespace std;
 #include <game/object.hpp>
 
 class Text: public Object {
+    public: 
     SDL_Texture* texture = NULL;
     // SDL_Rect position;
     TTF_Font* font;
     SDL_Renderer* renderer;
     SDL_Color color;
     string text;
-    public: 
     Text(SDL_Renderer* renderer, TTF_Font* font, string text="", int x=0, int y=0, SDL_Color color={255, 255, 255}) {
         position.x = x;
         position.y = y;

@@ -1,5 +1,5 @@
-#ifndef TEST_SCENE_H
-#define TEST_SCENE_H
+#ifndef TEST_SCENE_SPRITE
+#define TEST_SCENE_SPRITE
 
 using namespace std;
 #include <iostream>
@@ -14,10 +14,9 @@ using namespace std;
 #include <game/map.hpp>
 #include <game/state.hpp>
 
-#include <test_enum.hpp>
-#include <test_unit.hpp>
-#include <test_selectbox.hpp>
-
+#include <example_inc_enum.hpp>
+#include <example_inc_selectbox.hpp>
+#include <example_inc_unit.hpp>
 
 
 class TestScene : public Scene {
@@ -46,7 +45,7 @@ class TestScene : public Scene {
                 printf("Failed to load font: %s", SDL_GetError());
             }
 
-            map = new Map(new Image(renderer, "assets/sprites/tileset_compressed.png"), 16, 16, 500, 500, 4);
+            map = new Map(new Image(renderer, "assets/sprites/winter.png"), 16, 16, 500, 500, 4);
             int mapFrameCount = map->tiles->getFrameCount();
             printf("map frame count %d\n", mapFrameCount);
             for (size_t x = 0; x < map->mapWidth; x++)

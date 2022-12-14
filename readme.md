@@ -40,7 +40,7 @@ So for now I am a bit lazy to instruct how to download SDL libs and includes and
 
 3. ```sudo apt install libsdl2-image-dev libsdl2-ttf-dev```
 
-    ```g++ -std=c++17 -O3 -m64 -Isrc  -s -o main main.cpp -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf```
+    ```g++ -std=c++17 -O3 -m64 -Isrc -s -o main main.cpp src/game/*.cpp  -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf```
 
 
 # How it works
@@ -107,6 +107,7 @@ animation->render(&position);
 ```
 
 # Map generation
+## Perlin Noise
 Just generate map with x,y for cycle and random appeared to be too complex task, first of all big title games use procedural map generation using random noise which in its turn is a complex algorithm which was invented by some guy named Perlin for movie Tron and the algorithm was called Perlin Noise but eventually it was slow so he came up with new version of algorithm called Simplex Noise but patented it for 3 dimensional use, after which some dudes made OpenSimplexNoise
 
 So first I searched C++ implementations of it, basically none of them work or did not work with C++ 17 standard or had to many dependencies, then after trials and errors one repo with 21 stars appeared to be promising but lacking examples
@@ -127,28 +128,28 @@ for (int y=0; y<width; y++) {
         // Use library to generate value for x,y 
         // And scale it from -1 .. 1 to 1 .. 255
         alpha = (noise.eval(x*intensity, y*intensity) + 1) / 2.0  * 255.0;
-        minimap->setPixel(x, y, 255, 255, 255, alpha);       
+        terrain->setPixel(x, y, 255, 255, 255, alpha);       
     }
 }
 ```
 
 When the right path was visible I implemented minimap, so plan is that first we generate map plan aka minimap and based on minimap regular map is generated using sprites.
 
-This is how minimap is generated in ```test_scene_perlin.hpp```:
+This is how terrain plan is generated in ```example_scene_map.hpp```:
 ```c++
 class TestScenePerlin : public Scene {
     using Scene::Scene;
-    Minimap* minimap;
+    Terrain* terrain;
     int ticks;
     public:
     virtual void prepare() {
-        minimap = new Minimap(renderer, 512, 512, 1);
-        objects.push_back(minimap);
+        terrain = new Terrain(renderer, 512, 512, 1);
+        objects.push_back(terrain);
     }
     void update(State* state) {
         if (SDL_GetTicks()-ticks>1000) {
             srand(clock());
-            minimap->generateTerrain(rand(), 0.01, 6, TERRAIN_RANGES, TERRAIN_COLORS);
+            terrain->generate(rand(), 0.01, 6, TERRAIN_RANGES, TERRAIN_COLORS);
             ticks = SDL_GetTicks();
         }
     }
@@ -179,3 +180,22 @@ float TERRAIN_RANGES[6] = {
     1
 };
 ```
+
+## Tiled map smooth edges
+Little did I know that biggest trouble was steal ahead: I grabbed Warcraft 2 map tile sprite and just converted terrain number into tail sprite frame number, added some terrain minimap to scroll over the map and this is what showed up:
+
+![](/doc/images/map1.gif)
+
+But this edges, they need to transition smoothly and there is no answer for that in the Google, so I started researching tile variations by myself. It appears these are the possible tile transitions if you transition it with only corner transition rule which just looks like an IQ test question:
+
+![](/doc/images/transitions.png)
+
+I need only blue ones because I eleminated 1 square layout
+
+So I came up with complicated but nice algorithm I was lazy to check all cases and I risked my time just to implement it and the result was unbelivable also the algorithm run without error right in the first compilation:
+
+![](/doc/images/map2.png)
+
+So the map has 3 type of tiles water, ice and snowy ground and the algorithm calculates transitions between them and picks right tiles for it
+
+The algirithm can be found in ```src/game/tile.hpp``` class

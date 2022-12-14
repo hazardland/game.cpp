@@ -44,6 +44,16 @@ class Mouse {
         rightClick = leftClick =  false;
     }
 
+    bool inside(SDL_Rect* position) {
+        if (x>=position->x &&
+            y>=position->y &&
+            x<=position->x+position->w && 
+            y<=position->y+position->h) {
+                return true;
+            } 
+        return false;
+    }
+
 };
 
 class Event {

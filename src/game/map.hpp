@@ -19,7 +19,7 @@ class Map: public Object {
     public:
         int tileWidth;
         int tileHeight;
-        int tileScale;
+        float tileZoom;
         int mapWidth;
         int mapHeight;
 
@@ -27,17 +27,17 @@ class Map: public Object {
         Image* image;
         Clip* tiles;
         vector<vector<int>> grid;
-        Map(Image* image, int tileWidth, int tileHeight, int mapWidth, int mapHeight, int tileScale=1) {
+        Map(Image* image, int tileWidth, int tileHeight, int mapWidth, int mapHeight, float tileZoom=1) {
             this->image = image;
             this->tileWidth = tileWidth;
             this->tileHeight = tileHeight;
             this->mapWidth = mapWidth;
             this->mapHeight = mapHeight;
-            this->tileScale = tileScale;
+            this->tileZoom = tileZoom;
             tiles = new Clip(image, 
                              tileWidth, 
                              tileHeight, 
-                             0, 0, 
+                             1, 1, 
                              (image->getWidth()/tileWidth)*(image->getHeight()/tileHeight));
             for (size_t i = 0; i < mapWidth; i++)
             {
@@ -50,26 +50,31 @@ class Map: public Object {
                         
         }
         virtual int getWidth() {
-            return mapWidth*tileWidth*tileScale;
+            return mapWidth*tileWidth*tileZoom;
         }
         virtual int getHeight() {
-            return mapHeight*tileHeight*tileScale;
+            return mapHeight*tileHeight*tileZoom;
         }
 
         virtual void render(State* state) {
             SDL_Rect position;
-            position.w = tileWidth*tileScale;
-            position.h = tileHeight*tileScale;
+            position.w = tileWidth*tileZoom;
+            position.h = tileHeight*tileZoom;
             for (size_t x = 0; x < mapWidth; x++)
             {
                 for (size_t y = 0; y < mapHeight; y++)
                 {
                     //grid[x][y]
-                    // position.x = x*tileWidth*tileScale;
-                    // position.y = y*tileHeight*tileScale;
-                    if (state->camera->isVisible(x*tileWidth*tileScale, y*tileHeight*tileScale, &position)) {
-                        state->camera->translate(x*tileWidth*tileScale, y*tileHeight*tileScale, &position);
+                    // position.x = x*tileWidth*tileZoom;
+                    // position.y = y*tileHeight*tileZoom;
+                    if (state->camera->isVisible(x*tileWidth*tileZoom, y*tileHeight*tileZoom, &position)) {
+                        state->camera->translate(x*tileWidth*tileZoom, y*tileHeight*tileZoom, &position);
+                        // printf("%d ", tiles->getFrame(grid[x][y])->rect.x);
                         image->render(&tiles->getFrame(grid[x][y])->rect, &position);
+                        SDL_SetRenderDrawColor(image->renderer, 0, 0, 0, 255);
+                        SDL_RenderDrawRect(image->renderer, &position);
+                        SDL_SetRenderDrawColor(image->renderer, 0, 0, 0, 0);
+
                     }
                 }
                 

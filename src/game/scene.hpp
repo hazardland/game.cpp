@@ -1,5 +1,5 @@
-#ifndef GAME_SCENE_H
-#define GAME_SCENE_H
+#ifndef GAME_SCENE
+#define GAME_SCENE
 
 using namespace std;
 
@@ -89,7 +89,7 @@ class Scene {
             }
         }
 
-        virtual void render(State* state) {
+        virtual void render(State* state, bool present=true) {
 
             SDL_RenderClear(renderer);
 
@@ -97,10 +97,15 @@ class Scene {
                 object->render(state);
             }
 
+            if (present) {
+                SDL_RenderPresent(renderer);
+                SDL_Delay(1);
+            }
+        }
+
+        virtual void present() {
             SDL_RenderPresent(renderer);
-
             SDL_Delay(1);
-
         }
 
         ~Scene() {

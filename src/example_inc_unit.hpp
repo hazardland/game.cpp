@@ -10,7 +10,7 @@ using namespace std;
 #include <game/animation.hpp>
 #include <game/rectangle.hpp>
 
-#include <test_enum.hpp>
+#include <example_inc_enum.hpp>
 
 class Footman: public Object {
     public:

@@ -16,18 +16,14 @@ class Image {
         int height;
         SDL_Renderer* renderer;
 
-        Image (SDL_Renderer* renderer,
-                const char* imagePath,
-                const int fromColors[][3] = NULL,
-                const int toColors[][3] = NULL
-                ) {
+        Image (SDL_Renderer* renderer, const char* path) {
 
             this->renderer = renderer;
 
-            // SDL_Surface* surface = IMG_Load(imagePath);
+            // SDL_Surface* surface = IMG_Load(path);
             // if (!surface) {
             //     // @todo: raise error
-            //     printf("Failed to load image %s: %s", imagePath, SDL_GetError());
+            //     printf("Failed to load image %s: %s", path, SDL_GetError());
             // }
 
             // // Works onlo on 8 bit colors
@@ -38,7 +34,7 @@ class Image {
             // texture = SDL_CreateTextureFromSurface(renderer, surface);
             // SDL_FreeSurface(surface);
 
-            texture = IMG_LoadTexture (this->renderer, imagePath);
+            texture = IMG_LoadTexture (this->renderer, path);
             
             SDL_QueryTexture(texture, NULL, NULL, &width, &height);
         }

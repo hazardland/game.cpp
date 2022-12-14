@@ -10,8 +10,8 @@
 class Camera
 {
     public:
-    int x=100;
-    int y=100;
+    int x=0;
+    int y=0;
     int width;
     int height;
     // virtual bool isVisible(int x, int y, int width, int height) {
