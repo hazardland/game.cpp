@@ -62,6 +62,8 @@ class Window: public Screen {
             printf("Failed to create window: %s", SDL_GetError());
         }
 
+        // SDL_SetWindowOpacity(window, 0.6);
+        // SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
         if (state==NULL) {
             this->state = new State();

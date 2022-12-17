@@ -132,6 +132,10 @@ class Terrain: public Object {
     // }
 
     void prepare() {
+        if (texture!=NULL) {
+            printf("destroyed");
+            SDL_DestroyTexture(texture);
+        }
         texture = SDL_CreateTextureFromSurface(renderer, surface);
         modified = false;
     }
@@ -174,12 +178,10 @@ class Terrain: public Object {
     }
 
     /**
-     * Generates terrain using Open Simplex Noise algorithm
-     * @param seed Noise seed
-     * @param intensity Noise intensity. ex.: 0.01 (Lower is smoother higher is intense)
+     * Generates terrain with noise
+     * @param seed Seed for noise
+     * @param intensity Intensity for noise. ex.: 0.01 (Lower is smoother higher is intense)
      * @param ranges Terrain ranges per variation between ex.: {0.3, 0.5, 1} (0 - 0.3: Water, 0.3 - 0.5: Grass, 0.5 - 1: Trees)
-     * @param variations Terrain variation count. ex.: 3 (1:Water, 2:Grass, 3:Trees)
-     * @param colors Terrain variation rbg colors ex {{0,255,255}, {76,30,0}, {15,255,0}}
     */
     void generate1(int seed, 
                    float intensity,
@@ -200,8 +202,13 @@ class Terrain: public Object {
                 }
             }
         }
+        map->terrain = this->grid;
     }
 
+    /**
+     * @brief Import chunk of map based on data
+     * @param data 2 dimensionall data with different terrain variation types
+    */
     void import(vector<vector<int>> data) {
         int height = data.size();
         int width = data[0].size();
@@ -210,8 +217,16 @@ class Terrain: public Object {
         {
             set(x, y, data[y][x]);
         }
+        map->terrain = this->grid;
     }
 
+    /**
+     * @brief Generate terrain with guaranteed odd number 
+     * of same tiles min in same place
+     * @param seed Seed for noise
+     * @param intensity Intensity for noise. ex.: 0.01 (Lower is smoother higher is intense)
+     * @param ranges Terrain ranges per variation between ex.: {0.3, 0.5, 1} (0 - 0.3: Water, 0.3 - 0.5: Grass, 0.5 - 1: Trees)
+    */
     void generate2(
                  int seed, 
                  float intensity,
@@ -235,6 +250,7 @@ class Terrain: public Object {
                 }
             }
         }
+        map->terrain = this->grid;
     }    
 
 };

@@ -1,44 +1,33 @@
 #include <game/window.hpp>
 #include <game/scene.hpp>
-#include <game/animation.hpp>
+#include <game/sprite.hpp>
 
-// This is not the final form yet of how things should be organized
 class MyScene : public Scene {
     using Scene::Scene;
 
     public:
 
-    // Animation wraps sprite and clips
-    // Can play various clips from the sprite
-    // Like imagine Sprite has MOVE and ATTACK clips
-    Animation* animation;
+    // Sprite helds image and some data about frames
+    Sprite* sprite;
     SDL_Rect position;
 
     int currentFrame = 0;
 
     virtual void prepare() {
-
-        // Sprites is the map with integers where you can store your sprite collection
-        // Because you just need to load sprite once and then reuse in different objects
-        sprites[1] = (new Sprite(
+        // Create sprite instanse with default config
+        sprite = new Sprite(
             new Image(renderer, "doc/images/planet.png"),
             100,
-            100,
-            // This is new: Default pause per frame 60 miliseconds for this spritesheet
-            // Higher value causes slow animation
-            60
-        ))->addClip(
+            100
+        );
+
+        //
+        sprite->addClip(
             1, // Clip index
             1, // Start row in sprite sheet
             1, // Start cell in sprite sheet
             24  // Frame count to generate from row, cell
                 // We know our sprite contains 6x4 frames so 24 is total frame count
-        );
-        
-        // Create animation instanse with sprite instance
-        animation = new Animation(
-            sprites[1],
-            1
         );
 
         // Scale the frame a bit from its original size
@@ -52,12 +41,12 @@ class MyScene : public Scene {
         position.x = this->width/2 - position.w/2; 
         position.y = this->height/2 - position.h/2;
 
-        // At this point animation is playing default clip
-        // And here we just update with delta time elapsed from last frame
-        // With delta animaitons will play always with same speed no 
-        // matter how many frames per second we do have 
-        animation->update(state->clock->delta);
-
+        // Increase current frame
+        currentFrame++;
+        // Reset current frame to 0 if it becomes 24
+        if (currentFrame == sprite->clips[1]->getFrameCount()) {
+            currentFrame = 0;
+        }
     }
 
     virtual void render(State* state) {
@@ -65,7 +54,11 @@ class MyScene : public Scene {
 
         // Here we specify what to render from image with &frame
         // and where to render on scene with &position
-        animation->render(&position);
+        sprite->image->render(
+            // From clip with index 1
+            sprite->clips[1]->getFrame(currentFrame)->getRect(),
+            &position
+        );
 
         display();
     }

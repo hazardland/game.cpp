@@ -43,68 +43,274 @@ So for now I am a bit lazy to instruct how to download SDL libs and includes and
     ```g++ -std=c++17 -O3 -m64 -Isrc -s -o main main.cpp src/game/*.cpp  -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf```
 
 
-# How it works
-Here is how animation works
+# Hello world - Window, Scene and Image classes
+
+The example is very impractical and things are done rather more easaly, but first let us see how things work under the hood.
+
+Our goal with hellow world is to just display static image in the center of window:
+
+![](/doc/images/hello_world.png)
+
+The source sprite we are using looks like that:
+
+![](/doc/images/planet.png)
+
+(Which I generated from the planet sprite generator https://deep-fold.itch.io/pixel-planet-generator idk whoever made it but cool job)
+
+It contains planet animation in 6x4 (cells x rows) spritesheet where the size of each frame is 100x100 px
+
+In hello world example we will use only first frame to render:
+
+```c++
+#include <game/window.hpp>
+#include <game/scene.hpp>
+#include <game/image.hpp>
+
+// We will need scene to exend to setup our custom things
+class MyScene : public Scene {
+    using Scene::Scene;
+
+    public:
+
+    // We will store our loaded image here
+    Image* image;
+    // Here we store what we need to crop from image
+    SDL_Rect frame;
+    // Here we store where and what size we need to display
+    SDL_Rect position;
+
+    virtual void prepare() {
+        // Load the image
+        image = new Image(renderer, "doc/images/planet.png");
+        
+        // The image is sprite sheet
+        // But we only need first frame from it
+        frame.x = 0;
+        frame.y = 0;
+        frame.w = 100;
+        frame.h = 100;
+
+        // Scale the frame a bit from its original size
+        position.w = 200;
+        position.h = 200;
+    }
+
+    virtual void update(State* state) {
+        // Here we center image based on scene width and height
+        // No matter window size it will always stay in center
+        position.x = this->width/2 - position.w/2; 
+        position.y = this->height/2 - position.h/2; 
+    }
+
+    virtual void render(State* state) {
+        clear();
+
+        // Here we specify what to render from image with &frame
+        // and where to render on scene with &position
+        image->render(&frame, &position);
+
+        display();
+    }
+
+};
+
+int main(int argc, char** argv){
+    // Just create the window
+    Window* window = new Window("Hello World", 800, 600);
+    // Pass our scene instanse
+    window->setScene(new MyScene(window->window));
+    // Do the thing
+    return window->run();
+}
+```
+
+In this example we learned that there are Window, Scene and Image classes
+
+# Sprite class
+Let us advance a bit and see what Sprite class does under the hood before we see how to do things easyer
+
+The example will produce this:
+
+![](/doc/images/hello_world_2.png)
+
+Condsider that the example only depicts how sprite class operates but *this is not the way animation should be done*:
+
+```c++
+#include <game/window.hpp>
+#include <game/scene.hpp>
+#include <game/sprite.hpp>
+
+class MyScene : public Scene {
+    using Scene::Scene;
+
+    public:
+
+    // Sprite helds image and some data about frames
+    Sprite* sprite;
+    SDL_Rect position;
+
+    int currentFrame = 0;
+
+    virtual void prepare() {
+        // Create sprite instanse with default config
+        sprite = new Sprite(
+            new Image(renderer, "doc/images/planet.png"),
+            100,
+            100
+        );
+
+        //
+        sprite->addClip(
+            1, // Clip index
+            1, // Start row in sprite sheet
+            1, // Start cell in sprite sheet
+            24  // Frame count to generate from row, cell
+                // We know our sprite contains 6x4 frames so 24 is total frame count
+        );
+
+        // Scale the frame a bit from its original size
+        position.w = 200;
+        position.h = 200;
+    }
+
+    virtual void update(State* state) {
+        // Here we center image based on scene width and height
+        // No matter window size it will always stay in center
+        position.x = this->width/2 - position.w/2; 
+        position.y = this->height/2 - position.h/2;
+
+        // Increase current frame
+        currentFrame++;
+        // Reset current frame to 0 if it becomes 24
+        if (currentFrame == sprite->clips[1]->getFrameCount()) {
+            currentFrame = 0;
+        }
+    }
+
+    virtual void render(State* state) {
+        clear();
+
+        // Here we specify what to render from image with &frame
+        // and where to render on scene with &position
+        sprite->image->render(
+            // From clip with index 1
+            sprite->clips[1]->getFrame(currentFrame)->getRect(),
+            &position
+        );
+
+        display();
+    }
+
+};
+
+int main(int argc, char** argv){
+    // Just create the window
+    Window* window = new Window("Hello World", 800, 600);
+    // Pass our scene instanse
+    window->setScene(new MyScene(window->window));
+    // Do the thing
+    return window->run();
+}
+```
+
+The GIF does not depict how fast the planet spins because we just update sprites ```currentFrame``` number per each frame which are like 300 per second
+
+# Animation
+
+Now let us use animation class to gently handle animations with respet of delta time (elapsed milliseconds from last frame)
+
 ![](/doc/images/animation.jpg)
 
-We first start with preparing of Sprite in the scene ```prepare``` method where we have ```renderer``` instance present 
+
+The code is still not the final of how things should be organized but one last class to go:
 ```c++
-Sprite* sprite = new Sprite(
-    new Image(renderer, "footman.png"),
-    72, // Default frame width
-    72, // Default frame height
-    100, // Default frame pause
-    true // Default sprite read orientation (true == vertical read)
-);
+#include <game/window.hpp>
+#include <game/scene.hpp>
+#include <game/animation.hpp>
+
+// This is not the final form yet of how things should be organized
+class MyScene : public Scene {
+    using Scene::Scene;
+
+    public:
+
+    // Animation wraps sprite and clips
+    // Can play various clips from the sprite
+    // Like imagine Sprite has MOVE and ATTACK clips
+    Animation* animation;
+    SDL_Rect position;
+
+    int currentFrame = 0;
+
+    virtual void prepare() {
+
+        // Sprites is the map with integers where you can store your sprite collection
+        // Because you just need to load sprite once and then reuse in different objects
+        sprites[1] = (new Sprite(
+            new Image(renderer, "doc/images/planet.png"),
+            100,
+            100,
+            // This is new: Default pause per frame 60 miliseconds for this spritesheet
+            // Higher value causes slow animation
+            60
+        ))->addClip(
+            1, // Clip index
+            1, // Start row in sprite sheet
+            1, // Start cell in sprite sheet
+            24  // Frame count to generate from row, cell
+                // We know our sprite contains 6x4 frames so 24 is total frame count
+        );
+        
+        // Create animation instanse with sprite instance
+        animation = new Animation(
+            sprites[1],
+            1
+        );
+
+        // Scale the frame a bit from its original size
+        position.w = 200;
+        position.h = 200;
+    }
+
+    virtual void update(State* state) {
+        // Here we center image based on scene width and height
+        // No matter window size it will always stay in center
+        position.x = this->width/2 - position.w/2; 
+        position.y = this->height/2 - position.h/2;
+
+        // At this point animation is playing default clip
+        // And here we just update with delta time elapsed from last frame
+        // With delta animaitons will play always with same speed no 
+        // matter how many frames per second we do have 
+        animation->update(state->clock->delta);
+
+    }
+
+    virtual void render(State* state) {
+        clear();
+
+        // Here we specify what to render from image with &frame
+        // and where to render on scene with &position
+        animation->render(&position);
+
+        display();
+    }
+
+};
+
+int main(int argc, char** argv){
+    // Just create the window
+    Window* window = new Window("Hello World", 800, 600);
+    // Pass our scene instanse
+    window->setScene(new MyScene(window->window));
+    // Do the thing
+    return window->run();
+}
 ```
 
-Then let us define some constants somewhere:
-```c++
-// Define clip keys
-const UNIT_MOVE_UP = 1;
-const UNIT_MOVE_DOWN = 1;
+# Dev Blog
 
-sprite->addClip (
-    UNIT_MOVE_UP, // Clip name index 
-    1, // Start frame cell
-    2, // Start frame row
-    4, // Number of frames
-    true, // Flip x of frame
-    false // Flip y of frame
-);
-
-// Add some more clips
-sprite->addClip (UNIT_MOVE_DOWN, 5, 2, 4);
-sprite->addClip (UNIT_MOVE_RIGHT, 3, 2, 4);
-sprite->addClip (UNIT_MOVE_LEFT, 3, 2, 4, true);
-
-```
-
-Now that we have sprite with four clips we can create dumb animation
-
-```c++
-animation = new Animation(
-    sprite, // Our sprite
-    UNIT_STAND_DOWN // Default clip from sprite
-);
-```
-
-During scene update we can call
-
-```c++
-// The update will manage to play the clip frame by frame
-// By configured delayes with respect to delta
-animation->update(delta); // Where delta is provided in scene->update(delta)
-```
-
-And we render it somwhere in scene->render(...)
-```c++
-// Here goes some logic which manages the frame position on screen
-SDL_rect position;
-
-// And render the current active frame on screen
-animation->render(&position);
-```
+From this point we depict the process of implementation and research related to various aspects of framework
 
 # Map generation
 ## Perlin Noise

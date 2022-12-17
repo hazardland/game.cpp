@@ -89,23 +89,25 @@ class Scene {
             }
         }
 
-        virtual void render(State* state, bool present=true) {
+        virtual void render(State* state) {
+            clear();
+            process(state);
+            display();
+        }
 
+        virtual void clear() {
             SDL_RenderClear(renderer);
+        }
 
+        virtual void process(State* state) {
             for (auto &object: objects) {
                 object->render(state);
             }
-
-            if (present) {
-                SDL_RenderPresent(renderer);
-                SDL_Delay(1);
-            }
         }
 
-        virtual void present() {
+        virtual void display(int delay=1) {
             SDL_RenderPresent(renderer);
-            SDL_Delay(1);
+            SDL_Delay(delay);
         }
 
         ~Scene() {

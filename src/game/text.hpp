@@ -17,6 +17,7 @@ class Text: public Object {
     SDL_Renderer* renderer;
     SDL_Color color;
     string text;
+    map<string, SDL_Texture*> cache;
     Text(SDL_Renderer* renderer, TTF_Font* font, string text="", int x=0, int y=0, SDL_Color color={255, 255, 255}) {
         position.x = x;
         position.y = y;
@@ -29,16 +30,31 @@ class Text: public Object {
         if (this->text==text){
             return;
         }
+            if (cache.contains(text)) {
+                //printf("Cache hit %s\n", text);
+                texture = cache[text];
+                this->text = text;
+                SDL_QueryTexture(texture, NULL, NULL, &position.w, &position.h);
+                return;
+            }
         this->text = text;
-        SDL_DestroyTexture(texture);
+        // SDL_DestroyTexture(texture);
         SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
         if (surface==NULL) {
             printf("Failed to render text: %s", SDL_GetError());            
         }
         position.w = surface->w;
         position.h = surface->h;
-        texture = SDL_CreateTextureFromSurface(renderer, surface);
+        texture = NULL;
+        cache[text] = SDL_CreateTextureFromSurface(renderer, surface);
         SDL_FreeSurface(surface);
+        texture = cache[text];
+    }
+
+    void setColor(int red, int green, int blue) {
+        this->color.r = red;
+        this->color.g = green;
+        this->color.b = blue;
     }
     
     void render(State* state) {

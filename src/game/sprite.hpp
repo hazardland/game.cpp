@@ -27,7 +27,7 @@ class Sprite {
     Sprite (Image* image,
             int frameWidth,
             int frameHeight,
-            int framePause,
+            int framePause = 60,
             bool readVertically = false
             ) {
         this->frameWidth = frameWidth;
@@ -36,7 +36,7 @@ class Sprite {
         this->image = image;
         this->readVertically = readVertically;
     }
-    void addClip(int clipName,
+    Sprite* addClip(int clipName,
                  int startRow,
                  int startCell,
                  int frameCount,
@@ -49,6 +49,7 @@ class Sprite {
                                    frameCount, 
                                    framePause, 
                                    flipX, flipY, readVertically);
+        return this;
     }
     ~Sprite() {
         delete image;

@@ -7,7 +7,6 @@ using namespace std;
 #include <map>
 
 #include <game/terrain.hpp>
-#include <game/map.hpp>
 
 class Tile {
     public:
@@ -27,7 +26,11 @@ class Tile {
         if (key=="1001") cout << key << "\n";
         return edges[key][random(0, edges[key].size()-1)];
     }
-    int getTile(Terrain* terrain, int x, int y) {
+    /**
+     * @brief Choose tile for terrain when same type tile cluster contains min even number of tiles
+     * It shrinks tile when detects other type of tile neighbours
+    */
+    int getTile(Terrain* terrain, int x, int y, bool expand=true) {
         // Get corner sum
         int type = terrain->grid[x][y];
         //   x x x
@@ -43,29 +46,58 @@ class Tile {
             0, 0, // 0 1
             0, 0  // 2 3
         };
-        if (x!=0 && y!=0){
-            borders[0] = terrain->grid[x-1][y-1]<type ? 0 : 1;
+        if (expand) {
+            if (x!=0 && y!=0){
+                borders[0] = terrain->grid[x-1][y-1]>type ? 0 : 1;
+            }
+            if (y!=0){
+                borders[1] = terrain->grid[x  ][y-1]>type ? 0 : 1;
+            }
+            if (y!=0 && x<terrain->width-1) {
+                borders[2] = terrain->grid[x+1][y-1]>type ? 0 : 1;
+            }
+            if (x!=0) {
+                borders[3] = terrain->grid[x-1][y  ]>type ? 0 : 1;
+            }
+            if (x<terrain->width-1) {
+                borders[5] = terrain->grid[x+1][y  ]>type ? 0 : 1;
+            }
+            if (x!=0 && y<terrain->height-1) {
+                borders[6] = terrain->grid[x-1][y+1]>type ? 0 : 1;
+            }
+            if (y<terrain->height-1){
+                borders[7] = terrain->grid[x  ][y+1]>type ? 0 : 1;
+            }
+            if (x<terrain->width-1 && y<terrain->height-1) {
+                borders[8] = terrain->grid[x+1][y+1]>type ? 0 : 1;
+            }
         }
-        if (y!=0){
-            borders[1] = terrain->grid[x  ][y-1]<type ? 0 : 1;
-        }
-        if (y!=0 && x<terrain->width-1) {
-            borders[2] = terrain->grid[x+1][y-1]<type ? 0 : 1;
-        }
-        if (x!=0) {
-            borders[3] = terrain->grid[x-1][y  ]<type ? 0 : 1;
-        }
-        if (x<terrain->width-1) {
-            borders[5] = terrain->grid[x+1][y  ]<type ? 0 : 1;
-        }
-        if (x!=0 && y<terrain->height-1) {
-            borders[6] = terrain->grid[x-1][y+1]<type ? 0 : 1;
-        }
-        if (y<terrain->height-1){
-            borders[7] = terrain->grid[x  ][y+1]<type ? 0 : 1;
-        }
-        if (x<terrain->width-1 && y<terrain->height-1) {
-            borders[8] = terrain->grid[x+1][y+1]<type ? 0 : 1;
+        else {
+            if (x!=0 && y!=0){
+                borders[0] = terrain->grid[x-1][y-1]<type ? 0 : 1;
+            }
+            if (y!=0){
+                borders[1] = terrain->grid[x  ][y-1]<type ? 0 : 1;
+            }
+            if (y!=0 && x<terrain->width-1) {
+                borders[2] = terrain->grid[x+1][y-1]<type ? 0 : 1;
+            }
+            if (x!=0) {
+                borders[3] = terrain->grid[x-1][y  ]<type ? 0 : 1;
+            }
+            if (x<terrain->width-1) {
+                borders[5] = terrain->grid[x+1][y  ]<type ? 0 : 1;
+            }
+            if (x!=0 && y<terrain->height-1) {
+                borders[6] = terrain->grid[x-1][y+1]<type ? 0 : 1;
+            }
+            if (y<terrain->height-1){
+                borders[7] = terrain->grid[x  ][y+1]<type ? 0 : 1;
+            }
+            if (x<terrain->width-1 && y<terrain->height-1) {
+                borders[8] = terrain->grid[x+1][y+1]<type ? 0 : 1;
+            }
+
         }
         corners[0] = borders[3] + borders[0] + borders[1];  
         corners[1] = borders[1] + borders[2] + borders[5];  
@@ -140,6 +172,7 @@ class Tile {
         }
         return getEdge(result);
     }
+
 };
 
 #endif
