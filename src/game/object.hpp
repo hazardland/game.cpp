@@ -19,9 +19,14 @@ class Object {
 
     public:
 
-        // Warrning: This position indicates where to render the object on screen
-        // But it does not indicate where your object is actually in your game world
+        // To use this position as absolute position in conjuction with camera
+        // Use ->render(camera->translate(object->position)) instead
+        // But if you want to use translated position further in rendering
+        // User SDL_Rect camera->result after camera->translate()
         SDL_Rect position;
+
+        // int x;
+        // int y;
 
         virtual void update(State* state) {
 

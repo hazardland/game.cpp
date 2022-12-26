@@ -7,11 +7,12 @@ using namespace std;
 
 #include <SDL2/SDL_image.h>
 
-#include <game/noise.h>
 
+#include <game/noise.h>
 #include <game/object.hpp>
 #include <game/state.hpp>
 #include <game/map.hpp>
+#include <game/tile.hpp>
 #include <game/drag.hpp>
 
 class Terrain: public Object {
@@ -39,6 +40,8 @@ class Terrain: public Object {
     Map* map;
     
     vector<vector<int>> grid;
+    vector<Tile*> tiles;
+
 
     /**
      * @brief Stores general data about terrain and helps to generate it
@@ -206,21 +209,6 @@ class Terrain: public Object {
     }
 
     /**
-     * @brief Import chunk of map based on data
-     * @param data 2 dimensionall data with different terrain variation types
-    */
-    void import(vector<vector<int>> data) {
-        int height = data.size();
-        int width = data[0].size();
-        for (int y=0; y<height; y++)
-        for (int x=0; x<width; x++)
-        {
-            set(x, y, data[y][x]);
-        }
-        map->terrain = this->grid;
-    }
-
-    /**
      * @brief Generate terrain with guaranteed odd number 
      * of same tiles min in same place
      * @param seed Seed for noise
@@ -251,8 +239,194 @@ class Terrain: public Object {
             }
         }
         map->terrain = this->grid;
-    }    
+    }  
+
+    /**
+     * @brief Import chunk of map based on data
+     * @param data 2 dimensionall data with different terrain variation types
+    */
+    void import(vector<vector<int>> data) {
+        int height = data.size();
+        int width = data[0].size();
+        for (int y=0; y<height; y++)
+        for (int x=0; x<width; x++)
+        {
+            set(x, y, data[y][x]);
+        }
+        map->terrain = this->grid;
+    }
+  
+
+    /**
+     * @brief Fill map by expanding edge strategy
+    */
+    void fillMap() {
+        for (int x=0; x<width; x++) {
+            for (int y=0; y<height; y++) {
+                map->grid[x][y] = getTile(x, y, false);
+            }
+        }
+    }
+
+    /**
+     * @brief Choose tile for terrain when same type tile cluster contains min even number of tiles
+     * It shrinks tile when detects other type of tile neighbours
+    */
+    int getTile(int x, int y, bool expand=true) {
+        // Get corner sum
+        int type = this->grid[x][y];
+        Tile* tile = tiles[type];
+        if (!expand) {
+            if (type==0) {
+                return tile->getPlain();
+            }
+        } else {
+            if (type==tiles.size()-1) {
+                return tile->getPlain();
+            }
+        }
+        //   x x x
+        // y 0 0 0
+        // y 0 0 0
+        // y 0 0 0
+        int borders[] = {
+            1, 1, 1, // 0 1 2 
+            1, 1, 1, // 3 4 5
+            1, 1, 1  // 6 7 8
+        };
+        int corners[] = {
+            0, 0, // 0 1
+            0, 0  // 2 3
+        };
+        if (expand) {
+            if (x!=0 && y!=0){
+                borders[0] = this->grid[x-1][y-1]>type ? 0 : 1;
+            }
+            if (y!=0){
+                borders[1] = this->grid[x  ][y-1]>type ? 0 : 1;
+            }
+            if (y!=0 && x<this->width-1) {
+                borders[2] = this->grid[x+1][y-1]>type ? 0 : 1;
+            }
+            if (x!=0) {
+                borders[3] = this->grid[x-1][y  ]>type ? 0 : 1;
+            }
+            if (x<this->width-1) {
+                borders[5] = this->grid[x+1][y  ]>type ? 0 : 1;
+            }
+            if (x!=0 && y<this->height-1) {
+                borders[6] = this->grid[x-1][y+1]>type ? 0 : 1;
+            }
+            if (y<this->height-1){
+                borders[7] = this->grid[x  ][y+1]>type ? 0 : 1;
+            }
+            if (x<this->width-1 && y<this->height-1) {
+                borders[8] = this->grid[x+1][y+1]>type ? 0 : 1;
+            }
+        }
+        else {
+            if (x!=0 && y!=0){
+                borders[0] = this->grid[x-1][y-1]<type ? 0 : 1;
+            }
+            if (y!=0){
+                borders[1] = this->grid[x  ][y-1]<type ? 0 : 1;
+            }
+            if (y!=0 && x<this->width-1) {
+                borders[2] = this->grid[x+1][y-1]<type ? 0 : 1;
+            }
+            if (x!=0) {
+                borders[3] = this->grid[x-1][y  ]<type ? 0 : 1;
+            }
+            if (x<this->width-1) {
+                borders[5] = this->grid[x+1][y  ]<type ? 0 : 1;
+            }
+            if (x!=0 && y<this->height-1) {
+                borders[6] = this->grid[x-1][y+1]<type ? 0 : 1;
+            }
+            if (y<this->height-1){
+                borders[7] = this->grid[x  ][y+1]<type ? 0 : 1;
+            }
+            if (x<this->width-1 && y<this->height-1) {
+                borders[8] = this->grid[x+1][y+1]<type ? 0 : 1;
+            }
+
+        }
+        corners[0] = borders[3] + borders[0] + borders[1];  
+        corners[1] = borders[1] + borders[2] + borders[5];  
+        corners[2] = borders[3] + borders[6] + borders[7];  
+        corners[3] = borders[7] + borders[8] + borders[5];
+
+        int corner = 0;
+        int min = corners[0];
+
+        for(int i=1; i<4; i++)
+        {
+            if(corners[i]<min)
+            {
+                min = corners[i];
+                corner = i;
+            }
+        }
+
+        // int borders[] = {
+        //     1, 1, 1, // 0 1 2 
+        //     1, 1, 1, // 3 4 5
+        //     1, 1, 1  // 6 7 8
+        // };
+        // int corners[] = {
+        //     0, 0, // 0 1
+        //     0, 0  // 2 3
+        // };
+        
+        string result;
+        if (corner==0) {
+            result = 
+            to_string(borders[0]) + 
+            to_string(borders[1]) + 
+            to_string(borders[3]) + 
+            to_string(borders[4]);
+        }
+        if (corner==1) {
+            result = 
+            to_string(borders[1]) + 
+            to_string(borders[2]) + 
+            to_string(borders[4]) + 
+            to_string(borders[5]);
+
+        }
+        if (corner==2) { 
+            result = 
+            to_string(borders[3]) + 
+            to_string(borders[4]) + 
+            to_string(borders[6]) + 
+            to_string(borders[7]);
+
+        }
+        if (corner==3) {
+            result = 
+            to_string(borders[4]) + 
+            to_string(borders[5]) + 
+            to_string(borders[7]) + 
+            to_string(borders[8]);            
+        }
+
+        // printf("-- x: %d y: %d c: %d\n%d %d %d\n%d %d %d\n%d %d %d\n",
+        // x, y, corner, borders[0],borders[1], borders[2], borders[3], borders[4], borders[5], borders[6], borders[7], borders[8]        
+        // );
+        
+        // Mark bad tile
+        if (result=="1001") {
+            this->setPixel(x, y, 0, 0, 0, 255);
+        }
+
+        if (result.compare("1111")==0) {
+            return tile->getPlain();
+        }
+        return tile->getEdge(result);
+    }
+
 
 };
+
 
 #endif

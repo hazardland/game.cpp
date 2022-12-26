@@ -43,11 +43,75 @@ So for now I am a bit lazy to instruct how to download SDL libs and includes and
     ```g++ -std=c++17 -O3 -m64 -Isrc -s -o main main.cpp src/game/*.cpp  -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf```
 
 
+# Hello World - Object
+
+```c++
+#include <game/window.hpp>
+#include <game/scene.hpp>
+#include <game/animation.hpp>
+
+class Planet: public Object {
+    public:
+    Animation* animation;
+    Planet(Sprite* sprite) {
+        animation = new Animation(
+            sprite,
+            1
+        );
+        position.w = 200;
+        position.h = 200;        
+    }
+
+    virtual void update(State* state) {
+        position.x = state->camera->width/2 - position.w/2; 
+        position.y = state->camera->height/2 - position.h/2;
+        animation->update(state->clock->delta);
+    }
+
+    virtual void render(State* state) {
+        animation->render(&position);
+    }
+
+};
+
+class MyScene : public Scene {
+    using Scene::Scene;
+
+    public:
+
+    virtual void prepare() {
+
+        // Define sprite
+        sprites[1] = (new Sprite(
+            new Image(renderer, "doc/images/planet.png"),
+            100, // Frame width
+            100, // Frame height
+            60 // Frame pause
+        ))->addClip(
+            1, // Clip index
+            1, // Start row in sprite sheet
+            1, // Start cell in sprite sheet
+            24  // Frame count to generate from row, cell
+        );
+        
+        // Create Planet object
+        objects.push_back(new Planet(sprites[1]));
+    }
+
+};
+
+int main(int argc, char** argv){
+    Window* window = new Window("Hello World", 800, 600);
+    window->setScene(new MyScene(window->window));
+    return window->run();
+}
+```
+
 # Hello world - Window, Scene and Image classes
 
 The example is very impractical and things are done rather more easaly, but first let us see how things work under the hood.
 
-Our goal with hellow world is to just display static image in the center of window:
+Our goal with hello world is to just display static image in the center of window:
 
 ![](/doc/images/hello_world.png)
 
@@ -66,7 +130,7 @@ In hello world example we will use only first frame to render:
 #include <game/scene.hpp>
 #include <game/image.hpp>
 
-// We will need scene to exend to setup our custom things
+// We will need scene to extend to setup our custom things
 class MyScene : public Scene {
     using Scene::Scene;
 
@@ -127,7 +191,7 @@ int main(int argc, char** argv){
 In this example we learned that there are Window, Scene and Image classes
 
 # Sprite class
-Let us advance a bit and see what Sprite class does under the hood before we see how to do things easyer
+Let us advance a bit and see what Sprite class does under the hood before we see how to do things easyly
 
 The example will produce this:
 
@@ -148,8 +212,6 @@ class MyScene : public Scene {
     // Sprite helds image and some data about frames
     Sprite* sprite;
     SDL_Rect position;
-
-    int currentFrame = 0;
 
     virtual void prepare() {
         // Create sprite instanse with default config

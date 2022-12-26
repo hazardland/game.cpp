@@ -6,13 +6,12 @@ using namespace std;
 #include <map>
 
 #include <game/scene.hpp>
+#include <game/text.hpp>
 #include <game/map.hpp>
 #include <game/terrain.hpp>
-#include <game/text.hpp>
-#include <game/tile.hpp>
 
-int WIDTH = 1024;
-int HEIGHT = 1024;
+int WIDTH = 128;
+int HEIGHT = 128;
 
 class MapScene : public Scene {
     using Scene::Scene;
@@ -29,7 +28,7 @@ class MapScene : public Scene {
     virtual void prepare() {
         fps = new Text(renderer, font);
         
-        terrain = new Terrain(renderer, WIDTH, HEIGHT, 0.2, 
+        terrain = new Terrain(renderer, WIDTH, HEIGHT, 2, 
             3, // Variations
             {  // Colors
                 {51, 51, 255},
@@ -42,7 +41,7 @@ class MapScene : public Scene {
             new Image(renderer, "assets/sprites/winter.png"), 
             32, 32, 
             WIDTH, HEIGHT, 
-            2,
+            3,
             new Text(renderer, font)
         );
 
@@ -182,6 +181,7 @@ class MapScene : public Scene {
             )
         };
 
+        terrain->tiles = tiles1;
         terrain->setMap(map);
         terrain->setPosition(0, 0);
 
@@ -195,61 +195,31 @@ class MapScene : public Scene {
     void generate() {
         srand(clock());
         terrain->generate1(rand(), 0.05, {0.3, 0.55, 1});
-        // terrain->import(
-        //     {
-        //         {0,1,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        //         {1,1,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        //         {0,0,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        //         {1,1,1,1,0,0,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0},
-        //         {0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0},
-        //         {0,0,0,0,0,0,1,1,0,0,0,1,1,1,1,1,1,1,1,0,0},
-        //         {1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,0,0},
-        //         {1,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0},
-        //         {0,0,0,0,0,0,0,0,0,1,0,0,0,1,1,1,1,0,0,0,0},
-        //         {0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        //         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        //         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        //         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0},
-        //         {0,0,0,0,0,0,0,0,1,0,0,0,0,1,1,1,1,0,0,0,0},
-        //         {0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,1,0,0,0,0},
-        //         {0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,0,0},
-        //         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        //         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        //         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-        //         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-        //     }
-        // );
-        fill2();
-    }
-
-    void fill1() {
-        for (int x=0; x<WIDTH; x++) {
-            for (int y=0; y<HEIGHT; y++) {
-                if (terrain->grid[x][y]==0) {
-                    map->grid[x][y] = tiles1[0]->getPlain();
-                } else if (terrain->grid[x][y]==1) {
-                    // map->grid[x][y] = 331;
-                    map->grid[x][y] = tiles1[1]->getTile(terrain, x, y, false);
-                } else if (terrain->grid[x][y]==2) {
-                    map->grid[x][y] = tiles1[2]->getTile(terrain, x, y, false);
-                }
+        terrain->import(
+            {
+                {0,1,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,1,0,0,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0},
+                {0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0},
+                {0,0,0,0,0,0,1,1,0,0,0,1,1,1,1,1,1,1,1,0,0},
+                {1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,0,0},
+                {1,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,1,0,0,0,1,1,1,1,0,0,0,0},
+                {0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,1,0,0,0,0,1,1,1,1,0,0,0,0},
+                {0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,1,0,0,0,0},
+                {0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
             }
-        }
-    }
-
-    void fill2() {
-        for (int x=0; x<WIDTH; x++) {
-            for (int y=0; y<HEIGHT; y++) {
-                if (terrain->grid[x][y]==0) {
-                    map->grid[x][y] = tiles2[0]->getTile(terrain, x, y, true);
-                } else if (terrain->grid[x][y]==1) {
-                    // map->grid[x][y] = 331;
-                    map->grid[x][y] = tiles2[1]->getTile(terrain, x, y, true);
-                } else if (terrain->grid[x][y]==2) {
-                    map->grid[x][y] = tiles2[2]->getPlain();
-                }
-            }
-        }
+        );
+        terrain->fillMap();
     }
 
     virtual void update(State* state) {
@@ -285,7 +255,7 @@ class MapScene : public Scene {
     virtual void render(State* state){
         clear();
         process(state);
-        present();
+        display();
     }
 
 
