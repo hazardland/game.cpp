@@ -1,15 +1,19 @@
-#ifndef GAME_TILE
-#define GAME_TILE
+#ifndef GAME_TERRAIN
+#define GAME_TERRAIN
 
 using namespace std;
 
 #include <vector>
 
-class Tile {
+class Terrain {
     public:
         vector<int> plain;
         map<string, vector<int>> edges;
-    Tile (vector<int> plain, map<string, vector<int>> edges={}) {
+        int layer;
+        vector<int> color;
+    Terrain (int layer, vector<int> color, vector<int> plain, map<string, vector<int>> edges={}) {
+        this->layer = layer;
+        this->color = color;
         this->plain = plain;
         this->edges = edges;
     }

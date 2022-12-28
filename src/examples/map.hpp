@@ -28,14 +28,7 @@ class MapScene : public Scene {
     virtual void prepare() {
         fps = new Text(renderer, font);
         
-        terrain = new Terrain(renderer, WIDTH, HEIGHT, 2, 
-            3, // Variations
-            {  // Colors
-                {51, 51, 255},
-                {102, 178, 215},
-                {255, 255, 255}
-            }
-        );
+        terrain = new Terrain(renderer, WIDTH, HEIGHT, 2);
         
         map = new Map(
             new Image(renderer, "assets/sprites/winter.png"), 
@@ -45,9 +38,63 @@ class MapScene : public Scene {
             new Text(renderer, font)
         );
 
+/**
+
+"1.1.1.x" = {0},
+"1.1.x.x" = {1},
+"1.1.x.1" = {2},
+"1.x.1.x" = {28},
+"x.1.x.1" = {30},
+"1.x.1.1" = {56},
+"x.x.1.1" = {57},
+"x.1.1.1" = {58},
+"x.x.x.1" = {3},
+"x.x.1.x" = {4},
+"x.1.x.x" = {31},
+"1.x.x.x" = {32},
+"x.1.1.x" = {59},
+"1.x.x.1" = {60},
+"1.1.1.1" = {5, 6, 33, 34}
+
+"2.2.2.x" = {84},
+"2.2.x.x" = {85},
+"2.2.x.2" = {86},
+"2.x.2.x" = {112},
+"x.2.x.2" = {114},
+"2.x.2.2" = {140},
+"x.x.2.2" = {141},
+"x.2.2.2" = {142},
+"x.x.x.2" = {87},
+"x.x.2.x" = {88},
+"x.2.x.x" = {115},
+"2.x.x.x" = {116},
+"x.2.2.x" = {143},
+"2.x.x.2" = {144},
+"2.2.2.2" = {89, 117}
+
+"0.0.0.1" = {168},
+"0.0.1.1" = {169},
+"0.0.1.0" = {170},
+"0.1.0.1" = {196},
+"1.0.1.0" = {198},
+"0.1.0.0" = {224},
+"1.1.0.0" = {225},
+"1.0.0.0" = {226},
+"1.1.1.0" = {171},
+"1.1.0.1" = {172},
+"1.0.1.1" = {199},
+"0.1.1.1" = {200},
+"1.0.0.1" = {227},
+"0.1.1.0" = {228},
+"0.0.0.0" = {173, 174, 201, 202, 229}
+
+
+*/
         tiles1 = {
             // Water
             new Tile(
+                0,
+                {51, 51, 255},
                 // Base water
                 {
                     319, 320, 321,
@@ -59,6 +106,8 @@ class MapScene : public Scene {
             ),
             // Ice
             new Tile(
+                1,
+                {102, 178, 215},
                 // Base ice 
                 {
                     331, 332, 333, 334,
@@ -86,6 +135,8 @@ class MapScene : public Scene {
             ),
             // Ground
             new Tile(
+                1,
+                {255, 255, 255},
                 // Base ground
                 {
                     349, 350, 351,
@@ -116,6 +167,8 @@ class MapScene : public Scene {
         tiles2 = {
             // Water
             new Tile(
+                0,
+                {51, 51, 255},
                 // Base water
                 {
                     319, 320, 321,
@@ -143,6 +196,8 @@ class MapScene : public Scene {
             ),
             // Ice
             new Tile(
+                1,
+                {102, 178, 215},
                 // Base ice 
                 {
                     331, 332, 333, 334,
@@ -170,6 +225,8 @@ class MapScene : public Scene {
             ),
             // Ground
             new Tile(
+                1,
+                {255, 255, 255},
                 // Base ground
                 {
                     349, 350, 351,
@@ -219,7 +276,7 @@ class MapScene : public Scene {
                 {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
             }
         );
-        terrain->fillMap();
+        terrain->fillMapShrinked();
     }
 
     virtual void update(State* state) {

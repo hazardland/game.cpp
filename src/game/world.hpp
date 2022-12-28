@@ -1,5 +1,5 @@
-#ifndef GAME_TERRAIN
-#define GAME_TERRAIN
+#ifndef GAME_WORLD
+#define GAME_WORLD
 
 using namespace std;
 
@@ -15,7 +15,7 @@ using namespace std;
 #include <game/tile.hpp>
 #include <game/drag.hpp>
 
-class Terrain: public Object {
+class World: public Object {
 
     public:
 
@@ -30,8 +30,8 @@ class Terrain: public Object {
     int height;
     float scale;
 
-    int variations;
-    vector<vector<int>> colors;
+    // int variations;
+    // vector<vector<int>> colors;
 
     bool modified = false;
 
@@ -54,13 +54,7 @@ class Terrain: public Object {
     Terrain(SDL_Renderer* renderer, 
             int width, 
             int height, 
-            float scale,
-            int variations,
-            vector<vector<int>> colors
-            ) {
-
-        this->variations = variations;
-        this->colors = colors;
+            float scale) {
 
         this->width = width;
         this->height = height;
@@ -112,7 +106,7 @@ class Terrain: public Object {
 
     void set(int x, int y, int terrain) {
         grid[x][y] = terrain;
-        vector<int> color = colors[terrain];
+        vector<int> color = tiles[terrain]->color;
         SDL_Rect rect;
         rect.x = x*scale;
         rect.y = y*scale;
@@ -136,7 +130,7 @@ class Terrain: public Object {
 
     void prepare() {
         if (texture!=NULL) {
-            printf("destroyed");
+            printf("destroyed terrain texture\n");
             SDL_DestroyTexture(texture);
         }
         texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -197,7 +191,7 @@ class Terrain: public Object {
                 // alpha = (noise.eval(x*0.01, y*0.01) + 1) / 2.0  * 255.0;
                 // minimap->setPixel(x, y, 255, 255, 255, alpha);       
                 float depth = (noise.eval(x*intensity, y*intensity) + 1) / 2.0;
-                for (int terrain=0; terrain<variations; terrain++){
+                for (int terrain=0; terrain<tiles.size(); terrain++){
                     if (depth<=ranges[terrain]) {
                         set(x, y, terrain);
                         break;
@@ -227,7 +221,7 @@ class Terrain: public Object {
                 // alpha = (noise.eval(x*0.01, y*0.01) + 1) / 2.0  * 255.0;
                 // minimap->setPixel(x, y, 255, 255, 255, alpha);       
                 float depth = (noise.eval(x*intensity, y*intensity) + 1) / 2.0;
-                for (int terrain=0; terrain<variations; terrain++){
+                for (int terrain=0; terrain<tiles.size(); terrain++){
                     if (depth<=ranges[terrain]) {
                         set(x, y, terrain);
                         set(x+1, y, terrain);
@@ -260,10 +254,10 @@ class Terrain: public Object {
     /**
      * @brief Fill map by expanding edge strategy
     */
-    void fillMap() {
+    void fillMapShrinked() {
         for (int x=0; x<width; x++) {
             for (int y=0; y<height; y++) {
-                map->grid[x][y] = getTile(x, y, false);
+                map->tiles[x][y] = getTileShrinked(x, y);
             }
         }
     }
@@ -272,18 +266,12 @@ class Terrain: public Object {
      * @brief Choose tile for terrain when same type tile cluster contains min even number of tiles
      * It shrinks tile when detects other type of tile neighbours
     */
-    int getTile(int x, int y, bool expand=true) {
+    int getTileShrinked(int x, int y) {
         // Get corner sum
         int type = this->grid[x][y];
         Tile* tile = tiles[type];
-        if (!expand) {
-            if (type==0) {
-                return tile->getPlain();
-            }
-        } else {
-            if (type==tiles.size()-1) {
-                return tile->getPlain();
-            }
+        if (type==0) {
+            return tile->getPlain();
         }
         //   x x x
         // y 0 0 0
@@ -298,59 +286,32 @@ class Terrain: public Object {
             0, 0, // 0 1
             0, 0  // 2 3
         };
-        if (expand) {
-            if (x!=0 && y!=0){
-                borders[0] = this->grid[x-1][y-1]>type ? 0 : 1;
-            }
-            if (y!=0){
-                borders[1] = this->grid[x  ][y-1]>type ? 0 : 1;
-            }
-            if (y!=0 && x<this->width-1) {
-                borders[2] = this->grid[x+1][y-1]>type ? 0 : 1;
-            }
-            if (x!=0) {
-                borders[3] = this->grid[x-1][y  ]>type ? 0 : 1;
-            }
-            if (x<this->width-1) {
-                borders[5] = this->grid[x+1][y  ]>type ? 0 : 1;
-            }
-            if (x!=0 && y<this->height-1) {
-                borders[6] = this->grid[x-1][y+1]>type ? 0 : 1;
-            }
-            if (y<this->height-1){
-                borders[7] = this->grid[x  ][y+1]>type ? 0 : 1;
-            }
-            if (x<this->width-1 && y<this->height-1) {
-                borders[8] = this->grid[x+1][y+1]>type ? 0 : 1;
-            }
-        }
-        else {
-            if (x!=0 && y!=0){
-                borders[0] = this->grid[x-1][y-1]<type ? 0 : 1;
-            }
-            if (y!=0){
-                borders[1] = this->grid[x  ][y-1]<type ? 0 : 1;
-            }
-            if (y!=0 && x<this->width-1) {
-                borders[2] = this->grid[x+1][y-1]<type ? 0 : 1;
-            }
-            if (x!=0) {
-                borders[3] = this->grid[x-1][y  ]<type ? 0 : 1;
-            }
-            if (x<this->width-1) {
-                borders[5] = this->grid[x+1][y  ]<type ? 0 : 1;
-            }
-            if (x!=0 && y<this->height-1) {
-                borders[6] = this->grid[x-1][y+1]<type ? 0 : 1;
-            }
-            if (y<this->height-1){
-                borders[7] = this->grid[x  ][y+1]<type ? 0 : 1;
-            }
-            if (x<this->width-1 && y<this->height-1) {
-                borders[8] = this->grid[x+1][y+1]<type ? 0 : 1;
-            }
 
+        if (x!=0 && y!=0){
+            borders[0] = this->grid[x-1][y-1]<type ? 0 : 1;
         }
+        if (y!=0){
+            borders[1] = this->grid[x  ][y-1]<type ? 0 : 1;
+        }
+        if (y!=0 && x<this->width-1) {
+            borders[2] = this->grid[x+1][y-1]<type ? 0 : 1;
+        }
+        if (x!=0) {
+            borders[3] = this->grid[x-1][y  ]<type ? 0 : 1;
+        }
+        if (x<this->width-1) {
+            borders[5] = this->grid[x+1][y  ]<type ? 0 : 1;
+        }
+        if (x!=0 && y<this->height-1) {
+            borders[6] = this->grid[x-1][y+1]<type ? 0 : 1;
+        }
+        if (y<this->height-1){
+            borders[7] = this->grid[x  ][y+1]<type ? 0 : 1;
+        }
+        if (x<this->width-1 && y<this->height-1) {
+            borders[8] = this->grid[x+1][y+1]<type ? 0 : 1;
+        }
+
         corners[0] = borders[3] + borders[0] + borders[1];  
         corners[1] = borders[1] + borders[2] + borders[5];  
         corners[2] = borders[3] + borders[6] + borders[7];  

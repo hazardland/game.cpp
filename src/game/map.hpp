@@ -29,7 +29,7 @@ class Map: public Object {
         Image* image;
         Clip* clip;
 
-        vector<vector<int>> grid;
+        vector<vector<int>> tiles;
         Text* text;
         vector<vector<int>> terrain;
 
@@ -55,10 +55,10 @@ class Map: public Object {
                              (image->getWidth()/tileWidth)*(image->getHeight()/tileHeight));
             for (int i = 0; i < width; i++)
             {
-                grid.push_back(vector<int>());
+                tiles.push_back(vector<int>());
                 for (int j = 0; j < height; j++)
                 {
-                    grid[i].push_back(0);                    
+                    tiles[i].push_back(0);                    
                 }
             }
             this->text = text;
@@ -97,7 +97,7 @@ class Map: public Object {
                     location.y = y*tileHeight*scale;
                     if (state->camera->isVisible(&location)) {
                         position = state->camera->translate(&location);
-                        image->render(&clip->getFrame(grid[x][y])->rect, position);
+                        image->render(&clip->getFrame(tiles[x][y])->rect, position);
                         
                         if (debug){
 
