@@ -19,6 +19,8 @@ class Object {
 
     public:
 
+        int layer = -1;
+
         // To use this position as absolute position in conjuction with camera
         // Use ->render(camera->translate(object->position)) instead
         // But if you want to use translated position further in rendering

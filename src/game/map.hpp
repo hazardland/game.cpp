@@ -14,6 +14,18 @@ using namespace std;
 #include <game/legend.hpp>
 #include <game/noise.h>
 
+// grid[x][y]->terrain->layer
+// grid[x][y]->tile
+// grid[x][y]->object
+class Cell {
+    public:
+    int tile;
+    Terrain* terrain;
+    map<int, Object*> objects;
+    SDL_Rect* rect;
+};
+
+
 
 /**
  * @brief Map
@@ -34,8 +46,11 @@ class Map: public Object {
     Clip* clip;
 
     Text* text;
-    vector<vector<int>> grid;
-    vector<vector<int>> view;
+    //vector<vector<int>> grid;
+    vector<vector<Cell*>> grid;
+    // vector<vector<int>> view;
+    // layers[x][y] = layer
+    vector<vector<int>> layers;
 
 
     vector<Terrain*> terrains;
@@ -64,17 +79,32 @@ class Map: public Object {
         
         for (int x = 0; x < width; x++)
         {
-            grid.push_back(vector<int>());
-            view.push_back(vector<int>());
-            for (int y = 0; y < height; y++)
-            {
-                grid[x].push_back(0);
-                view[x].push_back(0);               
+            grid.push_back(vector<Cell*>());
+            for (int y = 0; y < height; y++) {
+                grid[x].push_back(new Cell());
             }
+            // grid.push_back(vector<int>());
+            // view.push_back(vector<int>());
+            // for (int y = 0; y < height; y++)
+            // {
+            //     grid[x].push_back(0);
+            //     view[x].push_back(0);               
+            // }
         }
         this->text = text;
         this->text->color = SDL_Color(0, 0, 0);
     }
+    // bool canMove(Object* object, int x, int y) {
+    //     // check if place contians obstacle
+    //     if (object->layer!=NULL && grid[x][y]->terrain->layer!=object->layer) {
+    //         return false;
+    //     }
+    //     // check if something occupies same layer
+    //     if (grid[x][y]->objects.size()>0) {
+
+    //     }
+    // }
+
     virtual int getWidth() {
         return width*tileWidth*scale;
     }
@@ -108,7 +138,7 @@ class Map: public Object {
                 location.y = y*tileHeight*scale;
                 if (state->camera->isVisible(&location)) {
                     position = state->camera->translate(&location);
-                    image->render(&clip->getFrame(view[x][y])->rect, position);
+                    image->render(grid[x][y]->rect, position);
                     
                     if (debug){
 
@@ -117,7 +147,8 @@ class Map: public Object {
                         SDL_RenderDrawRect(image->renderer, position);
                         SDL_SetRenderDrawColor(image->renderer, 0, 0, 0, 0);
 
-                        int type = grid[x][y];
+                        Cell* cell = grid[x][y]; 
+                        int type = cell->terrain->id;
                         
                         int borders[] = {
                             type, type, type, // 0 1 2 
@@ -136,28 +167,28 @@ class Map: public Object {
                         };
 
                         if (x!=0 && y!=0){
-                            borders[0] = this->grid[x-1][y-1]<type ? type-1 : type;
+                            borders[0] = this->grid[x-1][y-1]->terrain->id;
                         }
                         if (y!=0){
-                            borders[1] = this->grid[x  ][y-1]<type ? type-1 : type;
+                            borders[1] = this->grid[x  ][y-1]->terrain->id;
                         }
                         if (y!=0 && x<this->width-1) {
-                            borders[2] = this->grid[x+1][y-1]<type ? type-1 : type;
+                            borders[2] = this->grid[x+1][y-1]->terrain->id;
                         }
                         if (x!=0) {
-                            borders[3] = this->grid[x-1][y  ]<type ? type-1 : type;
+                            borders[3] = this->grid[x-1][y  ]->terrain->id;
                         }
                         if (x<this->width-1) {
-                            borders[5] = this->grid[x+1][y  ]<type ? type-1 : type;
+                            borders[5] = this->grid[x+1][y  ]->terrain->id;
                         }
                         if (x!=0 && y<this->height-1) {
-                            borders[6] = this->grid[x-1][y+1]<type ? type-1 : type;
+                            borders[6] = this->grid[x-1][y+1]->terrain->id;
                         }
                         if (y<this->height-1){
-                            borders[7] = this->grid[x  ][y+1]<type ? type-1 : type;
+                            borders[7] = this->grid[x  ][y+1]->terrain->id;
                         }
                         if (x<this->width-1 && y<this->height-1) {
-                            borders[8] = this->grid[x+1][y+1]<type ? type-1 : type;
+                            borders[8] = this->grid[x+1][y+1]->terrain->id;
                         }
 
                         corners[0] = borders[3] + borders[0] + borders[1];  
@@ -228,10 +259,10 @@ class Map: public Object {
     }
 
     void setTerrain(int x, int y, int type) {
-        grid[x][y] = type;
-        vector<int> color = terrains[type]->color;
+        Terrain* terrain = terrains[type];
+        grid[x][y]->terrain = terrain;
         if (legend!=NULL) {
-            legend->setPixel(x, y, color[0], color[1], color[2]);
+            legend->setPixel(x, y, terrain->color[0], terrain->color[1], terrain->color[2]);
         }
     }
 
@@ -332,7 +363,8 @@ class Map: public Object {
     void fillMap2() {
         for (int x=0; x<width; x++) {
             for (int y=0; y<height; y++) {
-                view[x][y] = getTile2(x, y);
+                grid[x][y]->tile = getTile2(x, y);
+                grid[x][y]->rect = &clip->getFrame(grid[x][y]->tile)->rect;
             }
         }
         printf("filled map 2\n");
@@ -344,8 +376,9 @@ class Map: public Object {
     */
     int getTile2(int x, int y) {
         // Get corner sum
-        int type = this->grid[x][y];
-        Terrain* terrain = terrains[type];
+        Cell* cell = this->grid[x][y]; 
+        int type = cell->terrain->id;
+        // Terrain* terrain = cell->terrain;
         if (type==0) {
             return getTile("0.0.0.0");
         }
@@ -364,28 +397,28 @@ class Map: public Object {
         };
 
         if (x!=0 && y!=0){
-            borders[0] = this->grid[x-1][y-1]<type ? type-1 : type;
+            borders[0] = this->grid[x-1][y-1]->terrain->id < type ? type-1 : type;
         }
         if (y!=0){
-            borders[1] = this->grid[x  ][y-1]<type ? type-1 : type;
+            borders[1] = this->grid[x  ][y-1]->terrain->id < type ? type-1 : type;
         }
         if (y!=0 && x<this->width-1) {
-            borders[2] = this->grid[x+1][y-1]<type ? type-1 : type;
+            borders[2] = this->grid[x+1][y-1]->terrain->id < type ? type-1 : type;
         }
         if (x!=0) {
-            borders[3] = this->grid[x-1][y  ]<type ? type-1 : type;
+            borders[3] = this->grid[x-1][y  ]->terrain->id < type ? type-1 : type;
         }
         if (x<this->width-1) {
-            borders[5] = this->grid[x+1][y  ]<type ? type-1 : type;
+            borders[5] = this->grid[x+1][y  ]->terrain->id < type ? type-1 : type;
         }
         if (x!=0 && y<this->height-1) {
-            borders[6] = this->grid[x-1][y+1]<type ? type-1 : type;
+            borders[6] = this->grid[x-1][y+1]->terrain->id < type ? type-1 : type;
         }
         if (y<this->height-1){
-            borders[7] = this->grid[x  ][y+1]<type ? type-1 : type;
+            borders[7] = this->grid[x  ][y+1]->terrain->id < type ? type-1 : type;
         }
         if (x<this->width-1 && y<this->height-1) {
-            borders[8] = this->grid[x+1][y+1]<type ? type-1 : type;
+            borders[8] = this->grid[x+1][y+1]->terrain->id < type ? type-1 : type;
         }
 
         corners[0] = borders[3] + borders[0] + borders[1];  

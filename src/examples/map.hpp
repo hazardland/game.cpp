@@ -104,9 +104,9 @@ class MapScene : public Scene {
 
 */
         map->terrains = {
-            new Terrain(0, {51, 51, 255}),
-            new Terrain(1, {102, 178, 215}),
-            new Terrain(2, {255, 255, 255})
+            new Terrain(0, 0, {51, 51, 255}),
+            new Terrain(1, 1, {102, 178, 215}),
+            new Terrain(2, 1, {255, 255, 255})
         };
 
         map->tiles = {

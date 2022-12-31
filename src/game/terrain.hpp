@@ -9,9 +9,11 @@ using namespace std;
 
 class Terrain {
     public:
+        int id;
         int layer;
         vector<int> color;
-    Terrain (int layer, vector<int> color) {
+    Terrain (int id, int layer, vector<int> color) {
+        this->id = id;
         this->layer = layer;
         this->color = color;
     }
