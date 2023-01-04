@@ -38,7 +38,7 @@ class Animation  {
         // cout << "Default clip "<< defaultClip << " " << clip << "\n";
     }
 
-    virtual void render(SDL_Rect* position) {
+    virtual void render(SDL_FRect* position) {
         image->render(clip->getFrame(frame)->getRect(), position, clip->getFrame(frame)->getFlip());
     }
 
@@ -46,7 +46,14 @@ class Animation  {
         if (clipName==activeClip) {
             return;
         }
+        if (!sprite->clips.contains(clipName)) {
+            cout<<"Unknown clip "<<clipName<<"\n";
+        } else {
+            // cout<<"Playing clip "<<activeClip<<"\n";
+        }
         clip = sprite->clips[clipName];
+        timer = 0;
+        frame = 0;
         if (slow>0) {
             pause = clip->getFramePause()*slow;
         } else {
@@ -68,6 +75,7 @@ class Animation  {
         if (frame == clip->getFrameCount()) {
             frame = 0;
         }
+        // cout << "Frame: " <<frame<<"\n";
     }
 
 };

@@ -10,13 +10,12 @@ class Planet: public Object {
             sprite,
             1
         );
-        position.w = 200;
-        position.h = 200;        
+        setSize(200, 200);
     }
 
     virtual void update(State* state) {
-        position.x = state->camera->width/2 - position.w/2; 
-        position.y = state->camera->height/2 - position.h/2;
+        setPosition (state->camera->width/2 - getWidth()/2,
+                     state->camera->height/2 - getHeight()/2);
         animation->update(state->clock->delta);
     }
 

@@ -89,7 +89,7 @@ class Clip {
             return frameCount;
         }
         Frame* getFrame(int frameIndex){
-            //cout << frame << " ";
+            // cout << frame << " ";
             return &frames[frameIndex];
         }
         int getFramePause() {

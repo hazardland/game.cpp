@@ -18,7 +18,7 @@ class Keyboard {
     bool space = false;
     const Uint8* keys;
     void reset() {
-        up = down = left = right = space = false;
+        //up = down = left = right = space = false;
     }
 };
 
@@ -44,7 +44,7 @@ class Mouse {
         rightClick = leftClick =  false;
     }
 
-    bool inside(SDL_Rect* position) {
+    bool inside(SDL_FRect* position) {
         if (x>=position->x &&
             y>=position->y &&
             x<=position->x+position->w && 
@@ -124,24 +124,46 @@ class Event {
                         break;
                     }
                     break;
-                case SDL_KEYDOWN:
-                    keyboard->keys = SDL_GetKeyboardState(nullptr);
-                    if (keyboard->keys[SDL_SCANCODE_UP]) {
-                        keyboard->up = true;
-                    }
-                    if (keyboard->keys[SDL_SCANCODE_DOWN]) {
-                        keyboard->down = true;
-                    }
-                    if (keyboard->keys[SDL_SCANCODE_RIGHT]) {
-                        keyboard->right = true;
-                    }
-                    if (keyboard->keys[SDL_SCANCODE_LEFT]) {
-                        keyboard->left = true;
-                    }
-                    if (keyboard->keys[SDL_SCANCODE_SPACE]) {
-                        keyboard->space = true;
-                    }
-                    break;
+                // case SDL_KEYDOWN:
+                //     keyboard->keys = SDL_GetKeyboardState(nullptr);
+                //     cout << "some key is down\n";
+                //     if (keyboard->keys[SDL_SCANCODE_UP]) {
+                //         cout << ">>>>> up is pressed\n";
+                //         keyboard->up = true;
+                //     }
+                //     if (keyboard->keys[SDL_SCANCODE_DOWN]) {
+                //         keyboard->down = true;
+                //     }
+                //     if (keyboard->keys[SDL_SCANCODE_RIGHT]) {
+                //         keyboard->right = true;
+                //     }
+                //     if (keyboard->keys[SDL_SCANCODE_LEFT]) {
+                //         keyboard->left = true;
+                //     }
+                //     if (keyboard->keys[SDL_SCANCODE_SPACE]) {
+                //         keyboard->space = true;
+                //     }
+                //     break;
+                // case SDL_KEYUP:
+                //     cout << "some key is up\n";
+                //     keyboard->keys = SDL_GetKeyboardState(nullptr);
+                //     if (keyboard->keys[SDL_SCANCODE_UP]) {
+                //         cout << "<<<<< up is released\n";
+                //         keyboard->up = false;
+                //     }
+                //     if (keyboard->keys[SDL_SCANCODE_DOWN]) {
+                //         keyboard->down = false;
+                //     }
+                //     if (keyboard->keys[SDL_SCANCODE_RIGHT]) {
+                //         keyboard->right = false;
+                //     }
+                //     if (keyboard->keys[SDL_SCANCODE_LEFT]) {
+                //         keyboard->left = false;
+                //     }
+                //     if (keyboard->keys[SDL_SCANCODE_SPACE]) {
+                //         keyboard->space = false;
+                //     }
+                //     break;
                 case SDL_MOUSEBUTTONDOWN:
                     // This could be potential drag start so save x, y
                     // Drag will only be activated on next tick
@@ -194,6 +216,34 @@ class Event {
             }
 
         }
+   
+        keyboard->keys = SDL_GetKeyboardState(nullptr);
+        if (keyboard->keys[SDL_SCANCODE_UP]) {
+            keyboard->up = true;
+        } else {
+            keyboard->up = false;
+        }
+        if (keyboard->keys[SDL_SCANCODE_DOWN]) {
+            keyboard->down = true;
+        } else {
+            keyboard->down = false;
+        }
+        if (keyboard->keys[SDL_SCANCODE_RIGHT]) {
+            keyboard->right = true;
+        } else {
+            keyboard->right = false;
+        }
+        if (keyboard->keys[SDL_SCANCODE_LEFT]) {
+            keyboard->left = true;
+        } else {
+            keyboard->left = false;
+        }
+        if (keyboard->keys[SDL_SCANCODE_SPACE]) {
+            keyboard->space = true;
+        } else {
+            keyboard->space = false;
+        }
+
     }
 
 };

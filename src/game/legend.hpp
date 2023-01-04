@@ -18,7 +18,7 @@ class Legend: public Object {
     public:
 
     SDL_Renderer* renderer;
-    SDL_Texture* texture;
+    SDL_Texture* texture = NULL;
     SDL_Surface* surface;
     SDL_Rect frame;
 
@@ -60,16 +60,17 @@ class Legend: public Object {
 
         this->renderer = renderer;
 
-        position.x = frame.x = 0;
-        position.y = frame.y = 0;
-        position.w = frame.w = width * scale;
-        position.h = frame.h = height * scale;
-
-        surface = SDL_CreateRGBSurfaceWithFormat(0, width*scale, height*scale, 0, SDL_PIXELFORMAT_RGBA32);
+        frame.x = 0;
+        frame.y = 0;
+        frame.w = width * scale;
+        frame.h = height * scale;
+        setPosition(0, 0);
+        setSize(width * scale, height * scale);
+        surface = SDL_CreateRGBSurfaceWithFormat(0, getWidth(), getHeight(), 0, SDL_PIXELFORMAT_RGBA32);
 
         prepare();
 
-        drag = new Drag(&position, false, true);
+        drag = new Drag(getPosition(), false, true);
 
     }
     void setPixel(int x, int y, int red, int blue, int green) {
@@ -93,7 +94,7 @@ class Legend: public Object {
 
     void prepare() {
         if (texture!=NULL) {
-            printf("destroyed terrain texture\n");
+            printf("Destroyed legend texture\n");
             SDL_DestroyTexture(texture);
         }
         texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -104,10 +105,10 @@ class Legend: public Object {
         Mouse* mouse = state->event->mouse;
         if (this->map!=NULL) {
             if (mouse->leftClick || mouse->leftDragActive) {
-                if (mouse->inside(&position)) {
-                    // printf("click %d %d pos %d %d %d %d\n", mouse->x, mouse->y, position.x, position.y, position.w, position.h);
-                    state->camera->x = ((mouse->x-position.x)/this->scale) * (map->getWidth()/this->width) - state->camera->width/2; 
-                    state->camera->y = ((mouse->y-position.y)/this->scale) * (map->getHeight()/this->height) - state->camera->height/2;
+                if (mouse->inside(getPosition())) {
+                    // printf("click %d %d pos %d %d %d %d\n", mouse->x, mouse->y, getX(), getY(), position.w, position.h);
+                    state->camera->x = ((mouse->x-getX())/this->scale) * (map->getWidth()/this->width) - state->camera->width/2; 
+                    state->camera->y = ((mouse->y-getY())/this->scale) * (map->getHeight()/this->height) - state->camera->height/2;
                     // printf("Setting camera %d %d\n", state->camera->x, state->camera->y);
                 }
             }
@@ -120,12 +121,12 @@ class Legend: public Object {
             prepare();
         }
         
-        SDL_RenderCopy(renderer, texture, &frame, &position);
+        SDL_RenderCopyF(renderer, texture, &frame, getPosition());
 
         if (map!=NULL) {
             SDL_Rect scope;
-            scope.x = position.x + state->camera->x / (map->getWidth()/(this->width*this->scale));
-            scope.y = position.y + state->camera->y / (map->getHeight()/(this->height*this->scale));
+            scope.x = getX() + state->camera->x / (map->getWidth()/(this->width*this->scale));
+            scope.y = getY() + state->camera->y / (map->getHeight()/(this->height*this->scale));
             scope.w = state->camera->width / (map->getWidth()/(this->width*this->scale)); 
             scope.h = state->camera->height / (map->getHeight()/(this->height*this->scale)); 
             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 50);

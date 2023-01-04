@@ -50,7 +50,7 @@ class Map: public Object {
     vector<vector<Cell*>> grid;
     // vector<vector<int>> view;
     // layers[x][y] = layer
-    vector<vector<int>> layers;
+    //vector<vector<int>> layers;
 
 
     vector<Terrain*> terrains;
@@ -105,18 +105,18 @@ class Map: public Object {
     //     }
     // }
 
-    virtual int getWidth() {
+    virtual float getWidth() {
         return width*tileWidth*scale;
     }
-    virtual int getHeight() {
+    virtual float getHeight() {
         return height*tileHeight*scale;
     }
 
     virtual void render(State* state) {
-        SDL_Rect location;
+        SDL_FRect location;
         location.w = tileWidth*scale;
         location.h = tileHeight*scale;
-        SDL_Rect* position;
+        SDL_FRect* position;
         // I think we do not need to cycle through all view to check if it is visible
         // We simply need to calculate what region could be visible
         // For this we take camera region
@@ -144,7 +144,7 @@ class Map: public Object {
 
                         // printf("%d ", clip->getFrame(grid[x][y])->rect.x);
                         SDL_SetRenderDrawColor(image->renderer, 0, 0, 0, 255);
-                        SDL_RenderDrawRect(image->renderer, position);
+                        SDL_RenderDrawRectF(image->renderer, position);
                         SDL_SetRenderDrawColor(image->renderer, 0, 0, 0, 0);
 
                         Cell* cell = grid[x][y]; 

@@ -3,7 +3,7 @@ using namespace std;
 
 #include <game/window.hpp>
 
-#include <examples/map.hpp>
+#include <examples/war2.hpp>
 
 
 int main(int argc, char** argv){

@@ -19,8 +19,7 @@ class Text: public Object {
     string text;
     map<string, SDL_Texture*> cache;
     Text(SDL_Renderer* renderer, TTF_Font* font, string text="", int x=0, int y=0, SDL_Color color={255, 255, 255}) {
-        position.x = x;
-        position.y = y;
+        setPosition(x, y);
         this->color = color;
         this->font = font;
         this->renderer = renderer;
@@ -34,7 +33,10 @@ class Text: public Object {
                 //printf("Cache hit %s\n", text);
                 texture = cache[text];
                 this->text = text;
-                SDL_QueryTexture(texture, NULL, NULL, &position.w, &position.h);
+                int width;
+                int height;
+                SDL_QueryTexture(texture, NULL, NULL, &width, &height);
+                setSize(width, height);
                 return;
             }
         this->text = text;
@@ -43,8 +45,7 @@ class Text: public Object {
         if (surface==NULL) {
             printf("Failed to render text: %s", SDL_GetError());            
         }
-        position.w = surface->w;
-        position.h = surface->h;
+        setSize(surface->w, surface->h);
         texture = NULL;
         cache[text] = SDL_CreateTextureFromSurface(renderer, surface);
         SDL_FreeSurface(surface);
@@ -58,7 +59,7 @@ class Text: public Object {
     }
     
     void render(State* state) {
-        SDL_RenderCopy(renderer, texture, NULL, &position);
+        SDL_RenderCopyF(renderer, texture, NULL, getPosition());
     }  
 
     ~Text() {

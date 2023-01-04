@@ -10,12 +10,16 @@
 class Camera
 {
     public:
-    SDL_Rect result;
+    SDL_FRect result;
     int x=0;
     int y=0;
     int width;
     int height;
-    virtual bool isVisible(SDL_Rect* position) {
+    virtual void setSize(int width, int height) {
+        this->width = width;
+        this->height = height;
+    }
+    virtual bool isVisible(SDL_FRect* position) {
         if (position->x + position->w  > x && 
             position->y + position->h > y &&
             position->x < x + width && 
@@ -35,7 +39,7 @@ class Camera
     //     }
     //     return false;
     // }
-    virtual SDL_Rect* translate(SDL_Rect* position) {
+    virtual SDL_FRect* translate(SDL_FRect* position) {
         result.x = position->x - x; 
         result.y = position->y - y;
         result.w = position->w;

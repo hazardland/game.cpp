@@ -12,9 +12,9 @@ class Drag {
     bool dragRight = true;
     int dragStartX;
     int dragStartY;
-    SDL_Rect* position;
+    SDL_FRect* position;
     bool enabled = true;
-    Drag(SDL_Rect* position, bool dragLeft, bool dragRight) {
+    Drag(SDL_FRect* position, bool dragLeft, bool dragRight) {
         this->position = position;
         this->dragLeft = dragLeft;
         this->dragRight = dragRight;

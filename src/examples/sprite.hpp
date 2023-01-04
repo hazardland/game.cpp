@@ -16,7 +16,7 @@ using namespace std;
 #include <game/select.hpp>
 
 #include <examples/enum.h>
-#include <examples/unit.hpp>
+#include <examples/footman.hpp>
 
 
 class TestScene : public Scene {

@@ -45,8 +45,8 @@ class Image {
         int getHeight() {
             return height;
         }
-        void render(SDL_Rect* frame, SDL_Rect* position, SDL_RendererFlip flip = SDL_FLIP_NONE) {
-            SDL_RenderCopyEx(renderer, texture, frame, position, 0, NULL, flip);
+        void render(SDL_Rect* frame, SDL_FRect* position, SDL_RendererFlip flip = SDL_FLIP_NONE) {
+            SDL_RenderCopyExF(renderer, texture, frame, position, 0, NULL, flip);
         }
         ~Image() {
             SDL_DestroyTexture(texture);

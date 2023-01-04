@@ -20,7 +20,7 @@ class Rectangle: public Object {
     int alpha;
     bool visible = true;
 
-    Rectangle(SDL_Renderer* renderer, SDL_Color background, SDL_Color border={}) {
+    Rectangle(SDL_Renderer* renderer, SDL_Color border={}, SDL_Color background={}) {
         this->renderer = renderer;
         //this->color = SDL_Color(red, blue, green, alpha);
         this->background = background;
@@ -43,15 +43,19 @@ class Rectangle: public Object {
             // cout << "Drawing rectangle "<< position.x << " " << position.y << " " << position.w << " " << position.h << "\n";
             // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
-            SDL_SetRenderDrawColor(renderer, background.r, background.g, background.b, background.a);
-            SDL_RenderFillRect(renderer, &position);
+            if (background.a>0) {
+                SDL_SetRenderDrawColor(renderer, background.r, background.g, background.b, background.a);
+                SDL_RenderFillRectF(renderer, getPosition());
+            }
 
             if (border.a>0){
                 SDL_SetRenderDrawColor(renderer, border.r, border.g, border.b, border.a);
-                SDL_RenderDrawRect(renderer, &position);
+                SDL_RenderDrawRectF(renderer, getPosition());
             }
 
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+            if (background.a>0 || border.a>0){
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+            }
             //SDL_RenderSetScale(renderer, 1, 1);
         }
     }

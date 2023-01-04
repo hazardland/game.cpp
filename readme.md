@@ -1,6 +1,6 @@
 # Setup things
 This is for me because I every time forget how to setup dev env on windows
-![](/doc/images/main.png)
+![](/doc/images/intro.gif)
 
 ## Windows
 1. Follow msys64 installation instructions here https://code.visualstudio.com/docs/languages/cpp#_example-install-mingwx64
@@ -58,18 +58,17 @@ class Planet: public Object {
             sprite,
             1
         );
-        position.w = 200;
-        position.h = 200;        
+        setSize(200, 200);       
     }
 
     virtual void update(State* state) {
-        position.x = state->camera->width/2 - position.w/2; 
-        position.y = state->camera->height/2 - position.h/2;
+        setPosition(state->camera->width/2 - getWidth()/2, 
+                    state->camera->height/2 - getHeight()/2);
         animation->update(state->clock->delta);
     }
 
     virtual void render(State* state) {
-        animation->render(&position);
+        animation->render(getPosition());
     }
 
 };

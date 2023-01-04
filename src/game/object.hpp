@@ -13,22 +13,23 @@ using namespace std;
 
 /*
     All methods here work only for on screen position
-    Have your own int x, int y to track object's game world position 
+    Have your own float x, float y to track object's game world position 
 */
 class Object {
 
+    
     public:
 
-        int layer = -1;
+        SDL_FRect position;
+        float layer = -1;
 
         // To use this position as absolute position in conjuction with camera
         // Use ->render(camera->translate(object->position)) instead
         // But if you want to use translated position further in rendering
         // User SDL_Rect camera->result after camera->translate()
-        SDL_Rect position;
 
-        // int x;
-        // int y;
+        // float x;
+        // float y;
 
         virtual void update(State* state) {
 
@@ -36,36 +37,40 @@ class Object {
         virtual void render(State* state) {
 
         }
-        virtual void setPosition (int x, int y) {
+        virtual Object* setPosition (float x, float y) {
             position.x = x;
             position.y = y;
+            return this;
         }
-        virtual void setSize (int width, int height) {
+        virtual SDL_FRect* getPosition() {
+            return &position;
+        }
+        virtual void setSize (float width, float height) {
             position.w = width;
             position.h = height;
         }
-        virtual void setX (int x) {
+        virtual void setX (float x) {
             position.x = x;
         }
-        virtual int getX() {
+        virtual float getX() {
             return position.x;
         }
-        virtual void setY (int y) {
+        virtual void setY (float y) {
             position.y = y;
         }
-        virtual int getY() {
+        virtual float getY() {
             return position.y;
         }        
-        virtual void setWidth (int width) {
+        virtual void setWidth (float width) {
             position.w = width;
         }
-        virtual int getWidth() {
+        virtual float getWidth() {
             return position.w;
         }
-        virtual void setHeight (int height) {
+        virtual void setHeight (float height) {
             position.h = height;
         }
-        virtual int getHeight() {
+        virtual float getHeight() {
             return position.h;
         }
 
