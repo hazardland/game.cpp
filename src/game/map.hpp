@@ -11,7 +11,7 @@ using namespace std;
 #include <game/state.hpp>
 #include <game/text.hpp>
 #include <game/terrain.hpp>
-#include <game/legend.hpp>
+#include <game/minimap.hpp>
 #include <game/noise.h>
 
 // grid[x][y]->terrain->layer
@@ -37,8 +37,8 @@ class Map: public Object {
     int tileWidth;
     int tileHeight;
     float scale;
-    int width;
-    int height;
+    int worldWidth;
+    int worldHeight;
     bool debug = false;
 
     // Holds the image and a clip containing all view
@@ -55,21 +55,21 @@ class Map: public Object {
 
     vector<Terrain*> terrains;
     map<string, vector<int>> tiles;
-    Legend* legend;
+    Minimap* minimap;
 
     Map(Image* image, 
         int tileWidth, 
         int tileHeight, 
-        int width, 
-        int height,
+        int worldWidth, 
+        int worldHeight,
         float scale=1,
         Text* text = NULL
     ) {
         this->image = image;
         this->tileWidth = tileWidth;
         this->tileHeight = tileHeight;
-        this->width = width;
-        this->height = height;
+        this->worldWidth = worldWidth;
+        this->worldHeight = worldHeight;
         this->scale = scale;
         clip = new Clip(image, 
                             tileWidth, 
@@ -77,61 +77,66 @@ class Map: public Object {
                             1, 1, 
                             (image->getWidth()/tileWidth)*(image->getHeight()/tileHeight));
         
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < worldWidth; x++)
         {
             grid.push_back(vector<Cell*>());
-            for (int y = 0; y < height; y++) {
+            for (int y = 0; y < worldHeight; y++) {
                 grid[x].push_back(new Cell());
             }
-            // grid.push_back(vector<int>());
-            // view.push_back(vector<int>());
-            // for (int y = 0; y < height; y++)
-            // {
-            //     grid[x].push_back(0);
-            //     view[x].push_back(0);               
-            // }
         }
         this->text = text;
         this->text->color = SDL_Color(0, 0, 0);
     }
-    // bool canMove(Object* object, int x, int y) {
-    //     // check if place contians obstacle
-    //     if (object->layer!=NULL && grid[x][y]->terrain->layer!=object->layer) {
-    //         return false;
-    //     }
-    //     // check if something occupies same layer
-    //     if (grid[x][y]->objects.size()>0) {
+    bool canMove(Object* object, int x, int y) {
+        // Check if place contians obstacle
+        if (object->layer!=-1 && grid[x][y]->terrain->layer!=object->layer) {
+            return false;
+        }
+        // Check if something occupies same layer
+        if (grid[x][y]->objects.size()>0) {
 
-    //     }
-    // }
-
-    virtual float getWidth() {
-        return width*tileWidth*scale;
+        }
+        return true;
     }
+
+    /**
+     * @brief Returns total map width in pixels
+    */
+    virtual float getWidth() {
+        return worldWidth*tileWidth*scale;
+    }
+
+    /**
+     * @brief Returns total map height in pixels
+    */
     virtual float getHeight() {
-        return height*tileHeight*scale;
+        return worldHeight*tileHeight*scale;
     }
 
     virtual void render(State* state) {
+
+        Camera* camera = state->camera;
+
+        // Choose renderable tiles
+        // @todo Code can be optimized furzer
+        int xFrom = (camera->x / (tileWidth*scale));
+        int xTo = (camera->width / (tileWidth*scale)) + xFrom + 2;
+        int yFrom = (camera->y / (tileHeight*scale));
+        int yTo = (camera->height / (tileHeight*scale)) + yFrom + 2;
+        if (xFrom<0) xFrom = 0;
+        if (yFrom<0) yFrom = 0;
+        if (xTo>worldWidth) xTo = worldWidth;
+        if (yTo>worldHeight) yTo = worldHeight;
+        //printf("map render region: %d,%d x %d,%d\n", xFrom, yFrom, xTo, yTo);
+
         SDL_FRect location;
         location.w = tileWidth*scale;
         location.h = tileHeight*scale;
         SDL_FRect* position;
-        // I think we do not need to cycle through all view to check if it is visible
-        // We simply need to calculate what region could be visible
-        // For this we take camera region
-        int x_from = (state->camera->x/(tileWidth*scale));
-        int x_to = (state->camera->width/(tileWidth*scale)) + x_from + 2;
-        int y_from = (state->camera->y/(tileHeight*scale));
-        int y_to = (state->camera->height/(tileHeight*scale)) + y_from + 2;
-        if (x_from<0) x_from = 0;
-        if (y_from<0) y_from = 0;
-        if (x_to>width) x_to = width;
-        if (y_to>height) y_to = height;
-        //printf("map render region: %d,%d x %d,%d\n", x_from, y_from, x_to, y_to);
-        for (int x = x_from; x < x_to; x++)
+
+        for (int x = xFrom; x < xTo; x++)
         {
-            for (int y = y_from; y < y_to; y++)
+            for (int y = yFrom; y < yTo; y++)
             {
                 //grid[x][y]
                 location.x = x*tileWidth*scale;
@@ -172,22 +177,22 @@ class Map: public Object {
                         if (y!=0){
                             borders[1] = this->grid[x  ][y-1]->terrain->id;
                         }
-                        if (y!=0 && x<this->width-1) {
+                        if (y!=0 && x<worldWidth-1) {
                             borders[2] = this->grid[x+1][y-1]->terrain->id;
                         }
                         if (x!=0) {
                             borders[3] = this->grid[x-1][y  ]->terrain->id;
                         }
-                        if (x<this->width-1) {
+                        if (x<worldWidth-1) {
                             borders[5] = this->grid[x+1][y  ]->terrain->id;
                         }
-                        if (x!=0 && y<this->height-1) {
+                        if (x!=0 && y<worldHeight-1) {
                             borders[6] = this->grid[x-1][y+1]->terrain->id;
                         }
-                        if (y<this->height-1){
+                        if (y<worldHeight-1){
                             borders[7] = this->grid[x  ][y+1]->terrain->id;
                         }
-                        if (x<this->width-1 && y<this->height-1) {
+                        if (x<worldWidth-1 && y<worldHeight-1) {
                             borders[8] = this->grid[x+1][y+1]->terrain->id;
                         }
 
@@ -258,19 +263,24 @@ class Map: public Object {
         }            
     }
 
+    /**
+     * @brief Set terrain type for tile location
+    */
     void setTerrain(int x, int y, int type) {
         Terrain* terrain = terrains[type];
         grid[x][y]->terrain = terrain;
-        if (legend!=NULL) {
-            legend->setPixel(x, y, terrain->color[0], terrain->color[1], terrain->color[2]);
+        if (minimap!=NULL) {
+            minimap->setTerrain(x, y, terrain->color[0], terrain->color[1], terrain->color[2]);
         }
     }
-
-    void setLegend(Legend* legend) {
-        this->legend = legend;
+    
+    // Connect map with minimap
+    // Used for updating terrain when generating map
+    void setMinimap(Minimap* minimap) {
+        this->minimap = minimap;
     }
-
   
+    // Get random tile for a key
     int getTile(string key) {
         // cout << "requested tile " << key << "\n";        
         return tiles[key][random(0, tiles[key].size()-1)];        
@@ -303,8 +313,8 @@ class Map: public Object {
                    vector<float> ranges) {
 
         OpenSimplexNoise::Noise noise{seed};
-        for (int x=0; x<width; x++) {
-            for (int y=0; y<height; y++)
+        for (int x=0; x<worldWidth; x++) {
+            for (int y=0; y<worldHeight; y++)
             {
                 // alpha = (noise.eval(x*0.01, y*0.01) + 1) / 2.0  * 255.0;
                 // minimap->setPixel(x, y, 255, 255, 255, alpha);       
@@ -333,8 +343,8 @@ class Map: public Object {
                  vector<float> ranges) {
 
         OpenSimplexNoise::Noise noise{seed};
-        for (int x=0; x<width; x+=2) {
-            for (int y=0; y<height; y+=2)
+        for (int x=0; x<worldWidth; x+=2) {
+            for (int y=0; y<worldHeight; y+=2)
             {
                 // alpha = (noise.eval(x*0.01, y*0.01) + 1) / 2.0  * 255.0;
                 // minimap->setPixel(x, y, 255, 255, 255, alpha);       
@@ -361,8 +371,8 @@ class Map: public Object {
      * @brief Fill map by expanding edge strategy
     */
     void fillMap2() {
-        for (int x=0; x<width; x++) {
-            for (int y=0; y<height; y++) {
+        for (int x=0; x<worldWidth; x++) {
+            for (int y=0; y<worldHeight; y++) {
                 grid[x][y]->tile = getTile2(x, y);
                 grid[x][y]->rect = &clip->getFrame(grid[x][y]->tile)->rect;
             }
@@ -402,22 +412,22 @@ class Map: public Object {
         if (y!=0){
             borders[1] = this->grid[x  ][y-1]->terrain->id < type ? type-1 : type;
         }
-        if (y!=0 && x<this->width-1) {
+        if (y!=0 && x<worldWidth-1) {
             borders[2] = this->grid[x+1][y-1]->terrain->id < type ? type-1 : type;
         }
         if (x!=0) {
             borders[3] = this->grid[x-1][y  ]->terrain->id < type ? type-1 : type;
         }
-        if (x<this->width-1) {
+        if (x<worldWidth-1) {
             borders[5] = this->grid[x+1][y  ]->terrain->id < type ? type-1 : type;
         }
-        if (x!=0 && y<this->height-1) {
+        if (x!=0 && y<worldHeight-1) {
             borders[6] = this->grid[x-1][y+1]->terrain->id < type ? type-1 : type;
         }
-        if (y<this->height-1){
+        if (y<worldHeight-1){
             borders[7] = this->grid[x  ][y+1]->terrain->id < type ? type-1 : type;
         }
-        if (x<this->width-1 && y<this->height-1) {
+        if (x<worldWidth-1 && y<worldHeight-1) {
             borders[8] = this->grid[x+1][y+1]->terrain->id < type ? type-1 : type;
         }
 

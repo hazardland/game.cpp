@@ -9,19 +9,21 @@ using namespace std;
 #include <game/text.hpp>
 #include <game/fps.hpp>
 #include <game/map.hpp>
-#include <game/legend.hpp>
+#include <game/minimap.hpp>
 
 #include <examples/enum.h>
 #include <examples/footman.hpp>
+#include <examples/farm.hpp>
 
-int WIDTH = 128;
-int HEIGHT = 128;
+int WIDTH = 2000;
+int HEIGHT = 2000;
 int SPRITE_FOOTMAN_RED = 1;
+int SPRITE_HUMAN_FARM = 2;
 
 class MapScene : public Scene {
     using Scene::Scene;
     Map* map;
-    Legend* legend;
+    Minimap* minimap;
     TTF_Font* font;
     Text* fps;
     int ticks;
@@ -35,21 +37,195 @@ class MapScene : public Scene {
         map = new Map(
             new Image(renderer, "assets/sprites/winter.png"), 
             32, 32, 
-            WIDTH, HEIGHT, 
-            1,
+            WIDTH, HEIGHT, 1,
             new Text(renderer, font)
         );
 
-        legend = new Legend(renderer ,WIDTH, HEIGHT, 2, map);
-        map->setLegend(legend);
+        minimap = new Minimap(
+            renderer, 
+            200, 200, 
+            WIDTH, HEIGHT, 3, 
+            map
+        );
+
+        map->setMinimap(minimap);
         map->debug = false;
 
-        legend->setPosition(0, 0);
+        minimap->setPosition(0, 0);
 
-        objects.push_back(map);
-        objects.push_back(legend);
-        objects.push_back(fps);
+        objects.insert({map->getId(), map});
 
+        map->terrains = {
+            new Terrain(0, 0, {51, 51, 255}),
+            new Terrain(1, 1, {102, 178, 215}),
+            new Terrain(2, 1, {255, 255, 255})
+        };
+
+        map->tiles = {
+            // Base water
+            {{"0.0.0.0"}, {319, 320, 321, 319, 320, 321, 319, 320, 321, 319, 320, 321 , 322, 323, 324}},
+            {{"1.1.1.1"}, {331, 332, 333, 334, 331, 332, 333, 334, 331, 332, 333, 334, 331, 332, 333, 334, 331, 332, 333, 334 , 335, 336, 337, 338, 339}},
+            // Ice crossing water            
+            {"0.1.1.1", {199, 200}},
+            {"1.0.1.1", {201, 202}},
+            {"0.0.1.1", {203, 204, 205}},
+            {"1.1.0.1", {206, 207}},
+            {"0.1.0.1", {208, 209, 210}},
+            {"0.0.0.1", {212, 213}},
+            {"1.1.1.0", {214, 215}},
+            {"1.0.1.0", {217, 218, 219}},
+            {"0.0.1.0", {220, 221}},
+            {"1.1.0.0", {222, 223, 224}},
+            {"0.1.0.0", {225, 226}},
+            {"1.0.0.0", {227, 228}},
+            {"1.0.0.1", {174}}, //271
+            // Base ground
+            {"2.2.2.2", {349, 350, 351, 349, 350, 351, 349, 350, 351, 349, 350, 351 , 352, 353, 354, 355, 356, 357, 358, 359, 363}},
+            // Ground crossing ice
+            {"1.2.2.2", {259, 260}},
+            {"2.1.2.2", {261, 262}},
+            {"1.1.2.2", {263, 264, 265}},
+            {"2.2.1.2", {266, 267}},
+            {"1.2.1.2", {268, 269, 270}},
+            {"1.1.1.2", {273, 274}},
+            {"2.2.2.1", {275, 276}},
+            {"2.1.2.1", {279, 280, 281}},
+            {"1.1.2.1", {282, 283}},
+            {"2.2.1.1", {284, 285, 286}},
+            {"1.2.1.1", {287, 288}},
+            {"2.1.1.1", {289, 290}},
+            {"2.1.1.2", {174}}, //271
+            {"1.2.2.1", {278}} //271
+        };
+
+
+        generate();
+
+        sprites[SPRITE_FOOTMAN_RED] = (new Sprite(new Image(renderer, "assets/sprites/footman.png"),
+                                    72,
+                                    72,
+                                    100,
+                                    true))
+        ->addClip (WALK+UP, 1, 2, 4, false, false)
+        ->addClip (WALK+DOWN, 5, 2, 4, false, false)
+        ->addClip (WALK+RIGHT, 3, 2, 4, false, false)
+        ->addClip (WALK+LEFT, 3, 2, 4, true, false)
+        ->addClip (WALK+UP+RIGHT, 2, 2, 4, false, false)
+        ->addClip (WALK+DOWN+RIGHT, 4, 2, 4, false, false)
+        ->addClip (WALK+UP+LEFT, 2, 2, 4, true, false)
+        ->addClip (WALK+DOWN+LEFT, 4, 1, 4, true, false)
+        ->addClip (STAND+UP, 1, 1, 1, false, false)
+        ->addClip (STAND+DOWN, 5, 1, 1, false, false)
+        ->addClip (STAND+RIGHT, 3, 1, 1, false, false)
+        ->addClip (STAND+LEFT, 3, 1, 1, true, false)
+        ->addClip (STAND+UP+RIGHT, 2, 1, 1, false, false)
+        ->addClip (STAND+DOWN+RIGHT, 4, 1, 1, false, false)
+        ->addClip (STAND+UP+LEFT, 2, 1, 1, true, false)
+        ->addClip (STAND+DOWN+LEFT, 4, 1, 1, true, false)
+        ->addClip (ATTACK+UP, 1, 6, 4, false, false)
+        ->addClip (ATTACK+DOWN, 5, 6, 4, false, false)
+        ->addClip (ATTACK+RIGHT, 3, 6, 4, false, false)
+        ->addClip (ATTACK+LEFT, 3, 6, 4, true, false)
+        ->addClip (ATTACK+UP+RIGHT, 2, 6, 4, false, false)
+        ->addClip (ATTACK+DOWN+RIGHT, 4, 6, 4, false, false)
+        ->addClip (ATTACK+UP+LEFT, 2, 6, 4, true, false)
+        ->addClip (ATTACK+DOWN+LEFT, 4, 6, 4, true, false);
+
+        sprites[SPRITE_HUMAN_FARM] = (new Sprite(new Image(renderer, "assets/sprites/farm.png"),
+                                    64,
+                                    64,
+                                    100,
+                                    true))->addClip(1, 1, 1);
+
+        for (int x=0; x<100*128; x+=128) {
+            for (int y=0; y<100*128; y+=128) {
+                Farm* farm = new Farm(sprites[SPRITE_HUMAN_FARM]);
+                farm->setMinimap(minimap)->setPosition(x, y); 
+                objects.insert({farm->getId(), farm});
+
+            }
+        }
+
+        for (int x=0; x<1*32; x+=32) {
+            for (int y=0; y<1*32; y+=32) {
+                Footman* footman = new Footman(sprites[SPRITE_FOOTMAN_RED]);
+                footman->setMap(map)
+                        ->setMinimap(minimap)
+                        ->setPosition(x, y); 
+                objects.insert({footman->getId(), footman});
+
+            }
+        }
+
+        objects.insert({minimap->getId(), minimap});
+        objects.insert({fps->getId(), fps});
+
+    }
+
+    void generate() {
+        srand(clock());
+        map->generate2(rand(), 0.05, {0.3, 0.55, 1});
+        // map->import(
+        //     {
+        //         {0,1,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        //         {1,1,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        //         {0,0,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        //         {1,1,1,1,0,0,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0},
+        //         {0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0},
+        //         {0,0,0,0,0,0,1,1,0,0,0,1,1,1,1,1,1,1,1,0,0},
+        //         {1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,0,0},
+        //         {1,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0},
+        //         {0,0,0,0,0,0,0,0,0,1,0,0,0,1,1,1,1,0,0,0,0},
+        //         {0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        //         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        //         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        //         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0},
+        //         {0,0,0,0,0,0,0,0,1,0,0,0,0,1,1,1,1,0,0,0,0},
+        //         {0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,1,0,0,0,0},
+        //         {0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,0,0},
+        //         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        //         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        //         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        //         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+        //     }
+        // );
+        map->fillMap2();
+    }
+
+    // virtual void update(State* state) {
+
+    //     // Keyboard* keyboard = state->event->keyboard; 
+
+    //     // if (keyboard->down) {
+    //     //     state->camera->y += 50;
+    //     // }
+    //     // if (keyboard->up) {
+    //     //     state->camera->y -= 50;
+    //     // }
+    //     // if (keyboard->right) {
+    //     //     state->camera->x += 50;
+    //     // }
+    //     // if (keyboard->left) {
+    //     //     state->camera->x -= 50;
+    //     // }
+
+    //     // if (keyboard->space) {
+    //     //     generate();
+    //     // }
+
+    //     Scene::update(state);
+
+    // }
+
+    // virtual void render(State* state){
+    //     clear();
+    //     process(state);
+    //     display();
+    // }
+
+};
+
+#endif
 
 // /**
 
@@ -103,147 +279,3 @@ class MapScene : public Scene {
 
 
 // */
-        map->terrains = {
-            new Terrain(0, 0, {51, 51, 255}),
-            new Terrain(1, 1, {102, 178, 215}),
-            new Terrain(2, 1, {255, 255, 255})
-        };
-
-        map->tiles = {
-            // Base water
-            {{"0.0.0.0"}, {319, 320, 321, 319, 320, 321, 319, 320, 321, 319, 320, 321 , 322, 323, 324}},
-            {{"1.1.1.1"}, {331, 332, 333, 334, 331, 332, 333, 334, 331, 332, 333, 334, 331, 332, 333, 334, 331, 332, 333, 334 , 335, 336, 337, 338, 339}},
-            // Ice crossing water            
-            {"0.1.1.1", {199, 200}},
-            {"1.0.1.1", {201, 202}},
-            {"0.0.1.1", {203, 204, 205}},
-            {"1.1.0.1", {206, 207}},
-            {"0.1.0.1", {208, 209, 210}},
-            {"0.0.0.1", {212, 213}},
-            {"1.1.1.0", {214, 215}},
-            {"1.0.1.0", {217, 218, 219}},
-            {"0.0.1.0", {220, 221}},
-            {"1.1.0.0", {222, 223, 224}},
-            {"0.1.0.0", {225, 226}},
-            {"1.0.0.0", {227, 228}},
-            {"1.0.0.1", {174}}, //271
-            // Base ground
-            {"2.2.2.2", {349, 350, 351, 349, 350, 351, 349, 350, 351, 349, 350, 351 , 352, 353, 354, 355, 356, 357, 358, 359, 363}},
-            // Ground crossing ice
-            {"1.2.2.2", {259, 260}},
-            {"2.1.2.2", {261, 262}},
-            {"1.1.2.2", {263, 264, 265}},
-            {"2.2.1.2", {266, 267}},
-            {"1.2.1.2", {268, 269, 270}},
-            {"1.1.1.2", {273, 274}},
-            {"2.2.2.1", {275, 276}},
-            {"2.1.2.1", {279, 280, 281}},
-            {"1.1.2.1", {282, 283}},
-            {"2.2.1.1", {284, 285, 286}},
-            {"1.2.1.1", {287, 288}},
-            {"2.1.1.1", {289, 290}},
-            {"2.1.1.2", {174}}, //271
-            {"1.2.2.1", {278}} //271
-        };
-
-
-        generate();
-
-        sprites[SPRITE_FOOTMAN_RED] = (new Sprite(new Image(renderer, "assets/sprites/footman.png"),
-                                    72,
-                                    72,
-                                    100,
-                                    true))
-        ->addClip (WALK+UP, 1, 2, 4, true, false)
-        ->addClip (WALK+DOWN, 5, 2, 4, false, false)
-        ->addClip (WALK+RIGHT, 3, 2, 4, false, false)
-        ->addClip (WALK+LEFT, 3, 2, 4, true, false)
-        ->addClip (WALK+UP+RIGHT, 2, 2, 4, false, false)
-        ->addClip (WALK+DOWN+RIGHT, 4, 2, 4, false, false)
-        ->addClip (WALK+UP+LEFT, 2, 2, 4, true, false)
-        ->addClip (WALK+DOWN+LEFT, 4, 1, 4, true, false)
-        ->addClip (STAND+UP, 1, 1, 1, false, false)
-        ->addClip (STAND+DOWN, 5, 1, 1, false, false)
-        ->addClip (STAND+RIGHT, 3, 1, 1, false, false)
-        ->addClip (STAND+LEFT, 3, 1, 1, true, false)
-        ->addClip (STAND+UP+RIGHT, 2, 1, 1, false, false)
-        ->addClip (STAND+DOWN+RIGHT, 4, 1, 1, false, false)
-        ->addClip (STAND+UP+LEFT, 2, 1, 1, true, false)
-        ->addClip (STAND+DOWN+LEFT, 4, 1, 1, true, false)
-        ->addClip (ATTACK+UP, 1, 6, 4, false, false)
-        ->addClip (ATTACK+DOWN, 5, 6, 4, false, false)
-        ->addClip (ATTACK+RIGHT, 3, 6, 4, false, false)
-        ->addClip (ATTACK+LEFT, 3, 6, 4, true, false)
-        ->addClip (ATTACK+UP+RIGHT, 2, 6, 4, false, false)
-        ->addClip (ATTACK+DOWN+RIGHT, 4, 6, 4, false, false)
-        ->addClip (ATTACK+UP+LEFT, 2, 6, 4, true, false)
-        ->addClip (ATTACK+DOWN+LEFT, 4, 6, 4, true, false);
-
-        objects.push_back((new Footman(sprites[SPRITE_FOOTMAN_RED]))->setPosition(width/2,height/2));
-
-    }
-
-    void generate() {
-        srand(clock());
-        map->generate2(rand(), 0.05, {0.3, 0.55, 1});
-        map->import(
-            {
-                {0,1,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {1,1,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {1,1,1,1,0,0,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0},
-                {0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0},
-                {0,0,0,0,0,0,1,1,0,0,0,1,1,1,1,1,1,1,1,0,0},
-                {1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,0,0},
-                {1,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,1,0,0,0,1,1,1,1,0,0,0,0},
-                {0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,1,0,0,0,0,1,1,1,1,0,0,0,0},
-                {0,0,0,0,0,0,0,1,1,1,0,0,0,1,1,1,1,0,0,0,0},
-                {0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,1,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-            }
-        );
-        map->fillMap2();
-    }
-
-    // virtual void update(State* state) {
-
-    //     // Keyboard* keyboard = state->event->keyboard; 
-
-    //     // if (keyboard->down) {
-    //     //     state->camera->y += 50;
-    //     // }
-    //     // if (keyboard->up) {
-    //     //     state->camera->y -= 50;
-    //     // }
-    //     // if (keyboard->right) {
-    //     //     state->camera->x += 50;
-    //     // }
-    //     // if (keyboard->left) {
-    //     //     state->camera->x -= 50;
-    //     // }
-
-    //     // if (keyboard->space) {
-    //     //     generate();
-    //     // }
-
-    //     Scene::update(state);
-
-    // }
-
-    // virtual void render(State* state){
-    //     clear();
-    //     process(state);
-    //     display();
-    // }
-
-};
-
-#endif

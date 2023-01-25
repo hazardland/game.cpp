@@ -36,13 +36,13 @@ class Sprite {
         this->image = image;
         this->readVertically = readVertically;
     }
-    Sprite* addClip(int clipName,
-                 int startRow,
-                 int startCell,
-                 int frameCount,
+    Sprite* addClip(int clipId=1,
+                 int startRow=1,
+                 int startCell=1,
+                 int frameCount=1,
                  bool flipX=false,
                  bool flipY=false) {
-        clips[clipName] = new Clip(image, 
+        clips[clipId] = new Clip(image, 
                                    frameWidth, 
                                    frameHeight, 
                                    startRow, startCell, 
@@ -50,6 +50,12 @@ class Sprite {
                                    framePause, 
                                    flipX, flipY, readVertically);
         return this;
+    }
+    Clip* getClip(int clipId) {
+        return clips[clipId];
+    }
+    SDL_Rect* getRect(int clipId=1, int frameIndex=0) {
+        return getClip(clipId)->getFrame(frameIndex)->getRect();
     }
     ~Sprite() {
         delete image;

@@ -6,7 +6,6 @@
 #include <game/event.hpp>
 #include <game/camera.hpp>
 
-
 /**
  * @brief Manage state in one object
  * 

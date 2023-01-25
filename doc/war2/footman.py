@@ -1,6 +1,8 @@
 import pygame
 import game
 
+BLUE = ((208, 212), (209, 213), (210, 214), (211, 215))
+
 class Sprite(game.Sprite):
     def __init__(self, scene, replace):
         super().__init__('./assets/sprites/footman.png',

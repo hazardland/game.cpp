@@ -27,8 +27,7 @@ class Scene {
         SDL_Window *window;
 
         map<int, Sprite*> sprites;
-        vector<Object*> objects;
-
+        map<int, Object*> objects;
 
         Scene(SDL_Window* window, int width=0, int height=0) {
 
@@ -84,14 +83,15 @@ class Scene {
 
 
         virtual void update(State* state) {
-            for (auto &object: objects) {
+            for (auto const& [id, object] : objects)
+            {
                 object->update(state);
             }
         }
 
         virtual void render(State* state) {
             clear();
-            process(state);
+            renderObjects(state);
             display();
         }
 
@@ -99,8 +99,9 @@ class Scene {
             SDL_RenderClear(renderer);
         }
 
-        virtual void process(State* state) {
-            for (auto &object: objects) {
+        virtual void renderObjects(State* state) {
+            for (auto const& [id, object] : objects)
+            {
                 object->render(state);
             }
         }

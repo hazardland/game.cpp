@@ -1,36 +1,36 @@
-. Fetch mouse.x mouse.y
+. Select objects
+. Center camera
+. Should objects have id?
+. Where is global object storage? in Scene
+. Object destroy should remove objects
+. Select objects
+. Delete objects
+. Create objects
+. Change terrain
+. Collision rectangle, Selection rectangle, render frame
 
-    -- On mouse down
-        drag.startX = input.x
-        drag.startY = input.y
+So what I do have now is object->position
+And I render body into position rectangle
+But what I should have is a getRenderRectangle()
 
-    -- On mouse up
-        if drag.active
-         
-            ended=True
-            active=False
-        
-        else if -- !drag.active && 
-           !drag.ended && 
-           drag.startX>-1 && 
-           drag.startY>-1 && 
-           (drag.startX!=input.x || drag.startY!=input.y)
-        drag.active=True
-        
-        else
-            click = true
-            drag.strartX = -1
-            drag.startY = -1
-    
-    XX -- On mouse move
-    XX    if drag.ended:
-    XX        startX=-1
-    XX        startY=-1
+getCollisionRect() - Gets collision rect 
+getRenderRect() - Get render rect to check where are we rendering
+getPositionRect() - Get position rectangle
+getSelectionRect() - Get the selection rectangle
 
-    input.drag(active=False, ended=False, startX, startY)
 
-+ Draw FPS
-. Draw Map
-. Implement Camera
+ახლა მაქვს getPoisition()
+რომელსაც იყენებს თვითონ ობიექტი რომ გაიგოს უნდა დაიხატოს თუ არ
+
+უნდა გადავარჩიო რომელი მჭირდება მოკლედ და გავიაზრო რომელი რას აკეთებს
+ეს იდეები მოვიდა ფაქტორიოდან
+
+ადრეც ვხვდებოდი რომ რაც რენდერდება სხვა არის და პოზიცია შეიძლება პატარა იყოს
+მინიმუმ ეს ორი უნდა განვასხვავო
+პოზიცია არის უფრო პერსონაჟის ფეხები, რუკასთან შეხების ადგილი
+
+რატომ განსხვავდება Collision-ი პოზიციისგან?
+
+Old
+-------------
 . How to use SDL_SetPaletteColors(surface->format->palette, newColors, startIndex, endIndex)
-. Make better Rectangle class with fill and border

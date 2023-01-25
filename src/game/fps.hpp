@@ -10,7 +10,7 @@ class Fps: public Text {
     int ticks = 0;
     virtual void update(State* state) {
         if (SDL_GetTicks()-ticks>500) {
-            setText(to_string(state->clock->fps) + " FPS");
+            setText(to_string(state->clock->fps) + " FPS / DELTA "+to_string(state->clock->delta));
             setX((float)state->camera->width - getWidth()-5);
             ticks = SDL_GetTicks();
         }

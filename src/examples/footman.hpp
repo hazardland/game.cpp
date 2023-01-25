@@ -9,28 +9,60 @@ using namespace std;
 #include <game/object.hpp>
 #include <game/animation.hpp>
 #include <game/rectangle.hpp>
+#include <game/map.hpp>
+#include <game/minimap.hpp>
 
 #include <examples/enum.h>
 
+/*
+    The object is pretty complicated
+    I need to come up with the way to standartize it
+    The code of framework envovleved a lot
+
+*/
 class Footman: public Object {
     public:
         Animation* body;
         Rectangle* outline;
-        int speed = 20;
+        int maxSpeed = 100;
+        int speed = 99;
         int mode = STAND;
         int modeX = RIGHT;
         int modeY = DOWN;
+        int cameraEdge = 100;
+        int cameraStep = 1;
+        bool cameraScroll = true; 
+        Map* map;
+        Minimap* minimap;
         Footman(Sprite* sprite) {
             // cout << "Creating footman\n";
-
             setSize(72, 72);
-
             // setPosition(x, y);
             body = new Animation(sprite, mode+modeX+modeY);
-            body->pause = 1000;
+            body->pause = 0;
             outline = new Rectangle(sprite->image->renderer);
-            outline->setSize(getWidth(), getHeight());
-            outline->border = SDL_Color{161, 195, 69, 100};
+            outline->setSize(getWidth()/3, getHeight()/3);
+            outline->border = SDL_Color{161, 195, 69, 255};
+        }
+        Footman* setMap(Map* map) {
+            this->map = map;
+            return this;
+        }
+        Footman* setMinimap(Minimap* minimap) {
+            this->minimap = minimap;
+            minimap->addObject(this);
+            return this;
+        }
+        virtual Uint32 getMinimapColor(SDL_PixelFormat* format) {
+            return SDL_MapRGBA(format, 255, 255, 0, 255);
+        }
+        virtual SDL_Rect getMinimapRect() {
+            return {
+                int(getX()/minimap->widthRatio()), 
+                int(getY())/minimap->heightRatio(),
+                int(getWidth()/minimap->widthRatio()),
+                int(getHeight()/minimap->heightRatio())
+            };
         }
         virtual void rotate(float x, float y) {
             if (x!=0 || y!=0) {
@@ -54,9 +86,10 @@ class Footman: public Object {
                 }
             }
         }
+        // Speed concept needs to be solved
+        // Here for example we have maximum speed 100
         virtual void move(int delta, float x, float y) {
-            position.x += (x*delta)/(100/speed); 
-            position.y += (y*delta)/(100/speed);       
+            addPosition ((x*delta)/(maxSpeed+1-speed), (y*delta)/(maxSpeed+1-speed));
         }
         virtual void update(State* state) {
             //cout << "Updating footman\n";
@@ -86,31 +119,33 @@ class Footman: public Object {
                 } else {
                     mode = WALK;
                     move(state->clock->delta, x, y);
+                    cameraFollow(state->camera);
                 }
             }
             body->play(mode+modeX+modeY);
             body->update(state->clock->delta);
         }
+        virtual void cameraFollow(Camera* camera) {
+            if (getY() - camera->y < cameraEdge) {
+                camera->y -= cameraEdge - (getY() - camera->y);
+            }
+            if (getX() - camera->x < cameraEdge) {
+                camera->x -= cameraEdge - (getX() - camera->x);
+            }
+            if (camera->y + camera->height - getY() - getWidth() < cameraEdge) {
+                camera->y += cameraEdge - (camera->y + camera->height - getY() - getWidth());
+            }
+            if (camera->x + camera->width - getX() - getHeight() < cameraEdge) {
+                camera->x += cameraEdge - (camera->x + camera->width - getX() - getHeight());
+            }
+        }
         virtual void render(State* state) {
             Camera* camera = state->camera;
             if (camera->isVisible(getPosition())) {
-                if (getY()-camera->y<200) {
-                    camera->y--;
-                }
-                if (getX()-camera->x<200) {
-                    camera->x--;
-                }
-                if (camera->y+camera->height-getY()<200) {
-                    camera->y++;
-                }
-                if (camera->x+camera->width-getX()<200) {
-                    camera->x++;
-                }
                 SDL_FRect* location = camera->translate(getPosition());
+                outline->setPosition(location->x+25, location->y+30);
+                outline->render(state);
                 body->render(location);
-                //setPosition(location->x, location->y);
-                outline->setPosition(location->x, location->y);
-                outline->render(state);                
             }
         }
 

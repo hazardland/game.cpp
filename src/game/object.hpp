@@ -17,11 +17,13 @@ using namespace std;
 */
 class Object {
 
+        SDL_FRect position;
     
     public:
+        
+        static int count;    
 
-        SDL_FRect position;
-        float layer = -1;
+        int layer = -1;
 
         // To use this position as absolute position in conjuction with camera
         // Use ->render(camera->translate(object->position)) instead
@@ -30,6 +32,20 @@ class Object {
 
         // float x;
         // float y;
+        
+        int id = 0;
+
+        void setId() {
+            if (id==0) {
+                Object::count++;
+                id = Object::count;
+            }
+        }
+
+        int getId() {
+            setId();
+            return id;
+        }
 
         virtual void update(State* state) {
 
@@ -44,6 +60,10 @@ class Object {
         }
         virtual SDL_FRect* getPosition() {
             return &position;
+        }
+        virtual void addPosition (float x, float y) {
+            position.x += x; 
+            position.y += y; 
         }
         virtual void setSize (float width, float height) {
             position.w = width;
@@ -73,7 +93,18 @@ class Object {
         virtual float getHeight() {
             return position.h;
         }
+        virtual bool hasMinimap() {
+            return false;
+        }
+        virtual Uint32 getMinimapColor(SDL_PixelFormat* format) {
+            return 0;
+        }
+        virtual SDL_Rect getMinimapRect() {
+            return {0,0,0,0};
+        }
 
 };
+
+int Object::count = 0;
 
 #endif
