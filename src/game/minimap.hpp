@@ -229,14 +229,19 @@ class Minimap: public Object {
     }
 
     bool isVisible(SDL_Rect* position) {
-        if (position->x + position->w  > frame.x && 
+        return position->x + position->w > frame.x &&
             position->y + position->h > frame.y &&
-            position->x < frame.x + frame.w && 
-            position->y < frame.y + frame.h
-        ) {
-            return true;
-        }
-        return false;
+            position->x < frame.x + frame.w &&
+            position->y < frame.y + frame.h;        
+        // if (position->x + position->w  > frame.x && 
+        //     position->y + position->h > frame.y &&
+        //     position->x < frame.x + frame.w && 
+        //     position->y < frame.y + frame.h
+        // ) {
+        //     return true;
+        // }
+        // return false;
+
     }
     
     void translate(SDL_Rect* position) {

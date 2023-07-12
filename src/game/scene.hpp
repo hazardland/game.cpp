@@ -91,22 +91,22 @@ class Scene {
 
         virtual void render(State* state) {
             clear();
-            renderObjects(state);
-            display();
+            build(state);
+            present();
         }
 
         virtual void clear() {
             SDL_RenderClear(renderer);
         }
 
-        virtual void renderObjects(State* state) {
+        virtual void build(State* state) {
             for (auto const& [id, object] : objects)
             {
                 object->render(state);
             }
         }
 
-        virtual void display(int delay=1) {
+        virtual void present(int delay=1) {
             SDL_RenderPresent(renderer);
             SDL_Delay(delay);
         }

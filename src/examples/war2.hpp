@@ -135,7 +135,7 @@ class MapScene : public Scene {
                                     64,
                                     64,
                                     100,
-                                    true))->addClip(1, 1, 1);
+                                    true))->addClip();
 
         for (int x=0; x<100*128; x+=128) {
             for (int y=0; y<100*128; y+=128) {
@@ -219,7 +219,7 @@ class MapScene : public Scene {
 
     // virtual void render(State* state){
     //     clear();
-    //     process(state);
+    //     build(state);
     //     display();
     // }
 

@@ -18,6 +18,9 @@ using namespace std;
 class Object {
 
         SDL_FRect position;
+        
+        // SDL_FRect output;
+        // SDL_FRect hitbox;
     
     public:
         
