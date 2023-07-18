@@ -75,6 +75,7 @@ class Window: public Screen {
     }
 
     void setScene(Scene* scene) {
+        state->renderer = scene->renderer;
         this->scene = scene;
         SDL_GetWindowSize(window, &scene->width, &scene->height);
     }

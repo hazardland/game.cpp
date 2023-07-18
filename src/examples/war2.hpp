@@ -37,7 +37,7 @@ class MapScene : public Scene {
         map = new Map(
             new Image(renderer, "assets/sprites/winter.png"), 
             32, 32, 
-            WIDTH, HEIGHT, 1,
+            WIDTH, HEIGHT, 1, 3,
             new Text(renderer, font)
         );
 
@@ -137,10 +137,10 @@ class MapScene : public Scene {
                                     100,
                                     true))->addClip();
 
-        for (int x=0; x<100*128; x+=128) {
-            for (int y=0; y<100*128; y+=128) {
+        for (int x=128; x<100*128; x+=128) {
+            for (int y=128; y<100*128; y+=128) {
                 Farm* farm = new Farm(sprites[SPRITE_HUMAN_FARM]);
-                farm->setMinimap(minimap)->setPosition(x, y); 
+                farm->setMinimap(minimap)->setMap(map)->setPosition(x, y); 
                 objects.insert({farm->getId(), farm});
 
             }

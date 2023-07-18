@@ -2,7 +2,7 @@
 #define GAME_MAP
 
 using namespace std;
-
+#include <list>
 #include <stdio.h>
 
 #include <game/object.hpp>
@@ -17,14 +17,28 @@ using namespace std;
 // grid[x][y]->terrain->layer
 // grid[x][y]->tile
 // grid[x][y]->object
+// class Cell {
+//     public:
+//     int tile;
+//     Terrain* terrain;
+//     map<int, Object*> objects;
+//     SDL_Rect* rect;
+// };
+
+
 class Cell {
     public:
-    int tile;
-    Terrain* terrain;
-    map<int, Object*> objects;
-    SDL_Rect* rect;
-};
 
+        int tile;
+        Terrain* terrain;
+        SDL_Rect* rect;
+
+        vector<list<Object*>> objects;
+
+        Cell(int layers) : objects(layers) {
+            // The 'objects' vector is initialized with 'layers' number of empty lists.
+        }
+};
 
 
 /**
@@ -36,9 +50,9 @@ class Map: public Object {
     public:
     int tileWidth;
     int tileHeight;
-    float scale;
-    int worldWidth;
-    int worldHeight;
+    float tileScale;
+    int tilesPerWidth;
+    int tilesPerHeight;
     bool debug = false;
 
     // Holds the image and a clip containing all view
@@ -60,57 +74,59 @@ class Map: public Object {
     Map(Image* image, 
         int tileWidth, 
         int tileHeight, 
-        int worldWidth, 
-        int worldHeight,
-        float scale=1,
+        int tilesPerWidth, 
+        int tilesPerHeight,
+        float tileScale=1,
+        int layerCount=3,
         Text* text = NULL
     ) {
         this->image = image;
         this->tileWidth = tileWidth;
         this->tileHeight = tileHeight;
-        this->worldWidth = worldWidth;
-        this->worldHeight = worldHeight;
-        this->scale = scale;
+        this->tilesPerWidth = tilesPerWidth;
+        this->tilesPerHeight = tilesPerHeight;
+        this->tileScale = tileScale;
         clip = new Clip(image, 
                             tileWidth, 
                             tileHeight, 
                             1, 1, 
                             (image->getWidth()/tileWidth)*(image->getHeight()/tileHeight));
         
-        for (int x = 0; x < worldWidth; x++)
+        for (int x = 0; x < tilesPerWidth; x++)
         {
             grid.push_back(vector<Cell*>());
-            for (int y = 0; y < worldHeight; y++) {
-                grid[x].push_back(new Cell());
+            for (int y = 0; y < tilesPerHeight; y++) {
+                grid[x].push_back(new Cell(layerCount));
             }
         }
         this->text = text;
         this->text->color = SDL_Color(0, 0, 0);
     }
-    bool canMove(Object* object, int x, int y) {
-        // Check if place contians obstacle
-        if (object->layer!=-1 && grid[x][y]->terrain->layer!=object->layer) {
-            return false;
-        }
-        // Check if something occupies same layer
-        if (grid[x][y]->objects.size()>0) {
 
-        }
-        return true;
-    }
+    // bool canMove(Object* object, int x, int y) {
+    //     // Check if place contians obstacle
+    //     if (object->layer!=-1 && grid[x][y]->terrain->layer!=object->layer) {
+    //         return false;
+    //     }
+    //     // Check if something occupies same layer
+    //     if (grid[x][y]->objects.size()>0) {
+
+    //     }
+    //     return true;
+    // }
 
     /**
      * @brief Returns total map width in pixels
     */
     virtual float getWidth() {
-        return worldWidth*tileWidth*scale;
+        return tilesPerWidth*tileWidth*tileScale;
     }
 
     /**
      * @brief Returns total map height in pixels
     */
     virtual float getHeight() {
-        return worldHeight*tileHeight*scale;
+        return tilesPerHeight*tileHeight*tileScale;
     }
 
     virtual void render(State* state) {
@@ -119,28 +135,28 @@ class Map: public Object {
 
         // Choose renderable tiles
         // @todo Code can be optimized furzer
-        int xFrom = (camera->x / (tileWidth*scale));
-        int xTo = (camera->width / (tileWidth*scale)) + xFrom + 2;
-        int yFrom = (camera->y / (tileHeight*scale));
-        int yTo = (camera->height / (tileHeight*scale)) + yFrom + 2;
-        if (xFrom<0) xFrom = 0;
-        if (yFrom<0) yFrom = 0;
-        if (xTo>worldWidth) xTo = worldWidth;
-        if (yTo>worldHeight) yTo = worldHeight;
-        //printf("map render region: %d,%d x %d,%d\n", xFrom, yFrom, xTo, yTo);
+        int xTileFrom = (camera->x / (tileWidth*tileScale));
+        int xTileTo = (camera->width / (tileWidth*tileScale)) + xTileFrom + 2;
+        int yTileFrom = (camera->y / (tileHeight*tileScale));
+        int yTileTo = (camera->height / (tileHeight*tileScale)) + yTileFrom + 2;
+        if (xTileFrom<0) xTileFrom = 0;
+        if (yTileFrom<0) yTileFrom = 0;
+        if (xTileTo>tilesPerWidth) xTileTo = tilesPerWidth;
+        if (yTileTo>tilesPerHeight) yTileTo = tilesPerHeight;
+        //printf("map render region: %d,%d x %d,%d\n", xTileFrom, yTileFrom, xTileTo, yTileTo);
 
         SDL_FRect location;
-        location.w = tileWidth*scale;
-        location.h = tileHeight*scale;
+        location.w = tileWidth*tileScale;
+        location.h = tileHeight*tileScale;
         SDL_FRect* position;
 
-        for (int x = xFrom; x < xTo; x++)
+        for (int x = xTileFrom; x < xTileTo; x++)
         {
-            for (int y = yFrom; y < yTo; y++)
+            for (int y = yTileFrom; y < yTileTo; y++)
             {
                 //grid[x][y]
-                location.x = x*tileWidth*scale;
-                location.y = y*tileHeight*scale;
+                location.x = x*tileWidth*tileScale;
+                location.y = y*tileHeight*tileScale;
                 if (state->camera->isVisible(&location)) {
                     position = state->camera->translate(&location);
                     image->render(grid[x][y]->rect, position);
@@ -177,22 +193,22 @@ class Map: public Object {
                         if (y!=0){
                             borders[1] = this->grid[x  ][y-1]->terrain->id;
                         }
-                        if (y!=0 && x<worldWidth-1) {
+                        if (y!=0 && x<tilesPerWidth-1) {
                             borders[2] = this->grid[x+1][y-1]->terrain->id;
                         }
                         if (x!=0) {
                             borders[3] = this->grid[x-1][y  ]->terrain->id;
                         }
-                        if (x<worldWidth-1) {
+                        if (x<tilesPerWidth-1) {
                             borders[5] = this->grid[x+1][y  ]->terrain->id;
                         }
-                        if (x!=0 && y<worldHeight-1) {
+                        if (x!=0 && y<tilesPerHeight-1) {
                             borders[6] = this->grid[x-1][y+1]->terrain->id;
                         }
-                        if (y<worldHeight-1){
+                        if (y<tilesPerHeight-1){
                             borders[7] = this->grid[x  ][y+1]->terrain->id;
                         }
-                        if (x<worldWidth-1 && y<worldHeight-1) {
+                        if (x<tilesPerWidth-1 && y<tilesPerHeight-1) {
                             borders[8] = this->grid[x+1][y+1]->terrain->id;
                         }
 
@@ -214,22 +230,22 @@ class Map: public Object {
                         }
 
                         text->setText(to_string(borders[0])); //+"tl"
-                        text->setPosition(position->x+scale, position->y+scale);
+                        text->setPosition(position->x+tileScale, position->y+tileScale);
                         // if (corner==0) text->setColor(255,255,255);
                         // else text->setColor(0,0,0);
                         text->render(state);
 
                         text->setText(to_string(borders[1])); //+"tm"
-                        text->setPosition(position->x+position->w/2-text->getWidth()/2, position->y+scale);
+                        text->setPosition(position->x+position->w/2-text->getWidth()/2, position->y+tileScale);
                         text->render(state);
 
                         text->setText(to_string(borders[2])); //+"tr"
-                        text->setPosition(position->x+position->w-text->getWidth()-scale, position->y+scale);
+                        text->setPosition(position->x+position->w-text->getWidth()-tileScale, position->y+tileScale);
                         text->render(state);
 
 
                         text->setText(to_string(borders[3])); //+"ml"
-                        text->setPosition(position->x+scale, position->y+position->h/2-text->getHeight()/2);
+                        text->setPosition(position->x+tileScale, position->y+position->h/2-text->getHeight()/2);
                         text->render(state);
 
 
@@ -238,21 +254,21 @@ class Map: public Object {
                         text->render(state);
 
                         text->setText(to_string(borders[5])); //+"mr"
-                        text->setPosition(position->x+position->w-text->getWidth()-scale, position->y+position->h/2-text->getHeight()/2);
+                        text->setPosition(position->x+position->w-text->getWidth()-tileScale, position->y+position->h/2-text->getHeight()/2);
                         text->render(state);
 
 
                         text->setText(to_string(borders[6])); //+"bl"
-                        text->setPosition(position->x+scale, position->y+position->h-text->getHeight()-scale);
+                        text->setPosition(position->x+tileScale, position->y+position->h-text->getHeight()-tileScale);
                         text->render(state);
 
                         text->setText(to_string(borders[7])); //+"bm"
-                        text->setPosition(position->x+position->w/2-text->getWidth()/2, position->y+position->h-text->getHeight()-scale);
+                        text->setPosition(position->x+position->w/2-text->getWidth()/2, position->y+position->h-text->getHeight()-tileScale);
                         text->render(state);
 
 
                         text->setText(to_string(borders[8])); //+"br"
-                        text->setPosition(position->x+position->w-text->getWidth()-scale, position->y+position->h-text->getHeight()-scale);
+                        text->setPosition(position->x+position->w-text->getWidth()-tileScale, position->y+position->h-text->getHeight()-tileScale);
                         text->render(state);
                     }
 
@@ -313,8 +329,8 @@ class Map: public Object {
                    vector<float> ranges) {
 
         OpenSimplexNoise::Noise noise{seed};
-        for (int x=0; x<worldWidth; x++) {
-            for (int y=0; y<worldHeight; y++)
+        for (int x=0; x<tilesPerWidth; x++) {
+            for (int y=0; y<tilesPerHeight; y++)
             {
                 // alpha = (noise.eval(x*0.01, y*0.01) + 1) / 2.0  * 255.0;
                 // minimap->setPixel(x, y, 255, 255, 255, alpha);       
@@ -343,8 +359,8 @@ class Map: public Object {
                  vector<float> ranges) {
 
         OpenSimplexNoise::Noise noise{seed};
-        for (int x=0; x<worldWidth; x+=2) {
-            for (int y=0; y<worldHeight; y+=2)
+        for (int x=0; x<tilesPerWidth; x+=2) {
+            for (int y=0; y<tilesPerHeight; y+=2)
             {
                 // alpha = (noise.eval(x*0.01, y*0.01) + 1) / 2.0  * 255.0;
                 // minimap->setPixel(x, y, 255, 255, 255, alpha);       
@@ -371,8 +387,8 @@ class Map: public Object {
      * @brief Fill map by expanding edge strategy
     */
     void fillMap2() {
-        for (int x=0; x<worldWidth; x++) {
-            for (int y=0; y<worldHeight; y++) {
+        for (int x=0; x<tilesPerWidth; x++) {
+            for (int y=0; y<tilesPerHeight; y++) {
                 grid[x][y]->tile = getTile2(x, y);
                 grid[x][y]->rect = &clip->getFrame(grid[x][y]->tile)->rect;
             }
@@ -412,22 +428,22 @@ class Map: public Object {
         if (y!=0){
             borders[1] = this->grid[x  ][y-1]->terrain->id < type ? type-1 : type;
         }
-        if (y!=0 && x<worldWidth-1) {
+        if (y!=0 && x<tilesPerWidth-1) {
             borders[2] = this->grid[x+1][y-1]->terrain->id < type ? type-1 : type;
         }
         if (x!=0) {
             borders[3] = this->grid[x-1][y  ]->terrain->id < type ? type-1 : type;
         }
-        if (x<worldWidth-1) {
+        if (x<tilesPerWidth-1) {
             borders[5] = this->grid[x+1][y  ]->terrain->id < type ? type-1 : type;
         }
-        if (x!=0 && y<worldHeight-1) {
+        if (x!=0 && y<tilesPerHeight-1) {
             borders[6] = this->grid[x-1][y+1]->terrain->id < type ? type-1 : type;
         }
-        if (y<worldHeight-1){
+        if (y<tilesPerHeight-1){
             borders[7] = this->grid[x  ][y+1]->terrain->id < type ? type-1 : type;
         }
-        if (x<worldWidth-1 && y<worldHeight-1) {
+        if (x<tilesPerWidth-1 && y<tilesPerHeight-1) {
             borders[8] = this->grid[x+1][y+1]->terrain->id < type ? type-1 : type;
         }
 

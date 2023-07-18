@@ -11,6 +11,7 @@ using namespace std;
 
 
 #include <game/object.hpp>
+#include <game/object.hpp>
 #include <game/state.hpp>
 #include <game/drag.hpp>
 
@@ -29,8 +30,8 @@ class Minimap: public Object {
     Object* map;
     vector<Object*> objects;
 
-    int worldWidth;
-    int worldHeight;
+    int tilesPerWidth;
+    int tilesPerHeight;
     float scale;
 
     int scopeWidth = 2;
@@ -45,24 +46,24 @@ class Minimap: public Object {
      * @param renderer Renderer used for drawing 
      * @param width Minimap view width 
      * @param height Minimap view height
-     * @param worldWidth Map tile count in width
-     * @param worldHeight Map tile count in height
+     * @param tilesPerWidth Map tile count in width
+     * @param tilesPerHeight Map tile count in height
      * @param scale Tile scale on minimap
      * @param map Parent map
     */
     Minimap(SDL_Renderer* renderer, 
            int width,
            int height,
-           int worldWidth,
-           int worldHeight, 
+           int tilesPerWidth,
+           int tilesPerHeight, 
            float scale,
            Object* map
            ) {
 
         this->map = map;
 
-        this->worldWidth = worldWidth;
-        this->worldHeight = worldHeight;
+        this->tilesPerWidth = tilesPerWidth;
+        this->tilesPerHeight = tilesPerHeight;
         this->scale = scale;
 
         this->renderer = renderer;
@@ -73,10 +74,10 @@ class Minimap: public Object {
         frame.h = height;
         setPosition(0, 0);
         setSize(width, height);
-        backgroundSurface = SDL_CreateRGBSurfaceWithFormat(0, worldHeight * scale, worldWidth * scale, 0, SDL_PIXELFORMAT_RGBA32);
+        backgroundSurface = SDL_CreateRGBSurfaceWithFormat(0, tilesPerHeight * scale, tilesPerWidth * scale, 0, SDL_PIXELFORMAT_RGBA32);
         prepare();
 
-        //foregroundSurface = SDL_CreateRGBSurfaceWithFormat(0, worldHeight * scale, worldWidth * scale, 0, SDL_PIXELFORMAT_RGBA32);
+        //foregroundSurface = SDL_CreateRGBSurfaceWithFormat(0, tilesPerHeight * scale, tilesPerWidth * scale, 0, SDL_PIXELFORMAT_RGBA32);
         foreground = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, frame.w, frame.h);
         SDL_SetTextureBlendMode(foreground, SDL_BLENDMODE_BLEND);
 
@@ -115,11 +116,11 @@ class Minimap: public Object {
     }
 
     int widthRatio() {
-        return map->getWidth()/(worldWidth * scale);        
+        return map->getWidth()/(tilesPerWidth * scale);        
     }
 
     int heightRatio() {
-        return map->getHeight()/(worldHeight * scale);
+        return map->getHeight()/(tilesPerHeight * scale);
     }
 
     virtual void update(State* state) {
@@ -131,8 +132,8 @@ class Minimap: public Object {
 
         bool manualPick = false;
         if ((mouse->leftClick || mouse->leftDragActive) && mouse->inside(getPosition())) {
-            // state->camera->x = ((mouse->x - getX())/scale) * (map->getWidth()/worldWidth) - camera->width/2; 
-            // state->camera->y = ((mouse->y - getY())/scale) * (map->getHeight()/worldHeight) - camera->height/2;
+            // state->camera->x = ((mouse->x - getX())/scale) * (map->getWidth()/tilesPerWidth) - camera->width/2; 
+            // state->camera->y = ((mouse->y - getY())/scale) * (map->getHeight()/tilesPerHeight) - camera->height/2;
 
             camera->x = ((mouse->x - getX() + frame.x)) * widthRatio() - camera->width/2; 
             camera->y = ((mouse->y - getY() + frame.y)) * heightRatio() - camera->height/2;
@@ -149,13 +150,13 @@ class Minimap: public Object {
 
             frame.x = scope.x + scope.w/2 - frame.w/2;
             frame.y = scope.y + scope.h/2 - frame.h/2;
-
-            if (frame.x+frame.w > worldWidth*scale) {
-                frame.x -= ((frame.x+frame.w) - (worldWidth*scale)); 
+ 
+            if (frame.x+frame.w > tilesPerWidth*scale) {
+                frame.x -= ((frame.x+frame.w) - (tilesPerWidth*scale)); 
             }
 
-            if (frame.y+frame.h > worldHeight*scale) {
-                frame.y -= ((frame.y+frame.h) - (worldHeight*scale)); 
+            if (frame.y+frame.h > tilesPerHeight*scale) {
+                frame.y -= ((frame.y+frame.h) - (tilesPerHeight*scale)); 
             }
 
             if (frame.x<0) {

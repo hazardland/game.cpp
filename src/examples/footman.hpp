@@ -2,11 +2,10 @@
 #define TEST_FOOTMAN_H
 
 using namespace std;
-
 #include <iostream>
 
 #include <game/sprite.hpp>
-#include <game/object.hpp>
+#include <game/unit.hpp>
 #include <game/animation.hpp>
 #include <game/rectangle.hpp>
 #include <game/map.hpp>
@@ -20,10 +19,10 @@ using namespace std;
     The code of framework envovleved a lot
 
 */
-class Footman: public Object {
+class Footman: public Unit {
     public:
         Animation* body;
-        Rectangle* outline;
+        Position* outline;
         int maxSpeed = 100;
         int speed = 99;
         int mode = STAND;
@@ -32,37 +31,20 @@ class Footman: public Object {
         int cameraEdge = 100;
         int cameraStep = 1;
         bool cameraScroll = true; 
-        Map* map;
-        Minimap* minimap;
+
         Footman(Sprite* sprite) {
             // cout << "Creating footman\n";
-            setSize(72, 72);
+            setLayer(1);
+            setSize(24, 24);
+            setPosition(64, 64);
             // setPosition(x, y);
             body = new Animation(sprite, mode+modeX+modeY);
             body->pause = 0;
-            outline = new Rectangle(sprite->image->renderer);
-            outline->setSize(getWidth()/3, getHeight()/3);
-            outline->border = SDL_Color{161, 195, 69, 255};
-        }
-        Footman* setMap(Map* map) {
-            this->map = map;
-            return this;
-        }
-        Footman* setMinimap(Minimap* minimap) {
-            this->minimap = minimap;
-            minimap->addObject(this);
-            return this;
+            renderPosition = createPosition(-24, -24, 72, 72);
+            outline = createPosition(-12, -12, 48, 48);
         }
         virtual Uint32 getMinimapColor(SDL_PixelFormat* format) {
             return SDL_MapRGBA(format, 255, 255, 0, 255);
-        }
-        virtual SDL_Rect getMinimapRect() {
-            return {
-                int(getX()/minimap->widthRatio()), 
-                int(getY())/minimap->heightRatio(),
-                int(getWidth()/minimap->widthRatio()),
-                int(getHeight()/minimap->heightRatio())
-            };
         }
         virtual void rotate(float x, float y) {
             if (x!=0 || y!=0) {
@@ -91,6 +73,7 @@ class Footman: public Object {
         virtual void move(int delta, float x, float y) {
             addPosition ((x*delta)/(maxSpeed+1-speed), (y*delta)/(maxSpeed+1-speed));
         }
+
         virtual void update(State* state) {
             //cout << "Updating footman\n";
             Keyboard* key = state->event->keyboard;
@@ -125,28 +108,37 @@ class Footman: public Object {
             body->play(mode+modeX+modeY);
             body->update(state->clock->delta);
         }
+
         virtual void cameraFollow(Camera* camera) {
-            if (getY() - camera->y < cameraEdge) {
-                camera->y -= cameraEdge - (getY() - camera->y);
+            if (getRenderY() - camera->y < cameraEdge) {
+                camera->y -= cameraEdge - (getRenderY() - camera->y);
             }
-            if (getX() - camera->x < cameraEdge) {
-                camera->x -= cameraEdge - (getX() - camera->x);
+            if (getRenderX() - camera->x < cameraEdge) {
+                camera->x -= cameraEdge - (getRenderX() - camera->x);
             }
-            if (camera->y + camera->height - getY() - getWidth() < cameraEdge) {
-                camera->y += cameraEdge - (camera->y + camera->height - getY() - getWidth());
+            if (camera->y + camera->height - getRenderY() - getRenderWidth() < cameraEdge) {
+                camera->y += cameraEdge - (camera->y + camera->height - getRenderY() - getRenderWidth());
             }
-            if (camera->x + camera->width - getX() - getHeight() < cameraEdge) {
-                camera->x += cameraEdge - (camera->x + camera->width - getX() - getHeight());
+            if (camera->x + camera->width - getRenderX() - getRenderHeight() < cameraEdge) {
+                camera->x += cameraEdge - (camera->x + camera->width - getRenderX() - getRenderHeight());
             }
         }
+
         virtual void render(State* state) {
+            // cout << "Rendering footman\n";
             Camera* camera = state->camera;
-            if (camera->isVisible(getPosition())) {
-                SDL_FRect* location = camera->translate(getPosition());
-                outline->setPosition(location->x+25, location->y+30);
-                outline->render(state);
-                body->render(location);
+            if (camera->isVisible(getRenderPosition())) {
+                // cout << "Footman  x:" << location->x << ", y:" << location->y  << ", w:" << location->w  << ", h:" << location->h << "\n";
+                // SDL_FRect* location = camera->translate(getRenderPosition());
+                drawPosition(state);
+                // renderPosition->draw(state);
+                // outline->draw(state);
+                body->render(camera->translate(getRenderPosition()));
             }
+        }
+
+        ~Footman() {
+            delete outline;
         }
 
 };
