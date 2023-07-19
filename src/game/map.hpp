@@ -12,6 +12,7 @@ using namespace std;
 #include <game/text.hpp>
 #include <game/terrain.hpp>
 #include <game/minimap.hpp>
+#include <game/cell.hpp>
 #include <game/noise.h>
 
 // grid[x][y]->terrain->layer
@@ -26,19 +27,19 @@ using namespace std;
 // };
 
 
-class Cell {
-    public:
+// class Cell {
+//     public:
 
-        int tile;
-        Terrain* terrain;
-        SDL_Rect* rect;
+//         int tile;
+//         Terrain* terrain;
+//         SDL_Rect* rect;
 
-        vector<list<Object*>> objects;
+//         vector<list<Object*>> objects;
 
-        Cell(int layers) : objects(layers) {
-            // The 'objects' vector is initialized with 'layers' number of empty lists.
-        }
-};
+//         Cell(int layers) : objects(layers) {
+//             // The 'objects' vector is initialized with 'layers' number of empty lists.
+//         }
+// };
 
 
 /**
@@ -294,6 +295,8 @@ class Map: public Object {
     // Used for updating terrain when generating map
     void setMinimap(Minimap* minimap) {
         this->minimap = minimap;
+        minimap->setMapData(grid, tileWidth, tileHeight, tileScale);
+        // minimap->updateMapSize(getWidth(), getHeight(), tileScale);
     }
   
     // Get random tile for a key
@@ -524,6 +527,5 @@ class Map: public Object {
     int random(int min, int max) {
         return rand() % (max-min+1) + min;   
     }
-
 };
 #endif

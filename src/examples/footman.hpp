@@ -36,7 +36,7 @@ class Footman: public Unit {
             // cout << "Creating footman\n";
             setLayer(1);
             setSize(24, 24);
-            setPosition(64, 64);
+            // setPosition(64, 64);
             // setPosition(x, y);
             body = new Animation(sprite, mode+modeX+modeY);
             body->pause = 0;
@@ -74,7 +74,7 @@ class Footman: public Unit {
             addPosition ((x*delta)/(maxSpeed+1-speed), (y*delta)/(maxSpeed+1-speed));
         }
 
-        virtual void update(State* state) {
+        virtual void update(State* state) override {
             //cout << "Updating footman\n";
             Keyboard* key = state->event->keyboard;
             float x = 0;
@@ -110,6 +110,9 @@ class Footman: public Unit {
         }
 
         virtual void cameraFollow(Camera* camera) {
+            if (!isSelected()) {
+                return;
+            }
             if (getRenderY() - camera->y < cameraEdge) {
                 camera->y -= cameraEdge - (getRenderY() - camera->y);
             }

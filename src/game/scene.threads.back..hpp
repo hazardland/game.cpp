@@ -19,9 +19,24 @@ using namespace std;
 // #include <game/input.hpp>
 // #include <game/camera.hpp>
 
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+
 class Scene {
 
-    list<Object*> visibleObjects;
+    // list<Object*> visibleObjects;
+   
+    std::thread updateThread;
+    std::mutex updateMutex;
+    std::condition_variable updateCondition;
+    bool shouldUpdate = false;
+    bool stopUpdates = false;
+    State* pendingStateUpdate = nullptr;
+
+    list<Object*> visibleObjects[2];
+    int currentVisibleObjects = 0; // index of the currently-visible objects
+    std::mutex visibleObjectsMutex;
 
     public:
 
@@ -107,22 +122,64 @@ class Scene {
         //         minimap->update(state);
         //     }
         // }
-        virtual void update(State* state) {
-            if (map) {
-                map->update(state);
-            }
-            visibleObjects.clear();
-            for (Object* object : objects)  // We change the iteration to be simpler
-            {
-                object->update(state);
-                if (object->isVisible(state)) {
-                    visibleObjects.push_back(object);
+        // virtual void update(State* state) {
+        //     if (map) {
+        //         map->update(state);
+        //     }
+        //     visibleObjects.clear();
+        //     for (Object* object : objects)  // We change the iteration to be simpler
+        //     {
+        //         object->update(state);
+        //         if (object->isVisible(state)) {
+        //             visibleObjects.push_back(object);
+        //         }
+        //     }
+        //     if (minimap) {
+        //         minimap->update(state);
+        //     }
+        // }
+
+    virtual void update(State* state) {
+        std::lock_guard<std::mutex> lock(updateMutex);
+        pendingStateUpdate = state;
+        shouldUpdate = true;
+        updateCondition.notify_one();
+    }
+
+   void startUpdating() {
+        updateThread = std::thread([this]() {
+            while (true) {
+                State* state;
+                {
+                    std::unique_lock<std::mutex> lock(updateMutex);
+                    updateCondition.wait(lock, [this] { return shouldUpdate || stopUpdates; });
+                    if (stopUpdates) break;
+                    state = pendingStateUpdate;
+                    shouldUpdate = false;
+                }
+                // Perform update...
+                if (map) {
+                    map->update(state);
+                }
+                int nextVisibleObjects = 1 - currentVisibleObjects; // index of the next set of visible objects
+                visibleObjects[nextVisibleObjects].clear();
+                for (Object* object : objects)
+                {
+                    object->update(state);
+                    if (object->isVisible(state)) {
+                        visibleObjects[nextVisibleObjects].push_back(object);
+                    }
+                }
+                if (minimap) {
+                    minimap->update(state);
+                }
+                {
+                    std::lock_guard<std::mutex> lock(visibleObjectsMutex);
+                    currentVisibleObjects = nextVisibleObjects;
                 }
             }
-            if (minimap) {
-                minimap->update(state);
-            }
-        }
+        });
+    }
 
         virtual void render(State* state) {
             clear();
@@ -134,15 +191,15 @@ class Scene {
             SDL_RenderClear(renderer);
         }
 
-        virtual void build(State* state) {
-            map->render(state);
-            for (Object* object : visibleObjects)
-            {
-                object->render(state);
-            }
-            minimap->render(state);
+    virtual void build(State* state) {
+        map->render(state);
+        std::lock_guard<std::mutex> lock(visibleObjectsMutex);
+        for (Object* object : visibleObjects[currentVisibleObjects])
+        {
+            object->render(state);
         }
-
+        minimap->render(state);
+    }
         virtual void present(int delay=1) {
             SDL_RenderPresent(renderer);
             SDL_Delay(delay);
@@ -153,9 +210,17 @@ class Scene {
             objects.push_back(obj);
         }
 
-        ~Scene() {
-            SDL_DestroyRenderer(renderer);
+    ~Scene() {
+        {
+            std::lock_guard<std::mutex> lock(updateMutex);
+            stopUpdates = true;
         }
+        updateCondition.notify_one();
+        if (updateThread.joinable()) {
+            updateThread.join();
+        }
+        SDL_DestroyRenderer(renderer);
+    }
 
 };
 

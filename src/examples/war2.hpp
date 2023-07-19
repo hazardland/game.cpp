@@ -22,8 +22,8 @@ int SPRITE_HUMAN_FARM = 2;
 
 class MapScene : public Scene {
     using Scene::Scene;
-    Map* map;
-    Minimap* minimap;
+    // Map* map;
+    // Minimap* minimap;
     TTF_Font* font;
     Text* fps;
     int ticks;
@@ -44,8 +44,7 @@ class MapScene : public Scene {
         minimap = new Minimap(
             renderer, 
             200, 200, 
-            WIDTH, HEIGHT, 3, 
-            map
+            WIDTH, HEIGHT, 3
         );
 
         map->setMinimap(minimap);
@@ -53,7 +52,7 @@ class MapScene : public Scene {
 
         minimap->setPosition(0, 0);
 
-        objects.insert({map->getId(), map});
+        // objects.insert({map->getId(), map});
 
         map->terrains = {
             new Terrain(0, 0, {51, 51, 255}),
@@ -140,26 +139,29 @@ class MapScene : public Scene {
         for (int x=128; x<100*128; x+=128) {
             for (int y=128; y<100*128; y+=128) {
                 Farm* farm = new Farm(sprites[SPRITE_HUMAN_FARM]);
-                farm->setMinimap(minimap)->setMap(map)->setPosition(x, y); 
-                objects.insert({farm->getId(), farm});
+                farm->setMap(map)->setPosition(x, y); 
+                // objects.insert({farm->getId(), farm});
+                addObject(farm);
 
             }
         }
 
+        Footman* lastFootman;
         for (int x=0; x<1*32; x+=32) {
             for (int y=0; y<1*32; y+=32) {
                 Footman* footman = new Footman(sprites[SPRITE_FOOTMAN_RED]);
                 footman->setMap(map)
-                        ->setMinimap(minimap)
                         ->setPosition(x, y); 
-                objects.insert({footman->getId(), footman});
-
+                // objects.insert({footman->getId(), footman});
+                addObject(footman);
+                lastFootman = footman;
             }
         }
+        lastFootman->select();
 
-        objects.insert({minimap->getId(), minimap});
-        objects.insert({fps->getId(), fps});
-
+        // objects.insert({minimap->getId(), minimap});
+        // objects.insert({fps->getId(), fps});
+        addObject(fps);
     }
 
     void generate() {

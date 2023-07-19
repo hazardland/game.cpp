@@ -25,6 +25,7 @@ using namespace std;
 class Unit: public Object {
 
     int lastCellLeft, lastCellTop, lastCellRight, lastCellBottom = -1;
+    bool selected = false;
 
     public:
 
@@ -55,7 +56,7 @@ class Unit: public Object {
         virtual void render(State* state) {
 
         }
-        virtual SDL_FRect* getRenderPosition() {
+        virtual SDL_FRect* getRenderPosition() override {
             return renderPosition->getSDL_FRect();
         }
 
@@ -79,16 +80,17 @@ class Unit: public Object {
             
         }
 
-        virtual SDL_Rect getMinimapRect() {
-            return {
-                int(getX()/minimap->widthRatio()), 
-                int(getY())/minimap->heightRatio(),
-                int(getWidth()/minimap->widthRatio()),
-                int(getHeight()/minimap->heightRatio())
-            };
-        }
+        // virtual SDL_Rect getMinimapRect() {
+        //     return {
+        //         int(getX()/minimap->widthRatio()), 
+        //         int(getY())/minimap->heightRatio(),
+        //         int(getWidth()/minimap->widthRatio()),
+        //         int(getHeight()/minimap->heightRatio())
+        //     };
+        // }
 
         void updateMapCells() {
+            // return;
             if (!map) {
                 return;
             }
@@ -132,6 +134,7 @@ class Unit: public Object {
         }
 
         bool canMove(float dx, float dy) { //, float dw, float dh
+            // return true;
             // Calculate the prospective new position and dimensions
             float newX = getX() + dx;
             float newY = getY() + dy;
@@ -204,6 +207,14 @@ class Unit: public Object {
         void setPosition(float x, float y) override {
             Object::setPosition(x, y);
             updateMapCells();
+        }
+
+        bool isSelected() {
+            return selected;
+        }
+
+        void select() {
+            selected = true;
         }
 
         // void setSize(float width, float height) override {

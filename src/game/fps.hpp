@@ -15,6 +15,9 @@ class Fps: public Text {
             ticks = SDL_GetTicks();
         }
     }
+    bool isVisible(State* state) override {
+        return true;
+    }
 
 };
 

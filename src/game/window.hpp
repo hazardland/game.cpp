@@ -96,20 +96,24 @@ class Window: public Screen {
 
     // }
 
-    int run () {
+int run () {
+    // Create your scene and state...
+    scene->prepare();
 
-        scene->prepare();
+    // Start the update thread
+    // scene->startUpdating();
 
-        while(!state->event->close){
-            state->clock->tick();
-            state->event->fetch();
-            scene->update(state);
-            scene->render(state);
-        }
-
-        return 0;
+    while(!state->event->close){
+        state->clock->tick();
+        state->event->fetch();
+        // Update the state in the update thread
+        scene->update(state);
+        // Render the state in the main thread
+        scene->render(state);
     }
 
+    return 0;
+}
 };
 
 #endif

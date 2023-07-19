@@ -104,6 +104,10 @@ class Object {
             return &position;
         }
 
+        virtual SDL_FRect* getRenderPosition () {
+            return &position;
+        }
+
         virtual Position* createPosition(float x, float y, float width, float height) {
             // cout << "Creating position\n";
             return new Position(x, y, width, height, &position.x, &position.y, &position.w, &position.h);
@@ -115,6 +119,10 @@ class Object {
             SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 0);
         }
 
+        virtual bool isVisible (State* state) {
+            return state->camera->isVisible(getRenderPosition());            
+        }
+
         virtual bool hasMinimap() {
             return false;
         }
@@ -123,9 +131,9 @@ class Object {
             return 0;
         }
 
-        virtual SDL_Rect getMinimapRect() {
-            return {0,0,0,0};
-        }
+        // virtual SDL_Rect getMinimapRect() {
+        //     return {0,0,0,0};
+        // }
 
         virtual void update(State* state) {
 
