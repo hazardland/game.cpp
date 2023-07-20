@@ -42,40 +42,73 @@ class Animation  {
         image->render(clip->getFrame(frame)->getRect(), position, clip->getFrame(frame)->getFlip());
     }
 
+    // virtual void play(int clipName, float slow=0) {
+    //     if (clipName==activeClip) {
+    //         return;
+    //     }
+    //     if (!sprite->clips.contains(clipName)) {
+    //         cout<<"Unknown clip "<<clipName<<"\n";
+    //     } else {
+    //         // cout<<"Playing clip "<<activeClip<<"\n";
+    //     }
+    //     clip = sprite->clips[clipName];
+    //     timer = 0;
+    //     frame = 0;
+    //     if (slow>0) {
+    //         pause = clip->getFramePause()*slow;
+    //     } else {
+    //         pause = clip->getFramePause();
+    //     }
+    //     activeClip = clipName;
+    //     // cout << "Set clip "<< clipName << " " << clip << "\n";
+    // }
+
     virtual void play(int clipName, float slow=0) {
-        if (clipName==activeClip) {
+        if (clipName == activeClip) {
             return;
         }
-        if (!sprite->clips.contains(clipName)) {
-            cout<<"Unknown clip "<<clipName<<"\n";
-        } else {
-            // cout<<"Playing clip "<<activeClip<<"\n";
-        }
-        clip = sprite->clips[clipName];
+
+        auto clipIter = sprite->clips.find(clipName);
+        if (clipIter == sprite->clips.end()) {
+            cout << "Unknown clip " << clipName << "\n";
+            return;
+        } 
+
+        clip = clipIter->second;
         timer = 0;
         frame = 0;
-        if (slow>0) {
-            pause = clip->getFramePause()*slow;
+        if (slow > 0) {
+            pause = clip->getFramePause() * slow;
         } else {
             pause = clip->getFramePause();
         }
         activeClip = clipName;
-        // cout << "Set clip "<< clipName << " " << clip << "\n";
     }
 
+
+    // virtual void update(uint32_t delta) {
+    //     // cout << "Updating";
+    //     timer += delta;
+    //     if (timer < pause){
+    //         return;
+    //     }
+    //     timer = 0;
+
+    //     frame += 1;
+    //     if (frame == clip->getFrameCount()) {
+    //         frame = 0;
+    //     }
+    //     // cout << "Frame: " <<frame<<"\n";
+    // }
+
     virtual void update(uint32_t delta) {
-        // cout << "Updating";
         timer += delta;
         if (timer < pause){
             return;
         }
         timer = 0;
 
-        frame += 1;
-        if (frame == clip->getFrameCount()) {
-            frame = 0;
-        }
-        // cout << "Frame: " <<frame<<"\n";
+        frame = (frame + 1) % clip->getFrameCount();
     }
 
 };

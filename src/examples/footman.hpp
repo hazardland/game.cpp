@@ -25,7 +25,7 @@ class Footman: public Unit {
         Position* outline;
         int maxSpeed = 100;
         int speed = 99;
-        int mode = STAND;
+        int mode = IDLE;
         int modeX = RIGHT;
         int modeY = DOWN;
         int cameraEdge = 100;
@@ -46,21 +46,21 @@ class Footman: public Unit {
         virtual Uint32 getMinimapColor(SDL_PixelFormat* format) {
             return SDL_MapRGBA(format, 255, 255, 0, 255);
         }
-        virtual void rotate(float x, float y) {
-            if (x!=0 || y!=0) {
-                if (x!=0) {
-                    if (x<0) {
+        virtual void rotate(float directionX, float directionY) {
+            if (directionX!=0 || directionY!=0) {
+                if (directionX!=0) {
+                    if (directionX<0) {
                         modeX = LEFT;
-                    } else if (x>0) {
+                    } else if (directionX>0) {
                         modeX = RIGHT;
                     }
                 } else {
                     modeX = 0;
                 }
-                if (y!=0) {
-                    if (y<0) {
+                if (directionY!=0) {
+                    if (directionY<0) {
                         modeY = UP;
-                    } else if (y>0) {
+                    } else if (directionY>0) {
                         modeY = DOWN;
                     }
                 } else {
@@ -70,38 +70,38 @@ class Footman: public Unit {
         }
         // Speed concept needs to be solved
         // Here for example we have maximum speed 100
-        virtual void move(int delta, float x, float y) {
-            addPosition ((x*delta)/(maxSpeed+1-speed), (y*delta)/(maxSpeed+1-speed));
+        virtual void move(int deltaTime, float directionX, float directionY) {
+            addPosition ((directionX*deltaTime)/(maxSpeed+1-speed), (directionY*deltaTime)/(maxSpeed+1-speed));
         }
 
         virtual void update(State* state) override {
             //cout << "Updating footman\n";
             Keyboard* key = state->event->keyboard;
-            float x = 0;
-            float y = 0;
+            float directionX = 0;
+            float directionY = 0;
             if (key->up) {
                 // cout << "up\n";
-                y = -1;
+                directionY = -1;
             } else if (key->down) {
-                y = 1;
+                directionY = 1;
                 // cout << "down\n";
             }
             if (key->left) {
                 // cout << "left\n";
-                x = -1;
+                directionX = -1;
             } else if (key->right) {
-                x = 1;
+                directionX = 1;
                 // cout << "right\n";
             }
-            rotate(x, y);
+            rotate(directionX, directionY);
             if (key->space) {
                 mode = ATTACK;
             } else {
-                if (x==0 && y==0) {
-                    mode = STAND;
+                if (directionX==0 && directionY==0) {
+                    mode = IDLE;
                 } else {
-                    mode = WALK;
-                    move(state->clock->delta, x, y);
+                    mode = MOVE;
+                    move(state->clock->delta, directionX, directionY);
                     cameraFollow(state->camera);
                 }
             }
@@ -109,23 +109,44 @@ class Footman: public Unit {
             body->update(state->clock->delta);
         }
 
+
         virtual void cameraFollow(Camera* camera) {
             if (!isSelected()) {
                 return;
             }
-            if (getRenderY() - camera->y < cameraEdge) {
-                camera->y -= cameraEdge - (getRenderY() - camera->y);
+            SDL_FRect* renderRect = getRenderPosition();
+            if (renderRect->y - camera->y < cameraEdge) {
+                camera->y -= cameraEdge - (renderRect->y - camera->y);
             }
-            if (getRenderX() - camera->x < cameraEdge) {
-                camera->x -= cameraEdge - (getRenderX() - camera->x);
+            if (renderRect->x - camera->x < cameraEdge) {
+                camera->x -= cameraEdge - (renderRect->x - camera->x);
             }
-            if (camera->y + camera->height - getRenderY() - getRenderWidth() < cameraEdge) {
-                camera->y += cameraEdge - (camera->y + camera->height - getRenderY() - getRenderWidth());
+            if (camera->y + camera->height - renderRect->y - renderRect->w < cameraEdge) {
+                camera->y += cameraEdge - (camera->y + camera->height - renderRect->y - renderRect->w);
             }
-            if (camera->x + camera->width - getRenderX() - getRenderHeight() < cameraEdge) {
-                camera->x += cameraEdge - (camera->x + camera->width - getRenderX() - getRenderHeight());
+            if (camera->x + camera->width - renderRect->x - renderRect->h < cameraEdge) {
+                camera->x += cameraEdge - (camera->x + camera->width - renderRect->x - renderRect->h);
             }
         }
+
+        // virtual void cameraFollow(Camera* camera) {
+        //     if (!isSelected()) {
+        //         return;
+        //     }
+        //     SDL_FRect* renderRect = getRenderPosition();
+        //     if (getRenderY() - camera->y < cameraEdge) {
+        //         camera->y -= cameraEdge - (getRenderY() - camera->y);
+        //     }
+        //     if (getRenderX() - camera->x < cameraEdge) {
+        //         camera->x -= cameraEdge - (getRenderX() - camera->x);
+        //     }
+        //     if (camera->y + camera->height - getRenderY() - getRenderWidth() < cameraEdge) {
+        //         camera->y += cameraEdge - (camera->y + camera->height - getRenderY() - getRenderWidth());
+        //     }
+        //     if (camera->x + camera->width - getRenderX() - getRenderHeight() < cameraEdge) {
+        //         camera->x += cameraEdge - (camera->x + camera->width - getRenderX() - getRenderHeight());
+        //     }
+        // }
 
         virtual void render(State* state) {
             // cout << "Rendering footman\n";

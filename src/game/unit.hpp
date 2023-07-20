@@ -43,11 +43,6 @@ class Unit: public Object {
             this->map = map;
             return this;
         }
-        virtual Unit* setMinimap(Minimap* minimap) {
-            this->minimap = minimap;
-            minimap->addObject(this);
-            return this;
-        }
         virtual Unit* setScene(Map* map) {
             this->scene = scene;
             return this;
@@ -60,21 +55,21 @@ class Unit: public Object {
             return renderPosition->getSDL_FRect();
         }
 
-        virtual float getRenderX() {
-            return renderPosition->getX();
-        }
+        // virtual float getRenderX() {
+        //     return renderPosition->getX();
+        // }
 
-        virtual float getRenderY() {
-            return renderPosition->getY();
-        }
+        // virtual float getRenderY() {
+        //     return renderPosition->getY();
+        // }
 
-        virtual float getRenderHeight() {
-            return renderPosition->getWidth();
-        }
+        // virtual float getRenderHeight() {
+        //     return renderPosition->getWidth();
+        // }
 
-        virtual float getRenderWidth() {
-            return renderPosition->getHeight();
-        }
+        // virtual float getRenderWidth() {
+        //     return renderPosition->getHeight();
+        // }
 
         virtual void renderHitbox(State* state) {
             

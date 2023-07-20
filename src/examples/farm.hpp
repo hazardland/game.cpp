@@ -26,7 +26,7 @@ class Farm: public Unit {
         Camera* camera = state->camera;
         if (camera->isVisible(getRenderPosition())) {
             drawPosition(state);
-            renderPosition->draw(state);
+            // renderPosition->draw(state);
             body->image->render(body->getRect(), camera->translate(getRenderPosition()));
         }
     }

@@ -14,9 +14,9 @@ const int UP     =   1;
 const int DOWN   =   2;
 const int LEFT   =  10;
 const int RIGHT  =  20;
-const int WALK   = 100;
+const int MOVE   = 100;
 const int ATTACK = 200;
-const int STAND  =   0;
+const int IDLE  =   0;
 
 
 #endif

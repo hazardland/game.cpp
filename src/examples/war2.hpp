@@ -105,22 +105,22 @@ class MapScene : public Scene {
                                     72,
                                     100,
                                     true))
-        ->addClip (WALK+UP, 1, 2, 4, false, false)
-        ->addClip (WALK+DOWN, 5, 2, 4, false, false)
-        ->addClip (WALK+RIGHT, 3, 2, 4, false, false)
-        ->addClip (WALK+LEFT, 3, 2, 4, true, false)
-        ->addClip (WALK+UP+RIGHT, 2, 2, 4, false, false)
-        ->addClip (WALK+DOWN+RIGHT, 4, 2, 4, false, false)
-        ->addClip (WALK+UP+LEFT, 2, 2, 4, true, false)
-        ->addClip (WALK+DOWN+LEFT, 4, 1, 4, true, false)
-        ->addClip (STAND+UP, 1, 1, 1, false, false)
-        ->addClip (STAND+DOWN, 5, 1, 1, false, false)
-        ->addClip (STAND+RIGHT, 3, 1, 1, false, false)
-        ->addClip (STAND+LEFT, 3, 1, 1, true, false)
-        ->addClip (STAND+UP+RIGHT, 2, 1, 1, false, false)
-        ->addClip (STAND+DOWN+RIGHT, 4, 1, 1, false, false)
-        ->addClip (STAND+UP+LEFT, 2, 1, 1, true, false)
-        ->addClip (STAND+DOWN+LEFT, 4, 1, 1, true, false)
+        ->addClip (MOVE+UP, 1, 2, 4, false, false)
+        ->addClip (MOVE+DOWN, 5, 2, 4, false, false)
+        ->addClip (MOVE+RIGHT, 3, 2, 4, false, false)
+        ->addClip (MOVE+LEFT, 3, 2, 4, true, false)
+        ->addClip (MOVE+UP+RIGHT, 2, 2, 4, false, false)
+        ->addClip (MOVE+DOWN+RIGHT, 4, 2, 4, false, false)
+        ->addClip (MOVE+UP+LEFT, 2, 2, 4, true, false)
+        ->addClip (MOVE+DOWN+LEFT, 4, 1, 4, true, false)
+        ->addClip (IDLE+UP, 1, 1, 1, false, false)
+        ->addClip (IDLE+DOWN, 5, 1, 1, false, false)
+        ->addClip (IDLE+RIGHT, 3, 1, 1, false, false)
+        ->addClip (IDLE+LEFT, 3, 1, 1, true, false)
+        ->addClip (IDLE+UP+RIGHT, 2, 1, 1, false, false)
+        ->addClip (IDLE+DOWN+RIGHT, 4, 1, 1, false, false)
+        ->addClip (IDLE+UP+LEFT, 2, 1, 1, true, false)
+        ->addClip (IDLE+DOWN+LEFT, 4, 1, 1, true, false)
         ->addClip (ATTACK+UP, 1, 6, 4, false, false)
         ->addClip (ATTACK+DOWN, 5, 6, 4, false, false)
         ->addClip (ATTACK+RIGHT, 3, 6, 4, false, false)
@@ -147,8 +147,8 @@ class MapScene : public Scene {
         }
 
         Footman* lastFootman;
-        for (int x=0; x<1*32; x+=32) {
-            for (int y=0; y<1*32; y+=32) {
+        for (int x=0; x<10*32; x+=32) {
+            for (int y=10; y<1*32; y+=32) {
                 Footman* footman = new Footman(sprites[SPRITE_FOOTMAN_RED]);
                 footman->setMap(map)
                         ->setPosition(x, y); 
