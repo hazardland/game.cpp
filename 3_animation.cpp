@@ -1,6 +1,10 @@
-#include <game/window.hpp>
-#include <game/scene.hpp>
-#include <game/animation.hpp>
+#include <game/window.h>
+#include <game/scene.h>
+#include <game/animation.h>
+#include <game/sprite.h>
+#include <game/image.h>
+#include <game/state.h>
+#include <game/clock.h>
 
 // This is not the final form yet of how things should be organized
 class MyScene : public Scene {
@@ -12,7 +16,7 @@ class MyScene : public Scene {
     // Can play various clips from the sprite
     // Like imagine Sprite has MOVE and ATTACK clips
     Animation* animation;
-    SDL_Rect position;
+    SDL_FRect position;
 
     int currentFrame = 0;
 
@@ -66,8 +70,8 @@ class MyScene : public Scene {
         // Here we specify what to render from image with &frame
         // and where to render on scene with &position
         animation->render(&position);
-
-        display();
+        
+        present();
     }
 
 };

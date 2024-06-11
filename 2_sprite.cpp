@@ -1,6 +1,8 @@
-#include <game/window.hpp>
-#include <game/scene.hpp>
-#include <game/sprite.hpp>
+#include <game/window.h>
+#include <game/scene.h>
+#include <game/sprite.h>
+#include <game/clip.h>
+#include <game/image.h>
 
 class MyScene : public Scene {
     using Scene::Scene;
@@ -56,11 +58,11 @@ class MyScene : public Scene {
         // and where to render on scene with &position
         sprite->image->render(
             // From clip with index 1
-            sprite->clips[1]->getFrame(currentFrame)->getRect(),
+            sprite->getClip(1)->getFrame(currentFrame)->getRect(),
             &position
         );
 
-        display();
+        present();
     }
 
 };

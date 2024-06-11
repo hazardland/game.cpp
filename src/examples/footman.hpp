@@ -4,12 +4,13 @@
 using namespace std;
 #include <iostream>
 
-#include <game/sprite.hpp>
-#include <game/unit.hpp>
-#include <game/animation.hpp>
-#include <game/rectangle.hpp>
-#include <game/map.hpp>
-#include <game/minimap.hpp>
+#include <game/unit.h>
+#include <game/animation.h>
+#include <game/position.h>
+#include <game/state.h>
+#include <game/event.h>
+#include <game/camera.h>
+#include <game/clock.h>
 
 #include <examples/enum.h>
 

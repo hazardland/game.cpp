@@ -5,11 +5,14 @@ using namespace std;
 #include <vector>
 #include <map>
 
-#include <game/scene.hpp>
-#include <game/text.hpp>
-#include <game/fps.hpp>
-#include <game/map.hpp>
-#include <game/minimap.hpp>
+#include <game/scene.h>
+#include <game/text.h>
+#include <game/fps.h>
+#include <game/map.h>
+#include <game/minimap.h>
+#include <game/terrain.h>
+#include <game/image.h>
+
 
 #include <examples/enum.h>
 #include <examples/footman.hpp>
@@ -20,7 +23,7 @@ int HEIGHT = 2000;
 int SPRITE_FOOTMAN_RED = 1;
 int SPRITE_HUMAN_FARM = 2;
 
-class MapScene : public Scene {
+class Warcraft : public Scene {
     using Scene::Scene;
     // Map* map;
     // Minimap* minimap;

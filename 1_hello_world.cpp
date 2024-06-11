@@ -1,6 +1,6 @@
-#include <game/window.hpp>
-#include <game/scene.hpp>
-#include <game/image.hpp>
+#include <game/window.h>
+#include <game/scene.h>
+#include <game/image.h>
 
 // We will need scene to exend to setup our custom things
 class MyScene : public Scene {
@@ -13,7 +13,7 @@ class MyScene : public Scene {
     // Here we store what we need to crop from image
     SDL_Rect frame;
     // Here we store where and what size we need to display
-    SDL_Rect position;
+    SDL_FRect position;
 
     virtual void prepare() {
         // Load the image
@@ -45,7 +45,7 @@ class MyScene : public Scene {
         // and where to render on scene with &position
         image->render(&frame, &position);
 
-        display();
+        present();
     }
 
 };

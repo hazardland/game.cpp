@@ -5,9 +5,12 @@ using namespace std;
 
 #include <iostream>
 
-#include <game/sprite.hpp>
-#include <game/unit.hpp>
-#include <game/minimap.hpp>
+#include <game/sprite.h>
+#include <game/unit.h>
+#include <game/minimap.h>
+#include <game/image.h>
+#include <game/camera.h>
+#include <game/event.h>
 
 class Farm: public Unit {
     public:
