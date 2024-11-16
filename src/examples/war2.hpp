@@ -103,7 +103,7 @@ class Warcraft : public Scene {
 
         generate();
 
-        sprites[SPRITE_FOOTMAN_RED] = (new Sprite(new Image(renderer, "assets/sprites/footman.png"),
+        sprites[SPRITE_FOOTMAN_RED] = (new Sprite(new Image(renderer, "assets/sprites/grunt.png"),
                                     72,
                                     72,
                                     100,
@@ -150,7 +150,7 @@ class Warcraft : public Scene {
         }
 
         Footman* lastFootman;
-        for (int x=0; x<10*32; x+=32) {
+        for (int x=0; x<1*32; x+=32) {
             for (int y=10; y<1*32; y+=32) {
                 Footman* footman = new Footman(sprites[SPRITE_FOOTMAN_RED]);
                 footman->setMap(map)

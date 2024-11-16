@@ -81,9 +81,9 @@ bool Unit::canMove(float dx, float dy) {
     for (int i = left; i <= right; i++) {
         for (int j = top; j <= bottom; j++) {
 
-    if (map->grid[i][j]->terrain->layer != getLayer() && getLayer() != 0) {
-        return false;
-    }
+            if (map->grid[i][j]->terrain->layer != getLayer() && getLayer() != 0) {
+                return false;
+            }
             // if (map->grid[i][j]->terrain->layer != getLayer() && getLayer() != 0) {
             //     return false;
             // }                    
