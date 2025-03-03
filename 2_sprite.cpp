@@ -3,15 +3,16 @@
 #include <game/sprite.h>
 #include <game/clip.h>
 #include <game/image.h>
+#include <game/frame.h>
 
 class MyScene : public Scene {
     using Scene::Scene;
 
     public:
 
-    // Sprite helds image and some data about frames
+    // Sprite holds atlas image and its frame related data
     Sprite* sprite;
-    SDL_Rect position;
+    SDL_FRect position;
 
     int currentFrame = 0;
 

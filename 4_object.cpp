@@ -1,6 +1,15 @@
-#include <game/window.hpp>
-#include <game/scene.hpp>
-#include <game/animation.hpp>
+#include <game/window.h>
+#include <game/scene.h>
+#include <game/animation.h>
+#include <game/object.h>
+#include <game/state.h>
+#include <game/camera.h>
+#include <game/clock.h>
+#include <game/image.h>
+#include <game/sprite.h>
+
+int PLANET_SPRITE = 1;
+int PLANET_SPRITE_SPIN_CLIP = 1;
 
 class Planet: public Object {
     public:
@@ -20,7 +29,7 @@ class Planet: public Object {
     }
 
     virtual void render(State* state) {
-        animation->render(&position);
+        animation->render(getPosition());
     }
 
 };
@@ -33,20 +42,19 @@ class MyScene : public Scene {
     virtual void prepare() {
 
         // Define sprite
-        sprites[1] = (new Sprite(
+        sprites[PLANET_SPRITE] = (new Sprite(
             new Image(renderer, "doc/images/planet.png"),
             100, // Frame width
-            100, // Frame height
-            60 // Frame pause
+            100 // Frame height
         ))->addClip(
-            1, // Clip index
-            1, // Start row in sprite sheet
-            1, // Start cell in sprite sheet
-            24  // Frame count to generate from row, cell
+            PLANET_SPRITE_SPIN_CLIP, // Clip index
+            1, // Start frame row in sprite sheet
+            1, // Start frame cell in sprite sheet
+            24  // Frame count to generate from row, cell starting position
         );
         
         // Create Planet object
-        objects.push_back(new Planet(sprites[1]));
+        addObject(new Planet(sprites[PLANET_SPRITE]));
     }
 
 };

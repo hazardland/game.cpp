@@ -28,21 +28,25 @@ class MyScene : public Scene {
             new Image(renderer, "doc/images/planet.png"),
             100,
             100,
-            // This is new: Default pause per frame 60 miliseconds for this spritesheet
+            // This is new: Default pause per frame 60 miliseconds 
+            // for this spritesheet produced clips
             // Higher value causes slow animation
             60
         ))->addClip(
             1, // Clip index
-            1, // Start row in sprite sheet
-            1, // Start cell in sprite sheet
+            1, // Frame start row in sprite sheet
+            1, // Frame start cell in sprite sheet
             24  // Frame count to generate from row, cell
                 // We know our sprite contains 6x4 frames so 24 is total frame count
         );
         
-        // Create animation instanse with sprite instance
+        // So once we have our sprite and its clip regions configured
+        // We can create animation with this sprite
+        // Animation will play specific clip and 
+        // will manage frame change and render per tick and delta
         animation = new Animation(
             sprites[1],
-            1
+            1 // This is default clip name but animation can change clips within the sprite
         );
 
         // Scale the frame a bit from its original size
