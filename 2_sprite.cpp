@@ -24,7 +24,6 @@ class MyScene : public Scene {
             100
         );
 
-        //
         sprite->addClip(
             1, // Clip index
             1, // Start row in sprite sheet

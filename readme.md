@@ -46,9 +46,18 @@ So for now I am a bit lazy to instruct how to download SDL libs and includes and
 # Hello World - Object
 
 ```c++
-#include <game/window.hpp>
-#include <game/scene.hpp>
-#include <game/animation.hpp>
+#include <game/window.h>
+#include <game/scene.h>
+#include <game/animation.h>
+#include <game/object.h>
+#include <game/state.h>
+#include <game/camera.h>
+#include <game/clock.h>
+#include <game/image.h>
+#include <game/sprite.h>
+
+int PLANET_SPRITE = 1;
+int PLANET_SPRITE_SPIN_CLIP = 1;
 
 class Planet: public Object {
     public:
@@ -58,12 +67,12 @@ class Planet: public Object {
             sprite,
             1
         );
-        setSize(200, 200);       
+        setSize(200, 200);
     }
 
     virtual void update(State* state) {
-        setPosition(state->camera->width/2 - getWidth()/2, 
-                    state->camera->height/2 - getHeight()/2);
+        setPosition (state->camera->width/2 - getWidth()/2,
+                     state->camera->height/2 - getHeight()/2);
         animation->update(state->clock->delta);
     }
 
@@ -81,20 +90,19 @@ class MyScene : public Scene {
     virtual void prepare() {
 
         // Define sprite
-        sprites[1] = (new Sprite(
+        sprites[PLANET_SPRITE] = (new Sprite(
             new Image(renderer, "doc/images/planet.png"),
             100, // Frame width
-            100, // Frame height
-            60 // Frame pause
+            100 // Frame height
         ))->addClip(
-            1, // Clip index
-            1, // Start row in sprite sheet
-            1, // Start cell in sprite sheet
-            24  // Frame count to generate from row, cell
+            PLANET_SPRITE_SPIN_CLIP, // Clip index
+            1, // Start frame row in sprite sheet
+            1, // Start frame cell in sprite sheet
+            24  // Frame count to generate from row, cell starting position
         );
         
         // Create Planet object
-        objects.push_back(new Planet(sprites[1]));
+        addObject(new Planet(sprites[PLANET_SPRITE]));
     }
 
 };
@@ -125,11 +133,11 @@ It contains planet animation in 6x4 (cells x rows) spritesheet where the size of
 In hello world example we will use only first frame to render:
 
 ```c++
-#include <game/window.hpp>
-#include <game/scene.hpp>
-#include <game/image.hpp>
+#include <game/window.h>
+#include <game/scene.h>
+#include <game/image.h>
 
-// We will need scene to extend to setup our custom things
+// We will need scene to exend to setup our custom things
 class MyScene : public Scene {
     using Scene::Scene;
 
@@ -140,7 +148,7 @@ class MyScene : public Scene {
     // Here we store what we need to crop from image
     SDL_Rect frame;
     // Here we store where and what size we need to display
-    SDL_Rect position;
+    SDL_FRect position;
 
     virtual void prepare() {
         // Load the image
@@ -172,7 +180,7 @@ class MyScene : public Scene {
         // and where to render on scene with &position
         image->render(&frame, &position);
 
-        display();
+        present();
     }
 
 };
@@ -199,18 +207,23 @@ The example will produce this:
 Condsider that the example only depicts how sprite class operates but *this is not the way animation should be done*:
 
 ```c++
-#include <game/window.hpp>
-#include <game/scene.hpp>
-#include <game/sprite.hpp>
+#include <game/window.h>
+#include <game/scene.h>
+#include <game/sprite.h>
+#include <game/clip.h>
+#include <game/image.h>
+#include <game/frame.h>
 
 class MyScene : public Scene {
     using Scene::Scene;
 
     public:
 
-    // Sprite helds image and some data about frames
+    // Sprite holds atlas image and its frame related data
     Sprite* sprite;
-    SDL_Rect position;
+    SDL_FRect position;
+
+    int currentFrame = 0;
 
     virtual void prepare() {
         // Create sprite instanse with default config
@@ -220,7 +233,6 @@ class MyScene : public Scene {
             100
         );
 
-        //
         sprite->addClip(
             1, // Clip index
             1, // Start row in sprite sheet
@@ -255,11 +267,11 @@ class MyScene : public Scene {
         // and where to render on scene with &position
         sprite->image->render(
             // From clip with index 1
-            sprite->clips[1]->getFrame(currentFrame)->getRect(),
+            sprite->getClip(1)->getFrame(currentFrame)->getRect(),
             &position
         );
 
-        display();
+        present();
     }
 
 };
@@ -285,9 +297,13 @@ Now let us use animation class to gently handle animations with respet of delta 
 
 The code is still not the final of how things should be organized but one last class to go:
 ```c++
-#include <game/window.hpp>
-#include <game/scene.hpp>
-#include <game/animation.hpp>
+#include <game/window.h>
+#include <game/scene.h>
+#include <game/animation.h>
+#include <game/sprite.h>
+#include <game/image.h>
+#include <game/state.h>
+#include <game/clock.h>
 
 // This is not the final form yet of how things should be organized
 class MyScene : public Scene {
@@ -299,7 +315,7 @@ class MyScene : public Scene {
     // Can play various clips from the sprite
     // Like imagine Sprite has MOVE and ATTACK clips
     Animation* animation;
-    SDL_Rect position;
+    SDL_FRect position;
 
     int currentFrame = 0;
 
@@ -311,21 +327,25 @@ class MyScene : public Scene {
             new Image(renderer, "doc/images/planet.png"),
             100,
             100,
-            // This is new: Default pause per frame 60 miliseconds for this spritesheet
+            // This is new: Default pause per frame 60 miliseconds 
+            // for this spritesheet produced clips
             // Higher value causes slow animation
             60
         ))->addClip(
             1, // Clip index
-            1, // Start row in sprite sheet
-            1, // Start cell in sprite sheet
+            1, // Frame start row in sprite sheet
+            1, // Frame start cell in sprite sheet
             24  // Frame count to generate from row, cell
                 // We know our sprite contains 6x4 frames so 24 is total frame count
         );
         
-        // Create animation instanse with sprite instance
+        // So once we have our sprite and its clip regions configured
+        // We can create animation with this sprite
+        // Animation will play specific clip and 
+        // will manage frame change and render per tick and delta
         animation = new Animation(
             sprites[1],
-            1
+            1 // This is default clip name but animation can change clips within the sprite
         );
 
         // Scale the frame a bit from its original size
@@ -353,8 +373,8 @@ class MyScene : public Scene {
         // Here we specify what to render from image with &frame
         // and where to render on scene with &position
         animation->render(&position);
-
-        display();
+        
+        present();
     }
 
 };
