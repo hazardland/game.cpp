@@ -12,8 +12,9 @@
  * @class Camera
  * @brief A class that handles camera tracking in the game.
  *
- * This class handles the view of the game world, including the visibility and positioning
- * of game objects. It is able to update these based on the game state.
+ * Camera holds position and size of curreent visible rectangle inside game world
+ * It can tell if the object's position is visible inside camera region
+ * It can also translate absolute position from game world into screen position
  */
 class Camera {
     public:
@@ -32,7 +33,7 @@ class Camera {
     void setSize(int width, int height);
 
     /**
-     * @brief Checks whether a game object is visible in the camera view.
+     * @brief Checks whether a position is visible inside the camera view.
      * @param position The position of the game object.
      * @return true if the game object is visible, false otherwise.
      */
