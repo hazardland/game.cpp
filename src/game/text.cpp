@@ -1,6 +1,5 @@
 // File: text.cpp
 
-using namespace std;
 #include "game/text.h"
 #include <iostream>
 #include <string>
@@ -16,20 +15,20 @@ Text::Text(SDL_Renderer* renderer, TTF_Font* font, std::string text, int x, int 
     this->renderer = renderer;
 }
 
-void Text::setText(string text) {
+void Text::setText(std::string text) {
     if (this->text==text){
         return;
     }
-        if (cache.contains(text)) {
-            //printf("Cache hit %s\n", text);
-            texture = cache[text];
-            this->text = text;
-            int width;
-            int height;
-            SDL_QueryTexture(texture, NULL, NULL, &width, &height);
-            setSize(width, height);
-            return;
-        }
+    if (cache.contains(text)) {
+        //printf("Cache hit %s\n", text);
+        texture = cache[text];
+        this->text = text;
+        int width;
+        int height;
+        SDL_QueryTexture(texture, NULL, NULL, &width, &height);
+        setSize(width, height);
+        return;
+    }
     this->text = text;
     // SDL_DestroyTexture(texture);
     SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);

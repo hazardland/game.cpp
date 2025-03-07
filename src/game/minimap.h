@@ -7,13 +7,13 @@
 
 #include <SDL2/SDL_image.h>
 
-#include "game/object.h"
+#include "game/unit.h"
 
 class Drag;
 class Cell;
 class State;
 
-class Minimap: public Object {
+class Minimap: public Unit {
 public:
     Minimap(SDL_Renderer* renderer, 
            int minimapWidth,
@@ -24,9 +24,9 @@ public:
     );
 
     void setTerrain(int x, int y, int red, int blue, int green);
-    void setObject(SDL_Rect* rect, int red, int blue, int green);
-    void addObject(Object* object);
-    void clearObjects();
+    void setUnit(SDL_Rect* rect, int red, int blue, int green);
+    void addUnit(Unit* unit);
+    void clearUnits();
     void prepare();
     void setMapData(std::vector<std::vector<Cell*>>& grid, int mapTileWidth, int mapTileHeight, float mapTileScale);
     virtual void update(State* state) override;
@@ -46,7 +46,7 @@ private:
     SDL_Texture* foreground = NULL;
     SDL_FRect scope;
     SDL_Rect frame;
-    std::vector<Object*> objects;
+    std::vector<Unit*> units;
     int tilesPerWidth;
     int tilesPerHeight;
     float minimapScale;

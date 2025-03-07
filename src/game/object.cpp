@@ -68,42 +68,19 @@ float Object::getWidth() {
     return position.w;
 }
 
-int Object::getLayer() {
-    return layer;
-}
-
-void Object::setLayer(int layer) {
-    this->layer = layer;
-}
-
 SDL_FRect* Object::getPosition() {
     return &position;
 }
 
-SDL_FRect* Object::getRenderPosition() {
-    return &position;
+Position* Object::createChildPosition(float x, float y, float width, float height) {
+    Position* pos = new Position(x, y, width, height, &position.x, &position.y, &position.w, &position.h);
+    childPositions.push_back(pos);
+    return pos;
 }
 
-Position* Object::createPosition(float x, float y, float width, float height) {
-    return new Position(x, y, width, height, &position.x, &position.y, &position.w, &position.h);
-}
-
-void Object::drawPosition(State* state) {
-    SDL_SetRenderDrawColor(state->renderer, 161, 195, 69, 255);
-    SDL_RenderDrawRectF(state->renderer, state->camera->translate(getPosition()));
-    SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 0);
-}
 
 bool Object::isVisible(State* state) {
-    return state->camera->isVisible(getRenderPosition());
-}
-
-bool Object::hasMinimap() {
-    return false;
-}
-
-Uint32 Object::getMinimapColor(SDL_PixelFormat* format) {
-    return 0;
+    return true;
 }
 
 void Object::update(State* state) {
@@ -112,4 +89,18 @@ void Object::update(State* state) {
 
 void Object::render(State* state) {
     // Add implementation here
+}
+
+// Notify all child positions that parent moved
+void Object::updateChildPositions() {
+    for (auto pos : childPositions) {
+        pos->setRequiresUpdate(); // Flag the child position to recalculate
+    }
+}
+
+Object::~Object() {
+    // Cleanup allocated child positions
+    for (auto pos : childPositions) {
+        delete pos;
+    }
 }

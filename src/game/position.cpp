@@ -21,27 +21,42 @@ Position::Position(float x, float y, float width, float height,
 }
 
 float Position::getX() {
-    return *parentX + (x * ((*parentWidth / width) / parentWidthRatio));
+    recalculateIfNeeded();
+    return rect.x;
 }
 
 float Position::getY() {
-    return *parentY + (y * ((*parentHeight / height) / parentHeightRatio));
+    recalculateIfNeeded();
+    return rect.y;
 }
 
 float Position::getWidth() {
-    return width * ((*parentWidth / width) / parentWidthRatio);
+    recalculateIfNeeded();
+    return rect.w;
 }
 
 float Position::getHeight() {
-    return height * ((*parentHeight / height) / parentHeightRatio);
+    recalculateIfNeeded();
+    return rect.h;
 }
 
 SDL_FRect* Position::getSDL_FRect() {
-    rect.x = getX();
-    rect.y = getY();
-    rect.w = getWidth();
-    rect.h = getHeight();
+    recalculateIfNeeded();
     return &rect;
+}
+
+void Position::recalculateIfNeeded() {
+    if (needsUpdate){
+        rect.x = *parentX + (x * ((*parentWidth / width) / parentWidthRatio));
+        rect.y = *parentY + (y * ((*parentHeight / height) / parentHeightRatio));
+        rect.w = width * ((*parentWidth / width) / parentWidthRatio);
+        rect.h = height * ((*parentHeight / height) / parentHeightRatio);
+        needsUpdate = false;
+    }
+}
+
+void Position::setRequiresUpdate() {
+    needsUpdate = true;
 }
 
 void Position::draw(State* state) {

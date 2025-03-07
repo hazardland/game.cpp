@@ -26,11 +26,14 @@ public:
     float getY();
     float getWidth();
     float getHeight();
+    void setRequiresUpdate();  // Mark that recalculation is needed
     SDL_FRect* getSDL_FRect();
     void draw(State* state);
 
 private:
+    void recalculateIfNeeded();
     bool parent = false;
+    bool needsUpdate = true;    
     float* parentX;
     float* parentY;
     float* parentWidth;

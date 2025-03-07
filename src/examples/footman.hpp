@@ -1,7 +1,6 @@
 #ifndef TEST_FOOTMAN_H
 #define TEST_FOOTMAN_H
 
-using namespace std;
 #include <iostream>
 
 #include <game/unit.h>
@@ -36,13 +35,14 @@ class Footman: public Unit {
         Footman(Sprite* sprite) {
             // cout << "Creating footman\n";
             setLayer(1);
+            allowTerrains({1,2});
             setSize(24, 24);
             // setPosition(64, 64);
             // setPosition(x, y);
             body = new Animation(sprite, mode+modeX+modeY);
             body->pause = 0;
-            renderPosition = createPosition(-24, -24, 72, 72);
-            outline = createPosition(-12, -12, 48, 48);
+            renderPosition = createChildPosition(-24, -24, 72, 72);
+            outline = createChildPosition(-12, -12, 48, 48);
         }
         virtual Uint32 getMinimapColor(SDL_PixelFormat* format) {
             return SDL_MapRGBA(format, 255, 255, 0, 255);
@@ -157,6 +157,7 @@ class Footman: public Unit {
                 // SDL_FRect* location = camera->translate(getRenderPosition());
                 drawPosition(state);
                 // renderPosition->draw(state);
+                // selectPosition->draw(state);
                 // outline->draw(state);
                 body->render(camera->translate(getRenderPosition()));
             }

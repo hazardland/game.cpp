@@ -1,7 +1,6 @@
 #ifndef TEST_SCENE_PERLIN
 #define TEST_SCENE_PERLIN
 
-using namespace std;
 #include <vector>
 #include <map>
 
@@ -23,6 +22,15 @@ int HEIGHT = 2000;
 int SPRITE_FOOTMAN_RED = 1;
 int SPRITE_HUMAN_FARM = 2;
 
+int LAYER_WATER = 0;
+int LAYER_GROUND = 1;
+int LAYER_AIR = 2;
+
+int TERRAIN_WATER = 0;
+int TERRAIN_SHORE = 1;
+int TERRAIN_GROUND = 2;
+int TERRAIN_FOREST = 3;
+
 class Warcraft : public Scene {
     using Scene::Scene;
     // Map* map;
@@ -34,7 +42,7 @@ class Warcraft : public Scene {
     public:
 
     virtual void prepare() {
-        font = TTF_OpenFont("assets/fonts/titillium.ttf", 20);
+        font = TTF_OpenFont("assets/fonts/warcraft.ttf", 20);
         fps = new Fps(renderer, font);
                 
         map = new Map(
@@ -47,7 +55,7 @@ class Warcraft : public Scene {
         minimap = new Minimap(
             renderer, 
             200, 200, 
-            WIDTH, HEIGHT, 3
+            WIDTH, HEIGHT, 5
         );
 
         map->setMinimap(minimap);
@@ -58,9 +66,14 @@ class Warcraft : public Scene {
         // objects.insert({map->getId(), map});
 
         map->terrains = {
-            new Terrain(0, 0, {51, 51, 255}),
-            new Terrain(1, 1, {102, 178, 215}),
-            new Terrain(2, 1, {255, 255, 255})
+            // Water
+            new Terrain(TERRAIN_WATER, LAYER_WATER, {51, 51, 255}),
+            // Ice
+            new Terrain(TERRAIN_SHORE, LAYER_GROUND, {102, 178, 215}),
+            // Ground
+            new Terrain(TERRAIN_GROUND, LAYER_GROUND, {255, 255, 255}),
+            // Forest
+            new Terrain(TERRAIN_FOREST, LAYER_GROUND, {34, 139, 34}) // Dark green for forests            
         };
 
         map->tiles = {
@@ -97,11 +110,31 @@ class Warcraft : public Scene {
             {"1.2.1.1", {287, 288}},
             {"2.1.1.1", {289, 290}},
             {"2.1.1.2", {174}}, //271
-            {"1.2.2.1", {278}} //271
+            {"1.2.2.1", {278}}, //271,
+            // Base forest
+            {"3.3.3.3", {109, 110}},
+            // Forest crossing ground
+            {"2.3.3.3", {109}},
+            {"3.2.3.3", {109}},
+            {"2.2.3.3", {109}},
+            {"3.3.2.3", {109}},
+            {"2.3.2.3", {109}},
+            {"2.2.2.3", {109}},
+            {"3.3.3.2", {109}},
+            {"3.2.3.2", {109}},
+            {"2.2.3.2", {109}},
+            {"3.3.2.2", {109}},
+            {"2.3.2.2", {109}},
+            {"3.2.2.2", {109}},
+            {"3.2.2.3", {109}}, //372
+            {"2.3.3.2", {109}}, //372,
+
         };
 
+        std::cout << "Checkpoint" << std::endl;
 
         generate();
+
 
         sprites[SPRITE_FOOTMAN_RED] = (new Sprite(new Image(renderer, "assets/sprites/grunt.png"),
                                     72,
@@ -139,25 +172,29 @@ class Warcraft : public Scene {
                                     100,
                                     true))->addClip();
 
+
         for (int x=128; x<100*128; x+=128) {
             for (int y=128; y<100*128; y+=128) {
                 Farm* farm = new Farm(sprites[SPRITE_HUMAN_FARM]);
-                farm->setMap(map)->setPosition(x, y); 
-                // objects.insert({farm->getId(), farm});
-                addObject(farm);
+                farm->setMap(map);
+                if (farm->canExist(x-20, y-20, 64+20, 64+20)) {
+                    farm->setPosition(x, y); 
+                    addObject(farm);
+                }
 
             }
         }
 
         Footman* lastFootman;
-        for (int x=0; x<1*32; x+=32) {
-            for (int y=10; y<1*32; y+=32) {
+        for (int x=0; x<10*32; x+=32) {
+            for (int y=10; y<10*32; y+=32) {
                 Footman* footman = new Footman(sprites[SPRITE_FOOTMAN_RED]);
-                footman->setMap(map)
-                        ->setPosition(x, y); 
-                // objects.insert({footman->getId(), footman});
-                addObject(footman);
-                lastFootman = footman;
+                footman->setMap(map);
+                if (footman->canExist(x, y, 32, 32)) {
+                    footman->setPosition(x, y);
+                    addObject(footman);
+                    lastFootman = footman;
+                }
             }
         }
         lastFootman->select();
@@ -169,7 +206,7 @@ class Warcraft : public Scene {
 
     void generate() {
         srand(clock());
-        map->generate2(rand(), 0.05, {0.3, 0.55, 1});
+        map->generate2(rand(), 0.05, {0.2, 0.45, 0.8, 1});
         // map->import(
         //     {
         //         {0,1,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},

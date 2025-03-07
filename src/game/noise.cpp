@@ -3,7 +3,6 @@
 #include <cmath>
 namespace OpenSimplexNoise
 {
-  using namespace std;
 
   Noise::Noise()
     : m_stretch2d(-0.211324865405187) //(1/Math.sqrt(2+1)-1)/2;

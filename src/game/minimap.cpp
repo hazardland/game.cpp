@@ -47,16 +47,16 @@ void Minimap::setTerrain(int x, int y, int red, int blue, int green) {
     modified = true;
 }
 
-void Minimap::setObject(SDL_Rect* rect, int red, int blue, int green) {
+void Minimap::setUnit(SDL_Rect* rect, int red, int blue, int green) {
     SDL_FillRect(foregroundSurface, rect, SDL_MapRGB(foregroundSurface->format, red, blue, green));
 }
 
-void Minimap::addObject(Object* object) {
-    objects.push_back(object);
+void Minimap::addUnit(Unit* unit) {
+    units.push_back(unit);
 }
 
-void Minimap::clearObjects() {
-    objects.clear();
+void Minimap::clearUnits() {
+    units.clear();
 }
 
 void Minimap::prepare() {
@@ -68,7 +68,7 @@ void Minimap::prepare() {
     modified = false;
 }
 
-void Minimap::setMapData(vector<vector<Cell*>>& grid, int mapTileWidth, int mapTileHeight, float mapTileScale) {
+void Minimap::setMapData(std::vector<std::vector<Cell*>>& grid, int mapTileWidth, int mapTileHeight, float mapTileScale) {
     this->grid = &grid;
     this->mapTileWidth = mapTileWidth; 
     this->mapTileHeight = mapTileHeight; 
@@ -141,7 +141,7 @@ void Minimap::render(State* state) {
     // Clear old texture
     SDL_FillRect(foregroundSurface, NULL, 0); 
 
-    std::map<Uint32, vector<SDL_Rect>> rects;
+    std::map<Uint32, std::vector<SDL_Rect>> rects;
 
     int xTileFrom = ((frame.x*widthRatio) / (mapTileWidth*mapTileScale));
     int xTileTo = ((frame.w*widthRatio) / (mapTileWidth*mapTileScale)) + xTileFrom + 2;
@@ -160,14 +160,14 @@ void Minimap::render(State* state) {
                 // Get cell
                 Cell* cell = (*grid)[i][j];
 
-                // Iterate over objects in the cell
-                for(auto& objectList : cell->objects){
-                    for(Object* object : objectList){
+                // Iterate over units in the cell
+                for(auto& unitList : cell->units){
+                    for(Unit* unit : unitList){
                         SDL_Rect rect = {
-                            int(object->getX()/widthRatio), 
-                            int(object->getY()/heightRatio),
-                            int(object->getWidth()/widthRatio),
-                            int(object->getHeight()/heightRatio)
+                            int(unit->getX()/widthRatio), 
+                            int(unit->getY()/heightRatio),
+                            int(unit->getWidth()/widthRatio),
+                            int(unit->getHeight()/heightRatio)
                         };
 
                         rect.h = rect.h<2?2:rect.h;
@@ -175,7 +175,7 @@ void Minimap::render(State* state) {
                         if (isVisible(&rect)) {
                             translate(&rect);
                             rects[SDL_MapRGB(backgroundSurface->format,0,0,0)].push_back(rect); 
-                            rects[object->getMinimapColor(foregroundSurface->format)].push_back(rect);
+                            rects[unit->getMinimapColor(foregroundSurface->format)].push_back(rect);
                             rect.x -= 1;
                             rect.y -= 1;
                             rect.w += 2;

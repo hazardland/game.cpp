@@ -24,13 +24,22 @@ class Unit: public Object {
 private:
     int lastCellLeft, lastCellTop, lastCellRight, lastCellBottom;
     bool selected;
-    std::vector<std::pair<int, int>> cells;
+    int layer = 0;    // Layer where the unit exists in map
+    uint16_t allowedTerrains = 0;  // Default: No terrain allowed
+    bool ignoresTerrain = true;   // If true, unit ignores terrain checks
+    std::vector<std::pair<int, int>> cells; // Cells where unit exist in map
 
 public:
     Map* map;
     Minimap* minimap;
     Scene* scene;
+    // Render position is relateive to position but can be different
+    // Like can be x:-24, y:-24 which means it will be drown
+    // Sligthly up and left from parent position
+    // While main .position represents object in map
+    // .renderPosition determines where on screen the object is shown
     Position* renderPosition;
+    // Select position defines select area it is also relative to .position
     Position* selectPosition;
 
     // Setter methods
@@ -39,12 +48,13 @@ public:
 
     // Render methods
     virtual void render(State* state);
-    virtual SDL_FRect* getRenderPosition() override;
+    virtual SDL_FRect* getRenderPosition();
 
     //virtual void renderHitbox(State* state);
 
     // Map cell methods
     void updateMapCells();
+    bool canExist(float newX, float newY, float newWidth, float newHeight);
     bool canMove(float dx, float dy);
 
     // Position methods
@@ -54,6 +64,25 @@ public:
     // Selection methods
     bool isSelected();
     void select();
+
+
+    // Map related
+    virtual int getLayer();
+    virtual void setLayer(int layer);
+
+    // Terrain Management
+    void allowTerrain(int terrainId);                 // Allow a single terrain
+    void allowTerrains(std::initializer_list<int> terrains); // Allow multiple terrains
+    void removeTerrain(int terrainId);               // Remove a terrain
+    void ignoreTerrain();                                // Mark unit as flying
+    bool isTerrainAllowed(int terrainId) const;      // Check if terrain is allowed
+
+    // Minimap related
+    virtual bool hasMinimap();
+    virtual Uint32 getMinimapColor(SDL_PixelFormat* format);
+    
+    // Denig related
+    virtual void drawPosition(State* state);
 
     // Destructor
     ~Unit();

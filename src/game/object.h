@@ -2,6 +2,7 @@
 #define GAME_OBJECT_H
 
 #include <iostream>
+#include <vector>
 #include <SDL2/SDL_image.h>
 
 class State;
@@ -22,8 +23,8 @@ class Scene;
 class Object {
     private:
         int id = 0;   // Object ID
-        int layer = 0;    // Layer where the object exists
         SDL_FRect position;   // Object's position and size
+        std::vector<Position*> childPositions; // Track child positions
 
     public:
         static int count;    // Keep count of total objects
@@ -42,17 +43,14 @@ class Object {
         virtual float getY();
         virtual float getHeight();
         virtual float getWidth();
-        virtual int getLayer();
-        virtual void setLayer(int layer);
         virtual SDL_FRect* getPosition();
-        virtual SDL_FRect* getRenderPosition();
-        virtual Position* createPosition(float x, float y, float width, float height);
-        virtual void drawPosition(State* state);
+        // rename this to createChildPosition
+        virtual Position* createChildPosition(float x, float y, float width, float height);
+        void updateChildPositions();
         virtual bool isVisible(State* state);
-        virtual bool hasMinimap();
-        virtual Uint32 getMinimapColor(SDL_PixelFormat* format);
         virtual void update(State* state);
         virtual void render(State* state);
+        ~Object();
 };
 
 #endif // GAME_OBJECT

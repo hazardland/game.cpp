@@ -1,7 +1,6 @@
 #ifndef TEST_SCENE_SPRITE
 #define TEST_SCENE_SPRITE
 
-using namespace std;
 #include <iostream>
 #include <map>
 #include <vector>

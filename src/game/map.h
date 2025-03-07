@@ -1,8 +1,6 @@
 #ifndef GAME_MAP_H
 #define GAME_MAP_H
 
-using namespace std;
-
 #include <list>
 #include <stdio.h>
 #include <vector>

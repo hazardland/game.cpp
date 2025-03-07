@@ -1,8 +1,6 @@
 #ifndef TEST_FARM_H
 #define TEST_FARM_H
 
-using namespace std;
-
 #include <iostream>
 
 #include <game/sprite.h>
@@ -19,7 +17,8 @@ class Farm: public Unit {
         // cout << "Creating farm\n";
         setLayer(1);
         setSize(64, 64);
-        renderPosition = createPosition(0, 0, 64, 64);
+        allowTerrain(2);
+        renderPosition = createChildPosition(0, 0, 64, 64);
         body = sprite;
     }
     virtual Uint32 getMinimapColor(SDL_PixelFormat* format) {

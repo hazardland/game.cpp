@@ -36,7 +36,7 @@ Map::Map(Image* image,
     
     for (int x = 0; x < tilesPerWidth; x++)
     {
-        grid.push_back(vector<Cell*>());
+        grid.push_back(std::vector<Cell*>());
         for (int y = 0; y < tilesPerHeight; y++) {
             grid[x].push_back(new Cell(layerCount));
         }
@@ -155,45 +155,45 @@ void Map::render(State* state) {
                         }
                     }
 
-                    text->setText(to_string(borders[0])); //+"tl"
+                    text->setText(std::to_string(borders[0])); //+"tl"
                     text->setPosition(position->x+tileScale, position->y+tileScale);
                     // if (corner==0) text->setColor(255,255,255);
                     // else text->setColor(0,0,0);
                     text->render(state);
 
-                    text->setText(to_string(borders[1])); //+"tm"
+                    text->setText(std::to_string(borders[1])); //+"tm"
                     text->setPosition(position->x+position->w/2-text->getWidth()/2, position->y+tileScale);
                     text->render(state);
 
-                    text->setText(to_string(borders[2])); //+"tr"
+                    text->setText(std::to_string(borders[2])); //+"tr"
                     text->setPosition(position->x+position->w-text->getWidth()-tileScale, position->y+tileScale);
                     text->render(state);
 
 
-                    text->setText(to_string(borders[3])); //+"ml"
+                    text->setText(std::to_string(borders[3])); //+"ml"
                     text->setPosition(position->x+tileScale, position->y+position->h/2-text->getHeight()/2);
                     text->render(state);
 
 
-                    text->setText(to_string(borders[4])); //+"mid"
+                    text->setText(std::to_string(borders[4])); //+"mid"
                     text->setPosition(position->x+position->w/2-text->getWidth()/2, position->y+position->h/2-text->getHeight()/2);
                     text->render(state);
 
-                    text->setText(to_string(borders[5])); //+"mr"
+                    text->setText(std::to_string(borders[5])); //+"mr"
                     text->setPosition(position->x+position->w-text->getWidth()-tileScale, position->y+position->h/2-text->getHeight()/2);
                     text->render(state);
 
 
-                    text->setText(to_string(borders[6])); //+"bl"
+                    text->setText(std::to_string(borders[6])); //+"bl"
                     text->setPosition(position->x+tileScale, position->y+position->h-text->getHeight()-tileScale);
                     text->render(state);
 
-                    text->setText(to_string(borders[7])); //+"bm"
+                    text->setText(std::to_string(borders[7])); //+"bm"
                     text->setPosition(position->x+position->w/2-text->getWidth()/2, position->y+position->h-text->getHeight()-tileScale);
                     text->render(state);
 
 
-                    text->setText(to_string(borders[8])); //+"br"
+                    text->setText(std::to_string(borders[8])); //+"br"
                     text->setPosition(position->x+position->w-text->getWidth()-tileScale, position->y+position->h-text->getHeight()-tileScale);
                     text->render(state);
                 }
@@ -257,14 +257,14 @@ void Map::setMinimap(Minimap* minimap) {
     // minimap->updateMapSize(getWidth(), getHeight(), tileScale);
 }
 
-int Map::getTile(string key) {
+int Map::getTile(std::string key) {
     // cout << "requested tile " << key << "\n";        
     return tiles[key][random(0, tiles[key].size()-1)];        
 }
 
 // void Map::import(std::vector<std::vector<int>> data) {
 
-void Map::import(vector<vector<int>> data) {
+void Map::import(std::vector<std::vector<int>> data) {
     int height = data.size();
     int width = data[0].size();
     for (int y=0; y<height; y++)
@@ -278,7 +278,7 @@ void Map::import(vector<vector<int>> data) {
 
 void Map::generate1(int seed, 
                 float intensity,
-                vector<float> ranges) {
+                std::vector<float> ranges) {
 
     OpenSimplexNoise::Noise noise{seed};
     for (int x=0; x<tilesPerWidth; x++) {
@@ -301,7 +301,7 @@ void Map::generate1(int seed,
 void Map::generate2(
                 int seed, 
                 float intensity,
-                vector<float> ranges) {
+                std::vector<float> ranges) {
 
     OpenSimplexNoise::Noise noise{seed};
     for (int x=0; x<tilesPerWidth; x+=2) {
@@ -329,6 +329,7 @@ void Map::generate2(
 
 
 void Map::fillMap2() {
+    
     for (int x=0; x<tilesPerWidth; x++) {
         for (int y=0; y<tilesPerHeight; y++) {
             grid[x][y]->tile = getTile2(x, y);
@@ -412,36 +413,36 @@ int Map::getTile2(int x, int y) {
     //     0, 0  // 2 3
     // };
     
-    string result;
+    std::string result;
     if (corner==0) {
         result = 
-        to_string(borders[0]) + "." +
-        to_string(borders[1]) + "." +
-        to_string(borders[3]) + "." +
-        to_string(borders[4]);
+        std::to_string(borders[0]) + "." +
+        std::to_string(borders[1]) + "." +
+        std::to_string(borders[3]) + "." +
+        std::to_string(borders[4]);
     }
     if (corner==1) {
         result = 
-        to_string(borders[1]) + "." +
-        to_string(borders[2]) + "." +
-        to_string(borders[4]) + "." +
-        to_string(borders[5]);
+        std::to_string(borders[1]) + "." +
+        std::to_string(borders[2]) + "." +
+        std::to_string(borders[4]) + "." +
+        std::to_string(borders[5]);
 
     }
     if (corner==2) { 
         result = 
-        to_string(borders[3]) + "." +
-        to_string(borders[4]) + "." +
-        to_string(borders[6]) + "." +
-        to_string(borders[7]);
+        std::to_string(borders[3]) + "." +
+        std::to_string(borders[4]) + "." +
+        std::to_string(borders[6]) + "." +
+        std::to_string(borders[7]);
 
     }
     if (corner==3) {
         result = 
-        to_string(borders[4]) + "." +
-        to_string(borders[5]) + "." +
-        to_string(borders[7]) + "." +
-        to_string(borders[8]);        
+        std::to_string(borders[4]) + "." +
+        std::to_string(borders[5]) + "." +
+        std::to_string(borders[7]) + "." +
+        std::to_string(borders[8]);        
     }
 
     // printf("-- x: %d y: %d c: %d\n%d %d %d\n%d %d %d\n%d %d %d\n",

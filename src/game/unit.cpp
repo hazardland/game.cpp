@@ -4,6 +4,7 @@
 #include "game/map.h"
 #include "game/cell.h"
 #include "game/terrain.h"
+#include "game/camera.h"
 
 
 // Destructor
@@ -29,12 +30,15 @@ void Unit::addPosition(float x, float y) {
     if (canMove(x, y)) {
         Object::addPosition(x, y);
         updateMapCells();
+        updateChildPositions();        
     } else if (canMove(x, 0)) {
         Object::addPosition(x, 0);
         updateMapCells();
+        updateChildPositions();        
     } else if (canMove(0, y)) {
         Object::addPosition(0, y);
         updateMapCells();
+        updateChildPositions();
     }
 }
 
@@ -58,12 +62,20 @@ bool Unit::canMove(float dx, float dy) {
     float newY = getY() + dy;
     float newWidth = getWidth(); // + dw;
     float newHeight = getHeight(); // + dh;
+    return canExist(newX, newY, newWidth, newHeight);
+
+}
+
+bool Unit::canExist(float newX, float newY, float newWidth, float newHeight) {
+
+    // std::cout << "Checking farm can exist " << newX << "," << newY << std::endl;
 
     // Check if the new position would be outside the map's bounds
     if (newX < 0 || newX + newWidth > map->tilesPerWidth * map->tileWidth ||
         newY < 0 || newY + newHeight > map->tilesPerHeight * map->tileHeight) {
         return false;
     }
+
 
     // Calculate the cells this object would occupy after moving
     int left = static_cast<int>(newX / map->tileWidth);
@@ -72,10 +84,10 @@ bool Unit::canMove(float dx, float dy) {
     int bottom = static_cast<int>((newY + newHeight) / map->tileHeight);
 
     // Correct the boundaries if they are out of the map's bounds
-    left = max(0, left);
-    top = max(0, top);
-    right = min(map->tilesPerWidth - 1, right);
-    bottom = min(map->tilesPerHeight - 1, bottom);
+    left = std::max(0, left);
+    top = std::max(0, top);
+    right = std::min(map->tilesPerWidth - 1, right);
+    bottom = std::min(map->tilesPerHeight - 1, bottom);
 
     // Check every cell this object would occupy after moving
     for (int i = left; i <= right; i++) {
@@ -84,11 +96,12 @@ bool Unit::canMove(float dx, float dy) {
             if (map->grid[i][j]->terrain->layer != getLayer() && getLayer() != 0) {
                 return false;
             }
-            // if (map->grid[i][j]->terrain->layer != getLayer() && getLayer() != 0) {
-            //     return false;
-            // }                    
+            if (!ignoresTerrain && !isTerrainAllowed(map->grid[i][j]->terrain->id)) {
+                return false;
+            }
+
             // Get the objects in the current cell
-            auto& objects = map->grid[i][j]->objects[getLayer()];
+            auto& objects = map->grid[i][j]->units[getLayer()];
 
             // Check every object in the cell
             for (const auto& object : objects) {
@@ -120,10 +133,10 @@ void Unit::updateMapCells() {
     int bottom = static_cast<int>((getY() + getHeight()) / map->tileHeight);
 
     // Correct the boundaries if they are out of the map's bounds
-    left = max(0, left);
-    top = max(0, top);
-    right = min(map->tilesPerWidth - 1, right);
-    bottom = min(map->tilesPerHeight - 1, bottom);
+    left = std::max(0, left);
+    top = std::max(0, top);
+    right = std::min(map->tilesPerWidth - 1, right);
+    bottom = std::min(map->tilesPerHeight - 1, bottom);
 
     if(left == lastCellLeft && top == lastCellTop && right == lastCellRight && bottom == lastCellBottom){
         return;
@@ -131,7 +144,7 @@ void Unit::updateMapCells() {
     
     // Remove object from its current cells
     for (const auto& cell : cells) {
-        map->grid[cell.first][cell.second]->objects[getLayer()].remove(this);
+        map->grid[cell.first][cell.second]->units[getLayer()].remove(this);
     }
     cells.clear();
 
@@ -139,8 +152,8 @@ void Unit::updateMapCells() {
     // Add object to the new cells
     for (int i = left; i <= right; i++) {
         for (int j = top; j <= bottom; j++) {
-            map->grid[i][j]->objects[getLayer()].push_back(this);
-            cells.push_back(make_pair(i, j));
+            map->grid[i][j]->units[getLayer()].push_back(this);
+            cells.push_back(std::make_pair(i, j));
         }
     }     
 
@@ -149,7 +162,62 @@ void Unit::updateMapCells() {
     lastCellRight = right;
     lastCellBottom = bottom;        
 
+    
 }
+
+void Unit::drawPosition(State* state) {
+    SDL_SetRenderDrawColor(state->renderer, 161, 195, 69, 255);
+    SDL_RenderDrawRectF(state->renderer, state->camera->translate(getPosition()));
+    SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 0);
+}
+
+int Unit::getLayer() {
+    return layer;
+}
+
+void Unit::setLayer(int layer) {
+    this->layer = layer;
+}
+
+
+// Allow a single terrain
+void Unit::allowTerrain(int terrainId) {
+    ignoresTerrain = false;
+    allowedTerrains |= (1 << terrainId);
+}
+
+// Allow multiple terrains
+void Unit::allowTerrains(std::initializer_list<int> terrains) {
+    for (int terrainId : terrains) {
+        allowTerrain(terrainId);
+    }
+}
+
+// Remove a terrain
+void Unit::removeTerrain(int terrainId) {
+    allowedTerrains &= ~(1 << terrainId);
+}
+
+// Mark the unit as flying (ignores terrain)
+void Unit::ignoreTerrain() {
+    ignoresTerrain = true;
+}
+
+// Check if terrain is allowed (Flying units ignore terrain)
+bool Unit::isTerrainAllowed(int terrainId) const {
+    return ignoresTerrain || (allowedTerrains & (1 << terrainId));
+}
+
+
+bool Unit::hasMinimap() {
+    return false;
+}
+
+Uint32 Unit::getMinimapColor(SDL_PixelFormat* format) {
+    return 0;
+}
+
+
 
 // void Unit::~Unit() {
 //     // Implement destruction of the unit here if necessary
