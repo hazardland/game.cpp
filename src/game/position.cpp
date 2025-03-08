@@ -35,6 +35,16 @@ Position::Position(float x, float y, float width, float height) {
     this->parent = false;
 }
 
+Position::Position(float width, float height) {
+    this->width = width;
+    this->height = height;
+    this->parentX = nullptr;
+    this->parentY = nullptr;
+    this->parentWidth = nullptr;
+    this->parentHeight = nullptr;
+    this->parent = false;
+}
+
 Position::Position() {
     this->parent = false;
     this->parentX = nullptr;

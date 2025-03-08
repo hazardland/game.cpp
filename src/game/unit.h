@@ -28,8 +28,9 @@ private:
     uint16_t allowedTerrains = 0;  // Default: No terrain allowed
     bool ignoresTerrain = true;   // If true, unit ignores terrain checks
     std::vector<std::pair<int, int>> cells; // Cells where unit exist in map
-
-public:
+    
+    public:
+    bool moved;
     Map* map;
     Minimap* minimap;
     Scene* scene;
@@ -58,7 +59,7 @@ public:
     bool canMove(float dx, float dy);
 
     // Position methods
-    void addPosition(float x, float y) override;
+    bool changePosition(float x, float y);
     void setPosition(float x, float y) override;
 
     // Selection methods

@@ -31,6 +31,7 @@ class Object {
     public:
         static int count;    // Keep count of total objects
         Object();  // Declare constructor
+        // Object(Position* position);  // Declare constructor
         // Setter and getter methods
         void setId();
         int getId();

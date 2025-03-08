@@ -11,6 +11,10 @@ int Object::count = 0;
 
 Object::Object() : position(new Position()) {}
 
+// Object::Object(Position* position) {
+//     this->position = position;
+// }
+
 void Object::setId() {
     if (id==0) {
         Object::count++;

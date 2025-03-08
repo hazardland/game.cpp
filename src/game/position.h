@@ -20,7 +20,7 @@ public:
              float* parentWidth, float* parentHeight);
 
     Position(float x, float y, float width, float height);
-
+    Position(float width, float height);
     Position();
 
     ~Position() = default; // Add a virtual destructor

@@ -26,20 +26,25 @@ SDL_FRect* Unit::getRenderPosition() {
     return renderPosition->getSDL_FRect();
 }
 
-void Unit::addPosition(float x, float y) {
-    if (canMove(x, y)) {
-        Object::addPosition(x, y);
+
+bool Unit::changePosition(float byX, float byY) {
+    if (canMove(byX, byY)) {
+        addPosition(byX, byY);
         updateMapCells();
         updateChildPositions();        
-    } else if (canMove(x, 0)) {
-        Object::addPosition(x, 0);
+        return true;
+    } else if (canMove(byX, 0)) {
+        addPosition(byX, 0);
         updateMapCells();
         updateChildPositions();        
-    } else if (canMove(0, y)) {
-        Object::addPosition(0, y);
+        return true;
+    } else if (canMove(0, byY)) {
+        addPosition(0, byY);
         updateMapCells();
         updateChildPositions();
+        return true;
     }
+    return false;
 }
 
 void Unit::setPosition(float x, float y) {

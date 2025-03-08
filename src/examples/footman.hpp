@@ -24,7 +24,7 @@ class Footman: public Unit {
         Animation* body;
         Position* outline;
         int maxSpeed = 100;
-        int speed = 99;
+        int speed = 90;
         int mode = IDLE;
         int modeX = RIGHT;
         int modeY = DOWN;
@@ -33,7 +33,7 @@ class Footman: public Unit {
         bool cameraScroll = true; 
 
         Footman(Sprite* sprite) {
-            position = new Position(0, 0, 64, 46);
+            // position = new Position(32, 32);
             // cout << "Creating footman\n";
             setLayer(1);
             allowTerrains({1,2});
@@ -72,8 +72,8 @@ class Footman: public Unit {
         }
         // Speed concept needs to be solved
         // Here for example we have maximum speed 100
-        virtual void move(int deltaTime, float directionX, float directionY) {
-            addPosition ((directionX*deltaTime)/(maxSpeed+1-speed), (directionY*deltaTime)/(maxSpeed+1-speed));
+        virtual bool move(int deltaTime, float directionX, float directionY) {
+            return changePosition ((directionX*deltaTime)/(maxSpeed+1-speed), (directionY*deltaTime)/(maxSpeed+1-speed));
         }
 
         virtual void update(State* state) override {
@@ -102,8 +102,11 @@ class Footman: public Unit {
                 if (directionX==0 && directionY==0) {
                     mode = IDLE;
                 } else {
-                    mode = MOVE;
-                    move(state->clock->delta, directionX, directionY);
+                    if (move(state->clock->delta, directionX, directionY)) {
+                        mode = MOVE;
+                    } else {
+                        mode = IDLE;
+                    }
                     cameraFollow(state->camera);
                 }
             }
