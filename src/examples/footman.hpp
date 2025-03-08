@@ -33,6 +33,7 @@ class Footman: public Unit {
         bool cameraScroll = true; 
 
         Footman(Sprite* sprite) {
+            position = new Position(0, 0, 64, 46);
             // cout << "Creating footman\n";
             setLayer(1);
             allowTerrains({1,2});
@@ -42,7 +43,7 @@ class Footman: public Unit {
             body = new Animation(sprite, mode+modeX+modeY);
             body->pause = 0;
             renderPosition = createChildPosition(-24, -24, 72, 72);
-            outline = createChildPosition(-12, -12, 48, 48);
+            // outline = createChildPosition(-12, -12, 48, 48);
         }
         virtual Uint32 getMinimapColor(SDL_PixelFormat* format) {
             return SDL_MapRGBA(format, 255, 255, 0, 255);
@@ -164,7 +165,7 @@ class Footman: public Unit {
         }
 
         ~Footman() {
-            delete outline;
+            // delete outline;
         }
 
 };

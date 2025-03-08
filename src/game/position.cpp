@@ -1,5 +1,7 @@
 // File: position.cpp
 
+#include <iostream>
+
 #include "game/position.h"
 
 #include "game/camera.h"
@@ -18,6 +20,27 @@ Position::Position(float x, float y, float width, float height,
     this->parentHeight = parentHeight;
     this->parentWidthRatio = *parentWidth / width;
     this->parentHeightRatio = *parentHeight / height;
+    this->parent = true;
+}
+
+Position::Position(float x, float y, float width, float height) {
+    this->x = x;
+    this->y = y;
+    this->width = width;
+    this->height = height;
+    this->parentX = nullptr;
+    this->parentY = nullptr;
+    this->parentWidth = nullptr;
+    this->parentHeight = nullptr;
+    this->parent = false;
+}
+
+Position::Position() {
+    this->parent = false;
+    this->parentX = nullptr;
+    this->parentY = nullptr;
+    this->parentWidth = nullptr;
+    this->parentHeight = nullptr;
 }
 
 float Position::getX() {
@@ -45,8 +68,77 @@ SDL_FRect* Position::getSDL_FRect() {
     return &rect;
 }
 
+void Position::addPosition(float x, float y) {
+    if (parent) {
+        this->x += x;
+        this->y += y;
+        needsUpdate = true;
+    } else {
+        rect.x += x;
+        rect.y += y;
+    }
+}
+
+void Position::setPosition(float x, float y) {
+    if (parent) {
+        this->x = x;
+        this->y = y;
+        needsUpdate = true;
+    } else {
+        rect.x = x;
+        rect.y = y;
+    }
+}
+
+void Position::setSize(float width, float height) {
+    if (parent) {
+        this->width = width;
+        this->height = height;
+        needsUpdate = true;
+    } else {
+        rect.w = width;
+        rect.h = height;
+    }
+}
+
+void Position::setX(float x) {
+    if (parent) {
+        this->x = x;
+        needsUpdate = true;
+    } else {
+        rect.x = x;
+    }
+}
+
+void Position::setY(float y) {
+    if (parent) {
+        this->y = y;
+        needsUpdate = true;
+    } else {
+        rect.y = y;
+    }
+}
+
+void Position::setHeight(float height) {
+    if (parent) {
+        this->height = height;
+        needsUpdate = true;
+    } else {
+        rect.h = height;
+    }    
+}
+
+void Position::setWidth(float width) {
+    if (parent) {
+        this->width = width;
+        needsUpdate = true;
+    } else {
+        rect.w = width;
+    }    
+}
+
 void Position::recalculateIfNeeded() {
-    if (needsUpdate){
+    if (parent && needsUpdate){
         rect.x = *parentX + (x * ((*parentWidth / width) / parentWidthRatio));
         rect.y = *parentY + (y * ((*parentHeight / height) / parentHeightRatio));
         rect.w = width * ((*parentWidth / width) / parentWidthRatio);

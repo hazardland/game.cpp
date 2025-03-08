@@ -3,9 +3,7 @@
 #ifndef GAME_POSITION_H
 #define GAME_POSITION_H
 
-#include <iostream>
 #include <SDL2/SDL_image.h>
-
 #include <game/state.h>
 
 /**
@@ -20,15 +18,30 @@ public:
     Position(float x, float y, float width, float height,
              float* parentX, float* parentY,
              float* parentWidth, float* parentHeight);
+
+    Position(float x, float y, float width, float height);
+
+    Position();
+
     ~Position() = default; // Add a virtual destructor
 
     float getX();
     float getY();
     float getWidth();
     float getHeight();
+    void addPosition(float x, float y);
+    void setPosition(float x, float y);
+    void setSize(float width, float height);
+    void setX(float x);
+    void setY(float y);
+    void setHeight(float height);
+    void setWidth(float width);
+    
     void setRequiresUpdate();  // Mark that recalculation is needed
     SDL_FRect* getSDL_FRect();
     void draw(State* state);
+    
+    SDL_FRect rect;
 
 private:
     void recalculateIfNeeded();
@@ -40,7 +53,6 @@ private:
     float* parentHeight;
     float parentWidthRatio;
     float parentHeightRatio;
-    SDL_FRect rect;
     float x;
     float y;
     float width;

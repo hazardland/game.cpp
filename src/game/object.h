@@ -23,12 +23,14 @@ class Scene;
 class Object {
     private:
         int id = 0;   // Object ID
-        SDL_FRect position;   // Object's position and size
         std::vector<Position*> childPositions; // Track child positions
+        
+    protected:
+        Position* position;   // Object's position and size
 
     public:
         static int count;    // Keep count of total objects
-
+        Object();  // Declare constructor
         // Setter and getter methods
         void setId();
         int getId();
@@ -44,7 +46,6 @@ class Object {
         virtual float getHeight();
         virtual float getWidth();
         virtual SDL_FRect* getPosition();
-        // rename this to createChildPosition
         virtual Position* createChildPosition(float x, float y, float width, float height);
         void updateChildPositions();
         virtual bool isVisible(State* state);
