@@ -11,6 +11,7 @@
 #include <game/minimap.h>
 #include <game/terrain.h>
 #include <game/image.h>
+#include <game/select.h>
 
 
 #include <examples/enum.h>
@@ -36,6 +37,7 @@ class Warcraft : public Scene {
     // Map* map;
     // Minimap* minimap;
     TTF_Font* font;
+    TTF_Font* fontSmall;
     Text* fps;
     int ticks;
 
@@ -43,13 +45,14 @@ class Warcraft : public Scene {
 
     virtual void prepare() {
         font = TTF_OpenFont("assets/fonts/titillium.ttf", 20);
-        fps = new Fps(renderer, font);
+        fontSmall = TTF_OpenFont("assets/fonts/titillium.ttf", 10);
+        fps = new Fps(font);
                 
         map = new Map(
             new Image(renderer, "assets/sprites/winter.png"), 
             32, 32, 
             WIDTH, HEIGHT, 1, 3,
-            new Text(renderer, font)
+            new Text(font)
         );
 
         minimap = new Minimap(
@@ -188,7 +191,7 @@ class Warcraft : public Scene {
         Footman* lastFootman;
         for (int x=0; x<100*32; x+=32) {
             for (int y=10; y<100*32; y+=32) {
-                Footman* footman = new Footman(sprites[SPRITE_FOOTMAN_RED]);
+                Footman* footman = new Footman(sprites[SPRITE_FOOTMAN_RED], fontSmall);
                 footman->setMap(map);
                 if (footman->canExist(x, y, 32, 32)) {
                     footman->setPosition(x, y);
@@ -202,6 +205,8 @@ class Warcraft : public Scene {
         // objects.insert({minimap->getId(), minimap});
         // objects.insert({fps->getId(), fps});
         addObject(fps);
+
+        addObject(new Select({255,255,255,100},{1, 1, 1, 100}));
     }
 
     void generate() {

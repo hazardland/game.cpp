@@ -48,6 +48,7 @@ class Object {
         virtual float getWidth();
         virtual SDL_FRect* getPosition();
         virtual Position* createChildPosition(float x, float y, float width, float height);
+        virtual Position* createChildPosition(float x, float y);
         void updateChildPositions();
         virtual bool isVisible(State* state);
         virtual void update(State* state);

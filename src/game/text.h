@@ -21,17 +21,21 @@ class State;
  * and provides methods for rendering and manipulating the text.
  */
 class Text: public Object {
-public:
-    SDL_Texture* texture;
+private:
+    SDL_Texture* texture = NULL;
     TTF_Font* font;
-    SDL_Renderer* renderer;
     SDL_Color color;
     std::string text;
-    std::map<std::string, SDL_Texture*> cache;
-
-    Text(SDL_Renderer* renderer, TTF_Font* font, std::string text = "", int x = 0, int y = 0, SDL_Color color = {255, 255, 255});
-    void setText(std::string text);
-    void setColor(int red, int green, int blue);
+    // std::map<std::string, SDL_Texture*> cache;
+    bool prepared = false;
+    bool positionFixed = true;
+public:
+    Text(TTF_Font* font, std::string text = "", int x = 0, int y = 0, SDL_Color color = {255, 255, 255});
+    Text(TTF_Font* font, Position* position, std::string text = "", SDL_Color color = {255, 255, 255});
+    Text* setText(std::string text);
+    Text* appendText(std::string text);
+    Text* setColor(SDL_Color color);
+    Text* setPositionFixed(bool value);
     virtual void render(State* state) override;
     ~Text();
 };

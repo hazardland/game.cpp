@@ -19,6 +19,9 @@ public:
              float* parentX, float* parentY,
              float* parentWidth, float* parentHeight);
 
+    Position(float x, float y, float width, float height,
+             float* parentX, float* parentY);             
+
     Position(float x, float y, float width, float height);
     Position(float width, float height);
     Position();

@@ -42,7 +42,7 @@ Map::Map(Image* image,
         }
     }
     this->text = text;
-    this->text->color = SDL_Color(0, 0, 0);
+    this->text->setColor(SDL_Color(0, 0, 0));
 
 }
 

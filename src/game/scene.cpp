@@ -31,6 +31,8 @@ Scene::Scene(SDL_Window* window, int width, int height) {
     }
 
     renderer = SDL_CreateRenderer(window, preferedDriverId, SDL_RENDERER_ACCELERATED);
+    // renderer = SDL_CreateRenderer(window, preferedDriverId, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
     if (SDL_GetRendererInfo(renderer, &driverInfo)==0) {
         std::cout << "Chosen driver: " << driverInfo.name << std::endl;
     }

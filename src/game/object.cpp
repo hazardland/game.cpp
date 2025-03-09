@@ -103,6 +103,17 @@ Position* Object::createChildPosition(float x, float y, float width, float heigh
     return pos;                    
 }
 
+Position* Object::createChildPosition(float x, float y) {
+    Position* pos =  new Position(
+                        x, y, 
+                        1, 1, 
+                        &position->rect.x,
+                        &position->rect.y
+                    );
+    childPositions.push_back(pos);
+    return pos;                    
+}
+
 bool Object::isVisible(State* state) {
     return true;
 }

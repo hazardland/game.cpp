@@ -16,12 +16,11 @@ class State;
  */
 class Rectangle: public Object {
 public:
-    SDL_Renderer* renderer;
     SDL_Color background;
     SDL_Color border;
     bool visible;
 
-    Rectangle(SDL_Renderer* renderer, SDL_Color border = {}, SDL_Color background = {});
+    Rectangle(SDL_Color border = {}, SDL_Color background = {});
     void show();
     void hide();
     void render(State* state) override;

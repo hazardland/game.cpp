@@ -10,7 +10,7 @@ Here is what I managed to achieve on my hangover weekend:
 
 These are common challenges when working with warcraft2 assets.
 
-![alt text](./war2.gif)
+![alt text](./firstchar.gif)
 
 Lounch: ```py main.py```, use arrow keys to walk and spacebar to attack.
 

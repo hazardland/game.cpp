@@ -14,10 +14,8 @@ class Farm: public Unit {
     public:
     Sprite* body;
     Farm(Sprite* sprite) {
-        position = new Position(64, 64);
-        // cout << "Creating farm\n";
         setLayer(1);
-        // setSize(64, 64);
+        setSize(64, 64);
         allowTerrain(2);
         renderPosition = createChildPosition(0, 0, 64, 64);
         body = sprite;

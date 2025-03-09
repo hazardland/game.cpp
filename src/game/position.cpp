@@ -6,7 +6,7 @@
 
 #include "game/camera.h"
 
-
+// Positin with relative x, y, width, height
 Position::Position(float x, float y, float width, float height,
                    float* parentX, float* parentY,
                    float* parentWidth, float* parentHeight) {
@@ -20,9 +20,24 @@ Position::Position(float x, float y, float width, float height,
     this->parentHeight = parentHeight;
     this->parentWidthRatio = *parentWidth / width;
     this->parentHeightRatio = *parentHeight / height;
-    this->parent = true;
 }
 
+// Position with relative x, y
+Position::Position(float x, float y, float width, float height,
+                    float* parentX, float* parentY) {
+    // printf("Creating parent x: %d\n", x);
+    this->x = x;
+    this->y = y;
+    this->width = width;
+    this->height = height;
+    this->parentX = parentX;
+    this->parentY = parentY;
+    this->parentWidth = nullptr;
+    this->parentHeight = nullptr;
+}
+
+
+// Position with no relative
 Position::Position(float x, float y, float width, float height) {
     this->x = x;
     this->y = y;
@@ -32,9 +47,10 @@ Position::Position(float x, float y, float width, float height) {
     this->parentY = nullptr;
     this->parentWidth = nullptr;
     this->parentHeight = nullptr;
-    this->parent = false;
 }
 
+
+// Position with no relative, just width and height
 Position::Position(float width, float height) {
     this->width = width;
     this->height = height;
@@ -42,11 +58,9 @@ Position::Position(float width, float height) {
     this->parentY = nullptr;
     this->parentWidth = nullptr;
     this->parentHeight = nullptr;
-    this->parent = false;
 }
 
 Position::Position() {
-    this->parent = false;
     this->parentX = nullptr;
     this->parentY = nullptr;
     this->parentWidth = nullptr;
@@ -79,40 +93,55 @@ SDL_FRect* Position::getSDL_FRect() {
 }
 
 void Position::addPosition(float x, float y) {
-    if (parent) {
+    if (parentX!=nullptr) {
         this->x += x;
-        this->y += y;
         needsUpdate = true;
     } else {
         rect.x += x;
+    }
+    if (parentY!=nullptr) {
+        this->y += y;
+        needsUpdate = true;
+    } else {
         rect.y += y;
     }
 }
 
 void Position::setPosition(float x, float y) {
-    if (parent) {
+    if (parentX!=nullptr) {
         this->x = x;
-        this->y = y;
         needsUpdate = true;
     } else {
         rect.x = x;
+    }
+    if (parentY!=nullptr) {
+        this->y = y;
+        needsUpdate = true;
+    } else {
         rect.y = y;
     }
 }
 
 void Position::setSize(float width, float height) {
-    if (parent) {
+
+    if (parentWidth!=nullptr) {
         this->width = width;
-        this->height = height;
         needsUpdate = true;
     } else {
         rect.w = width;
+    };
+ 
+    if (parentHeight!=nullptr) {
+        this->height = height;
+        needsUpdate = true;
+    } else {
         rect.h = height;
     }
+
 }
 
 void Position::setX(float x) {
-    if (parent) {
+    if (parentX!=nullptr) {
         this->x = x;
         needsUpdate = true;
     } else {
@@ -121,7 +150,7 @@ void Position::setX(float x) {
 }
 
 void Position::setY(float y) {
-    if (parent) {
+    if (parentY!=nullptr) {
         this->y = y;
         needsUpdate = true;
     } else {
@@ -130,7 +159,7 @@ void Position::setY(float y) {
 }
 
 void Position::setHeight(float height) {
-    if (parent) {
+    if (parentHeight!=nullptr) {
         this->height = height;
         needsUpdate = true;
     } else {
@@ -139,7 +168,7 @@ void Position::setHeight(float height) {
 }
 
 void Position::setWidth(float width) {
-    if (parent) {
+    if (parentWidth!=nullptr) {
         this->width = width;
         needsUpdate = true;
     } else {
@@ -148,11 +177,21 @@ void Position::setWidth(float width) {
 }
 
 void Position::recalculateIfNeeded() {
-    if (parent && needsUpdate){
-        rect.x = *parentX + (x * ((*parentWidth / width) / parentWidthRatio));
-        rect.y = *parentY + (y * ((*parentHeight / height) / parentHeightRatio));
-        rect.w = width * ((*parentWidth / width) / parentWidthRatio);
-        rect.h = height * ((*parentHeight / height) / parentHeightRatio);
+    if (needsUpdate){
+        if (parentX!=nullptr) {
+            if (parentWidth!=nullptr) {
+                rect.x = *parentX + (x * ((*parentWidth / width) / parentWidthRatio));
+                rect.y = *parentY + (y * ((*parentHeight / height) / parentHeightRatio));
+            } else {
+                rect.x = *parentX + x;
+                rect.y = *parentY + y;
+                // printf("Updating relative x: %.2f + parentX: %.2f, y: %.2f + parentY: %.2f\n", x, *parentX, y, *parentY);
+            }
+        }
+        if (parentWidth!=nullptr) {
+            rect.w = width * ((*parentWidth / width) / parentWidthRatio);
+            rect.h = height * ((*parentHeight / height) / parentHeightRatio);
+        }
         needsUpdate = false;
     }
 }

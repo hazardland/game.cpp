@@ -7,54 +7,102 @@
 
 #include "game/object.h"
 #include "game/state.h"
+#include "game/camera.h"
 
-Text::Text(SDL_Renderer* renderer, TTF_Font* font, std::string text, int x, int y, SDL_Color color) {
+Text::Text(TTF_Font* font, std::string text, int x, int y, SDL_Color color) {
     setPosition(x, y);
     this->color = color;
     this->font = font;
-    this->renderer = renderer;
+    positionFixed = true;
+    // this->renderer = renderer;
 }
 
-void Text::setText(std::string text) {
+Text::Text(TTF_Font* font, Position* position, std::string text, SDL_Color color) {
+    this->position = position;
+    this->color = color;
+    this->font = font;
+    // this->renderer = renderer;
+    positionFixed = false;
+}
+
+Text* Text::setText(std::string text) {
     if (this->text==text){
-        return;
+        return this;
     }
-    if (cache.contains(text)) {
-        //printf("Cache hit %s\n", text);
-        texture = cache[text];
-        this->text = text;
-        int width;
-        int height;
-        SDL_QueryTexture(texture, NULL, NULL, &width, &height);
-        setSize(width, height);
-        return;
-    }
+    prepared = false;
     this->text = text;
-    // SDL_DestroyTexture(texture);
-    SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
-    if (surface==NULL) {
-        printf("Failed to render text: %s", SDL_GetError());            
-    }
-    setSize(surface->w, surface->h);
-    texture = NULL;
-    cache[text] = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
-    texture = cache[text];
+    return this;
 }
 
-void Text::setColor(int red, int green, int blue) {
-    color.r = red;
-    color.g = green;
-    color.b = blue;
+Text* Text::appendText(std::string text) {
+    setText(this->text + text);
+    return this;
+}
+
+Text* Text::setColor(SDL_Color color) {
+    this->color.r = color.r;
+    this->color.g = color.g;
+    this->color.b = color.b;
+    this->color.a = color.a;
+    return this;
 }
 
 void Text::render(State* state) {
-    SDL_RenderCopyF(renderer, texture, NULL, getPosition());
+    if (text.empty()) {
+        return;
+    }
+    if (!prepared) {
+        // if (cache.contains(text)) {
+        //     //printf("Cache hit %s\n", text);
+        //     texture = cache[text];
+        //     int width;
+        //     int height;
+        //     SDL_QueryTexture(texture, NULL, NULL, &width, &height);
+        //     setSize(width, height);
+        // } else {
+        //     // SDL_DestroyTexture(texture);
+        //     SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
+        //     if (surface==NULL) {
+        //         printf("Failed to render text: %s", SDL_GetError());            
+        //     }
+        //     setSize(surface->w, surface->h);
+        //     texture = NULL;
+        //     cache[text] = SDL_CreateTextureFromSurface(state->renderer, surface);
+        //     SDL_FreeSurface(surface);
+        //     texture = cache[text];
+        // }
+
+        SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
+        if (surface==NULL) {
+            printf("Failed to render text: %s", SDL_GetError());            
+        }
+        setSize(surface->w, surface->h);
+        if (texture!=nullptr) {
+            SDL_DestroyTexture(texture);            
+        }
+        texture = SDL_CreateTextureFromSurface(state->renderer, surface);
+        SDL_FreeSurface(surface);
+
+        prepared = true;
+    }
+    // printf("rendering tex");
+    if (positionFixed) {
+        SDL_RenderCopyF(state->renderer, texture, NULL, getPosition());
+    } else {
+        SDL_RenderCopyF(state->renderer, texture, NULL, state->camera->translate(getPosition()));
+    }
+}
+
+Text* Text::setPositionFixed(bool value) {
+    positionFixed = value;
+    return this;
 }
 
 Text::~Text() {
-    SDL_DestroyTexture(texture);
-    for (auto &item : cache) {
-        SDL_DestroyTexture(item.second);
+    if (texture) {
+        SDL_DestroyTexture(texture);
     }
+    // for (auto &item : cache) {
+    //     SDL_DestroyTexture(item.second);
+    // }
 }
