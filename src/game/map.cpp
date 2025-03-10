@@ -27,7 +27,7 @@ Map::Map(Image* image,
     this->tileHeight = tileHeight;
     this->tilesPerWidth = tilesPerWidth;
     this->tilesPerHeight = tilesPerHeight;
-    this->tileScale = tileScale;
+    this->tileScale = 1;
     clip = new Clip(image, 
                         tileWidth, 
                         tileHeight, 
@@ -42,7 +42,7 @@ Map::Map(Image* image,
         }
     }
     this->text = text;
-    this->text->setColor(SDL_Color(0, 0, 0));
+    this->text->setColor(SDL_Color(255, 255, 255))->enableCache();
 
 }
 
@@ -87,7 +87,7 @@ void Map::render(State* state) {
                 position = state->camera->translate(&location);
                 image->render(grid[x][y]->rect, position);
                 
-                if (debug){
+                if (true){
 
                     // printf("%d ", clip->getFrame(grid[x][y])->rect.x);
                     SDL_SetRenderDrawColor(image->renderer, 0, 0, 0, 255);
@@ -155,46 +155,83 @@ void Map::render(State* state) {
                         }
                     }
 
-                    text->setText(std::to_string(borders[0])); //+"tl"
-                    text->setPosition(position->x+tileScale, position->y+tileScale);
-                    // if (corner==0) text->setColor(255,255,255);
-                    // else text->setColor(0,0,0);
+                    int topLeft;
+                    int topRight;
+                    int botLeft;
+                    int botRight;
+
+                    if (corner==0) {
+                        topLeft = borders[0];
+                        topRight = borders[1];
+                        botLeft = borders[3];
+                        botRight = borders[4];
+                    }
+                    if (corner==1) {
+                        topLeft = borders[1];
+                        topRight = borders[2];
+                        botLeft = borders[4];
+                        botRight = borders[5];
+                
+                    }
+                    if (corner==2) { 
+                        topLeft = borders[3];
+                        topRight = borders[4];
+                        botLeft = borders[6];
+                        botRight = borders[7];
+                
+                    }
+                    if (corner==3) {
+                        topLeft = borders[4];
+                        topRight = borders[5];
+                        botLeft = borders[7];
+                        botRight = borders[8];
+                    }
+
+                    
+                    // text->setText(result); //+"tl"
+                    // text->setPosition(position->x+1, position->y+1);
+                    // text->render(state);
+                    
+                    text->setText(std::to_string(topLeft)); //+"tl"
+                    text->setPosition(position->x+1, position->y+1);
                     text->render(state);
 
-                    text->setText(std::to_string(borders[1])); //+"tm"
-                    text->setPosition(position->x+position->w/2-text->getWidth()/2, position->y+tileScale);
-                    text->render(state);
+                        // text->setText(std::to_string(borders[1])); //+"tm"
+                        // text->setPosition(position->x+position->w/2-text->getWidth()/2, position->y+tileScale);
+                        // text->render(state);
 
-                    text->setText(std::to_string(borders[2])); //+"tr"
-                    text->setPosition(position->x+position->w-text->getWidth()-tileScale, position->y+tileScale);
-                    text->render(state);
+                    text->setColor({255,255,255,255});
 
-
-                    text->setText(std::to_string(borders[3])); //+"ml"
-                    text->setPosition(position->x+tileScale, position->y+position->h/2-text->getHeight()/2);
+                    text->setText(std::to_string(topRight)); //+"tr"
+                    text->setPosition(position->x+position->w-text->getWidth()-1, position->y+1);
                     text->render(state);
 
 
-                    text->setText(std::to_string(borders[4])); //+"mid"
-                    text->setPosition(position->x+position->w/2-text->getWidth()/2, position->y+position->h/2-text->getHeight()/2);
+                        // text->setText(std::to_string(borders[3])); //+"ml"
+                        // text->setPosition(position->x+tileScale, position->y+position->h/2-text->getHeight()/2);
+                        // text->render(state);
+
+
+                        // text->setText(std::to_string(borders[4])); //+"mid"
+                        // text->setPosition(position->x+position->w/2-text->getWidth()/2, position->y+position->h/2-text->getHeight()/2);
+                        // text->render(state);
+
+                        // text->setText(std::to_string(borders[5])); //+"mr"
+                        // text->setPosition(position->x+position->w-text->getWidth()-tileScale, position->y+position->h/2-text->getHeight()/2);
+                        // text->render(state);
+
+
+                    text->setText(std::to_string(botLeft)); //+"bl"
+                    text->setPosition(position->x+1, position->y+position->h-text->getHeight()-1);
                     text->render(state);
 
-                    text->setText(std::to_string(borders[5])); //+"mr"
-                    text->setPosition(position->x+position->w-text->getWidth()-tileScale, position->y+position->h/2-text->getHeight()/2);
-                    text->render(state);
+                        // text->setText(std::to_string(borders[7])); //+"bm"
+                        // text->setPosition(position->x+position->w/2-text->getWidth()/2, position->y+position->h-text->getHeight()-tileScale);
+                        // text->render(state);
 
 
-                    text->setText(std::to_string(borders[6])); //+"bl"
-                    text->setPosition(position->x+tileScale, position->y+position->h-text->getHeight()-tileScale);
-                    text->render(state);
-
-                    text->setText(std::to_string(borders[7])); //+"bm"
-                    text->setPosition(position->x+position->w/2-text->getWidth()/2, position->y+position->h-text->getHeight()-tileScale);
-                    text->render(state);
-
-
-                    text->setText(std::to_string(borders[8])); //+"br"
-                    text->setPosition(position->x+position->w-text->getWidth()-tileScale, position->y+position->h-text->getHeight()-tileScale);
+                    text->setText(std::to_string(botRight)); //+"br"
+                    text->setPosition(position->x+position->w-text->getWidth()-1, position->y+position->h-text->getHeight()-1);
                     text->render(state);
                 }
             }
@@ -211,49 +248,9 @@ void Map::setTerrain(int x, int y, int type) {
     }
 }
 
-// // Implement setMinimap method
-// void Map::setMinimap(Minimap* minimap) {
-//     // Implementation details
-// }
-
-// // Implement getTile method
-// int Map::getTile(string key) {
-//     // Implementation details
-// }
-
-// // // Implement import method
-// // void Map::import(vector<vector<int>> data) {
-// //     // Implementation details
-// // }
-
-// // Implement generate1 method
-// void Map::generate1(int seed, float intensity, vector<float> ranges) {
-//     // Implementation details
-// }
-
-// // Implement generate2 method
-// void Map::generate2(int seed, float intensity, vector<float> ranges) {
-//     // Implementation details
-// }
-
-// // Implement fillMap2 method
-// void Map::fillMap2() {
-//     // Implementation details
-// }
-
-// // Implement getTile2 method
-// int Map::getTile2(int x, int y) {
-//     // Implementation details
-// }
-
-// // Implement random method
-// int Map::random(int min, int max) {
-//     // Implementation details
-// }
-
 void Map::setMinimap(Minimap* minimap) {
     this->minimap = minimap;
-    minimap->setMapData(grid, tileWidth, tileHeight, tileScale);
+    minimap->setMapData(grid, tileWidth, tileHeight);
     // minimap->updateMapSize(getWidth(), getHeight(), tileScale);
 }
 

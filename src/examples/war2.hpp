@@ -18,8 +18,8 @@
 #include <examples/footman.hpp>
 #include <examples/farm.hpp>
 
-int WIDTH = 2000;
-int HEIGHT = 2000;
+int WIDTH = 200;
+int HEIGHT = 200;
 int SPRITE_FOOTMAN_RED = 1;
 int SPRITE_HUMAN_FARM = 2;
 
@@ -52,13 +52,13 @@ class Warcraft : public Scene {
             new Image(renderer, "assets/sprites/winter.png"), 
             32, 32, 
             WIDTH, HEIGHT, 1, 3,
-            new Text(font)
+            new Text(fontSmall)
         );
 
         minimap = new Minimap(
             renderer, 
-            200, 200, 
-            WIDTH, HEIGHT, 5
+            500, 500, 
+            WIDTH, HEIGHT, 3
         );
 
         map->setMinimap(minimap);
@@ -115,22 +115,22 @@ class Warcraft : public Scene {
             {"2.1.1.2", {174}}, //271
             {"1.2.2.1", {278}}, //271,
             // Base forest
-            {"3.3.3.3", {109, 110}},
+            {"3.3.3.3", {108, 109, 111, 112, 113, 114, 119, 120}},
             // Forest crossing ground
-            {"2.3.3.3", {109}},
-            {"3.2.3.3", {109}},
-            {"2.2.3.3", {109}},
-            {"3.3.2.3", {109}},
-            {"2.3.2.3", {109}},
-            {"2.2.2.3", {109}},
-            {"3.3.3.2", {109}},
-            {"3.2.3.2", {109}},
-            {"2.2.3.2", {109}},
-            {"3.3.2.2", {109}},
-            {"2.3.2.2", {109}},
-            {"3.2.2.2", {109}},
-            {"3.2.2.3", {109}}, //372
-            {"2.3.3.2", {109}}, //372,
+            {"2.3.3.3", {129, 104}},
+            {"3.2.3.3", {107, 131}},
+            {"2.2.3.3", {121}},
+            {"3.3.2.3", {102, 127}},
+            {"2.3.2.3", {115, 117, 128}},
+            {"2.2.2.3", {379}},
+            {"3.3.3.2", {133, 110}},
+            {"3.2.3.2", {115, 118}},
+            {"2.2.3.2", {379}},
+            {"3.3.2.2", {124, 134}},
+            {"2.3.2.2", {102}},
+            {"3.2.2.2", {379}},
+            {"3.2.2.3", {379}}, //372
+            {"2.3.3.2", {379}}, //372,
 
         };
 
@@ -176,8 +176,8 @@ class Warcraft : public Scene {
                                     true))->addClip();
 
 
-        for (int x=128; x<100*128; x+=128) {
-            for (int y=128; y<100*128; y+=128) {
+        for (int x=128; x<20*128; x+=128) {
+            for (int y=128; y<20*128; y+=128) {
                 Farm* farm = new Farm(sprites[SPRITE_HUMAN_FARM]);
                 farm->setMap(map);
                 if (farm->canExist(x-20, y-20, 64+20, 64+20)) {
@@ -188,9 +188,9 @@ class Warcraft : public Scene {
             }
         }
 
-        Footman* lastFootman;
-        for (int x=0; x<100*32; x+=32) {
-            for (int y=10; y<100*32; y+=32) {
+        Footman* lastFootman = NULL;
+        for (int x=0; x<20*32; x+=32) {
+            for (int y=10; y<20*32; y+=32) {
                 Footman* footman = new Footman(sprites[SPRITE_FOOTMAN_RED], fontSmall);
                 footman->setMap(map);
                 if (footman->canExist(x, y, 32, 32)) {
@@ -200,7 +200,9 @@ class Warcraft : public Scene {
                 }
             }
         }
-        lastFootman->select();
+        if (lastFootman!=nullptr) {
+            lastFootman->select();
+        }
 
         // objects.insert({minimap->getId(), minimap});
         // objects.insert({fps->getId(), fps});

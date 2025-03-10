@@ -26,10 +26,10 @@ Minimap::Minimap(SDL_Renderer* renderer,
     frame.h = minimapHeight;
     setPosition(0, 0);
     setSize(minimapWidth, minimapHeight);
-    backgroundSurface = SDL_CreateRGBSurfaceWithFormat(0, tilesPerHeight * minimapScale, tilesPerWidth * minimapScale, 0, SDL_PIXELFORMAT_RGBA32);
+    backgroundSurface = SDL_CreateRGBSurfaceWithFormat(0, tilesPerWidth * minimapScale, tilesPerHeight * minimapScale, 0, SDL_PIXELFORMAT_RGBA32);
+    
     prepare();
 
-    //foregroundSurface = SDL_CreateRGBSurfaceWithFormat(0, tilesPerHeight * scale, tilesPerWidth * scale, 0, SDL_PIXELFORMAT_RGBA32);
     foreground = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, frame.w, frame.h);
     SDL_SetTextureBlendMode(foreground, SDL_BLENDMODE_BLEND);
 
@@ -37,12 +37,21 @@ Minimap::Minimap(SDL_Renderer* renderer,
 
 }
 
-void Minimap::setTerrain(int x, int y, int red, int blue, int green) {
+// This is called per every tile in map
+void Minimap::setTerrain(int cell, int row, int red, int blue, int green) {
     SDL_Rect rect;
-    rect.x = x*minimapScale;
-    rect.y = y*minimapScale;
-    rect.h = minimapScale<1?1:minimapScale;
-    rect.w = minimapScale<1?1:minimapScale;
+    
+    rect.x = cell*minimapScale;
+    rect.y = row*minimapScale;
+    rect.h = minimapScale;
+    rect.w = minimapScale;
+
+    // rect.x = x * widthRatio;
+    // rect.y = y * heightRatio;
+    // rect.h = widthRatio;
+    // rect.w = heightRatio;
+
+
     SDL_FillRect(backgroundSurface, &rect, SDL_MapRGB(backgroundSurface->format, red, blue, green));
     modified = true;
 }
@@ -68,13 +77,12 @@ void Minimap::prepare() {
     modified = false;
 }
 
-void Minimap::setMapData(std::vector<std::vector<Cell*>>& grid, int mapTileWidth, int mapTileHeight, float mapTileScale) {
+void Minimap::setMapData(std::vector<std::vector<Cell*>>& grid, int mapTileWidth, int mapTileHeight) {
     this->grid = &grid;
     this->mapTileWidth = mapTileWidth; 
     this->mapTileHeight = mapTileHeight; 
-    this->mapTileScale = mapTileScale;
-    widthRatio = (mapTileWidth*mapTileScale)/minimapScale;
-    heightRatio = (mapTileHeight*mapTileScale)/minimapScale;
+    // widthRatio = mapTileWidth / minimapScale;
+    // heightRatio = mapTileHeight / minimapScale;
 }
 
 void Minimap::update(State* state) {
@@ -84,45 +92,53 @@ void Minimap::update(State* state) {
 
     drag->update(state);
 
+    // This allows to scroll map with scope drag
     bool manualPick = false;
     if ((mouse->leftClick || mouse->leftDragActive) && mouse->inside(getPosition())) {
-        // state->camera->x = ((mouse->x - getX())/minimapScale) * (map->getWidth()/tilesPerWidth) - camera->width/2; 
-        // state->camera->y = ((mouse->y - getY())/minimapScale) * (map->getHeight()/tilesPerHeight) - camera->height/2;
 
-        camera->x = ((mouse->x - getX() + frame.x)) * widthRatio - camera->width/2; 
-        camera->y = ((mouse->y - getY() + frame.y)) * heightRatio - camera->height/2;
+        camera->x = (((mouse->x - getX() + frame.x)) / minimapScale) * mapTileWidth - camera->width/2; 
+        camera->y = (((mouse->y - getY() + frame.y)) / minimapScale) * mapTileHeight - camera->height/2;
+
         manualPick = true;
     }
 
     // Prepare scope rectangle
-    scope.x = camera->x / widthRatio;
-    scope.y = camera->y / heightRatio;
-    scope.w = camera->width / widthRatio;
-    scope.h = camera->height / heightRatio;
+    scope.x = (camera->x/mapTileWidth) * minimapScale - frame.x + getX();
+    scope.y = (camera->y/mapTileHeight) * minimapScale - frame.y + getY();
+    scope.w = (camera->width/mapTileWidth) * minimapScale;
+    scope.h = (camera->height/mapTileHeight) * minimapScale;
 
     if (!manualPick) {
-
-        frame.x = scope.x + scope.w/2 - frame.w/2;
-        frame.y = scope.y + scope.h/2 - frame.h/2;
-
-        if (frame.x+frame.w > tilesPerWidth*minimapScale) {
-            frame.x -= ((frame.x+frame.w) - (tilesPerWidth*minimapScale)); 
-        }
-
-        if (frame.y+frame.h > tilesPerHeight*minimapScale) {
-            frame.y -= ((frame.y+frame.h) - (tilesPerHeight*minimapScale)); 
-        }
-
-        if (frame.x<0) {
-            frame.x = 0;
-        }
-        if (frame.y<0) {
-            frame.y = 0;
-        }
-
+        frame.x = ((camera->x/mapTileWidth) * minimapScale) - frame.w / 2;
+        frame.y = ((camera->y/mapTileWidth) * minimapScale) - frame.h / 2;
+        if (frame.x<0) {frame.x=0;};
+        if (frame.y<0) {frame.y=0;};
+        if ((frame.x+frame.w)/minimapScale>tilesPerWidth) {frame.x=tilesPerWidth*minimapScale-frame.w;};
+        if ((frame.y+frame.h)/minimapScale>tilesPerHeight) {frame.y=tilesPerHeight*minimapScale-frame.h;};
     }
-    scope.x += getX() - frame.x;
-    scope.y += getY() - frame.y;
+
+    // if (!manualPick) {
+
+    //     frame.x = scope.x + scope.w/2 - frame.w/2;
+    //     frame.y = scope.y + scope.h/2 - frame.h/2;
+        
+    //     if (frame.x+frame.w > tilesPerWidth*minimapScale) {
+    //         frame.x = ((frame.x+frame.w) - (tilesPerWidth*minimapScale)); 
+    //     }
+    //     if (frame.y+frame.h > tilesPerHeight*minimapScale) {
+    //         frame.y = ((frame.y+frame.h) - (tilesPerHeight*minimapScale)); 
+    //     }
+        
+    //     if (frame.x<0) {
+    //         frame.x = 0;
+    //     }
+    //     if (frame.y<0) {
+    //         frame.y = 0;
+    //     }
+
+    // }
+    // scope.x += getX() - frame.x;
+    // scope.y += getY() - frame.y;
 
 }
 
@@ -133,8 +149,10 @@ void Minimap::render(State* state) {
         prepare();
     }
 
+    // SDL_Rect mapFrame = getMapFrame();
     // Render backgroundSurface
     SDL_RenderCopyF(renderer, background, &frame, getPosition());
+    renderRectBorder(getPosition(), 102, 5, 51, 255);
 
     // Lock foreground texture and prepare forground surface
     SDL_LockTextureToSurface(foreground, NULL, &foregroundSurface);
@@ -143,10 +161,10 @@ void Minimap::render(State* state) {
 
     std::map<Uint32, std::vector<SDL_Rect>> rects;
 
-    int xTileFrom = ((frame.x*widthRatio) / (mapTileWidth*mapTileScale));
-    int xTileTo = ((frame.w*widthRatio) / (mapTileWidth*mapTileScale)) + xTileFrom + 2;
-    int yTileFrom = ((frame.y*heightRatio) / (mapTileHeight*mapTileScale));
-    int yTileTo = ((frame.h*heightRatio) / (mapTileHeight*mapTileScale)) + yTileFrom + 2;
+    int xTileFrom = frame.x / minimapScale - 2;
+    int xTileTo = xTileFrom + frame.w / minimapScale + 4;
+    int yTileFrom = frame.y / minimapScale - 2;
+    int yTileTo = frame.h / minimapScale + yTileFrom + 4;
     if (xTileFrom<0) xTileFrom = 0;
     if (yTileFrom<0) yTileFrom = 0;
     if (xTileTo>tilesPerWidth) xTileTo = tilesPerWidth;
@@ -164,10 +182,10 @@ void Minimap::render(State* state) {
                 for(auto& unitList : cell->units){
                     for(Unit* unit : unitList){
                         SDL_Rect rect = {
-                            int(unit->getX()/widthRatio), 
-                            int(unit->getY()/heightRatio),
-                            int(unit->getWidth()/widthRatio),
-                            int(unit->getHeight()/heightRatio)
+                            int((unit->getX() / mapTileWidth) * minimapScale), 
+                            int((unit->getY() / mapTileHeight) * minimapScale),
+                            int((unit->getWidth() / mapTileWidth) * minimapScale),
+                            int((unit->getHeight() / mapTileHeight) * minimapScale)
                         };
 
                         rect.h = rect.h<2?2:rect.h;
@@ -213,6 +231,11 @@ void Minimap::renderRectBorder(SDL_FRect* rect, int red, int green, int blue, in
     SDL_RenderDrawRectF(renderer, rect);
 }
 
+void Minimap::renderRectBorder(SDL_Rect* rect, int red, int green, int blue, int alpha) {
+    SDL_SetRenderDrawColor(renderer, red, blue, green, alpha);
+    SDL_RenderDrawRect(renderer, rect);
+}
+
 bool Minimap::isVisible(SDL_Rect* position) {
     return position->x + position->w > frame.x &&
         position->y + position->h > frame.y &&
@@ -229,14 +252,14 @@ bool Minimap::isVisible(SDL_Rect* position) {
 
 }
 
-SDL_Rect Minimap::getMapFrame() {
-    return {
-            int(frame.x * widthRatio), 
-            int(frame.y * heightRatio),
-            int(frame.w * widthRatio),
-            int(frame.h * heightRatio)
-        };
-}
+// SDL_Rect Minimap::getMapFrame() {
+//     return {
+//             frame.x * widthRatio, 
+//             frame.y * heightRatio,
+//             frame.w * widthRatio,
+//             frame.h * heightRatio
+//         };
+// }
 
 void Minimap::translate(SDL_Rect* position) {
     position->x += - frame.x; 

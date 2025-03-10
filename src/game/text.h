@@ -26,12 +26,14 @@ private:
     TTF_Font* font;
     SDL_Color color;
     std::string text;
-    // std::map<std::string, SDL_Texture*> cache;
+    std::map<std::string, SDL_Texture*> cache;
     bool prepared = false;
     bool positionFixed = true;
+    bool cacheEnabled;
 public:
     Text(TTF_Font* font, std::string text = "", int x = 0, int y = 0, SDL_Color color = {255, 255, 255});
     Text(TTF_Font* font, Position* position, std::string text = "", SDL_Color color = {255, 255, 255});
+    Text* enableCache();
     Text* setText(std::string text);
     Text* appendText(std::string text);
     Text* setColor(SDL_Color color);

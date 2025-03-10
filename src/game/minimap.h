@@ -28,13 +28,14 @@ public:
     void addUnit(Unit* unit);
     void clearUnits();
     void prepare();
-    void setMapData(std::vector<std::vector<Cell*>>& grid, int mapTileWidth, int mapTileHeight, float mapTileScale);
+    void setMapData(std::vector<std::vector<Cell*>>& grid, int mapTileWidth, int mapTileHeight);
     virtual void update(State* state) override;
     virtual void render(State* state) override;
     void renderRectColor(SDL_FRect* rect, int red, int green, int blue, int alpha=255);
     void renderRectBorder(SDL_FRect* rect, int red, int green, int blue, int alpha=255);
+    void renderRectBorder(SDL_Rect* rect, int red, int green, int blue, int alpha=255);
     virtual bool isVisible(SDL_Rect* position);
-    SDL_Rect getMapFrame();
+    // SDL_Rect getMapFrame();
     void translate(SDL_Rect* position);
     virtual bool isVisible(State* state) override;
 
@@ -54,9 +55,8 @@ private:
     SDL_Color scopeColor = {50, 205, 50};
     bool modified = false;
     Drag* drag;
-    int widthRatio;
-    int heightRatio;
-    float mapTileScale;
+    // float widthRatio;
+    // float heightRatio;
     float mapTileWidth;
     float mapTileHeight;
     std::vector<std::vector<Cell*>>* grid;

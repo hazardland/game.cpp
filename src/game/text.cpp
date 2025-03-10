@@ -47,42 +47,40 @@ Text* Text::setColor(SDL_Color color) {
     return this;
 }
 
+Text* Text::enableCache() {
+    cacheEnabled = true;
+    return this;
+}
+
 void Text::render(State* state) {
     if (text.empty()) {
         return;
     }
     if (!prepared) {
-        // if (cache.contains(text)) {
-        //     //printf("Cache hit %s\n", text);
-        //     texture = cache[text];
-        //     int width;
-        //     int height;
-        //     SDL_QueryTexture(texture, NULL, NULL, &width, &height);
-        //     setSize(width, height);
-        // } else {
-        //     // SDL_DestroyTexture(texture);
-        //     SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
-        //     if (surface==NULL) {
-        //         printf("Failed to render text: %s", SDL_GetError());            
-        //     }
-        //     setSize(surface->w, surface->h);
-        //     texture = NULL;
-        //     cache[text] = SDL_CreateTextureFromSurface(state->renderer, surface);
-        //     SDL_FreeSurface(surface);
-        //     texture = cache[text];
-        // }
-
-        SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
-        if (surface==NULL) {
-            printf("Failed to render text: %s", SDL_GetError());            
+        if (cacheEnabled && cache.contains(text)) {
+            //printf("Cache hit %s\n", text);
+            texture = cache[text];
+            int width;
+            int height;
+            SDL_QueryTexture(texture, NULL, NULL, &width, &height);
+            setSize(width, height);
+        } else {
+            SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
+            if (surface==NULL) {
+                printf("Failed to render text: %s", SDL_GetError());            
+            }
+            setSize(surface->w, surface->h);
+            if (texture!=nullptr) {
+                if (!cacheEnabled) {
+                    SDL_DestroyTexture(texture);            
+                }
+            }
+            texture = SDL_CreateTextureFromSurface(state->renderer, surface);
+            if (cacheEnabled) {
+                cache[text] = texture;
+            }
+            SDL_FreeSurface(surface);
         }
-        setSize(surface->w, surface->h);
-        if (texture!=nullptr) {
-            SDL_DestroyTexture(texture);            
-        }
-        texture = SDL_CreateTextureFromSurface(state->renderer, surface);
-        SDL_FreeSurface(surface);
-
         prepared = true;
     }
     // printf("rendering tex");
