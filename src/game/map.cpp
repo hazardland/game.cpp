@@ -18,16 +18,14 @@ Map::Map(Image* image,
          int tileHeight, 
          int tilesPerWidth, 
          int tilesPerHeight, 
-         float tileScale, 
          int layerCount, 
-         Text* text) {
+         TTF_Font* font) {
 
     this->image = image;
     this->tileWidth = tileWidth;
     this->tileHeight = tileHeight;
     this->tilesPerWidth = tilesPerWidth;
     this->tilesPerHeight = tilesPerHeight;
-    this->tileScale = 1;
     clip = new Clip(image, 
                         tileWidth, 
                         tileHeight, 
@@ -41,18 +39,18 @@ Map::Map(Image* image,
             grid[x].push_back(new Cell(layerCount));
         }
     }
-    this->text = text;
+    this->text = new Text(font);
     this->text->setColor(SDL_Color(255, 255, 255))->enableCache();
 
 }
 
 
 float Map::getWidth() {
-    return tilesPerWidth*tileWidth*tileScale;
+    return tilesPerWidth*tileWidth;
 }
 
 float Map::getHeight() {
-    return tilesPerHeight*tileHeight*tileScale;
+    return tilesPerHeight*tileHeight;
 }
 
 void Map::render(State* state) {
@@ -61,10 +59,10 @@ void Map::render(State* state) {
 
     // Choose renderable tiles
     // @todo Code can be optimized furzer
-    int xTileFrom = (camera->x / (tileWidth*tileScale));
-    int xTileTo = (camera->width / (tileWidth*tileScale)) + xTileFrom + 2;
-    int yTileFrom = (camera->y / (tileHeight*tileScale));
-    int yTileTo = (camera->height / (tileHeight*tileScale)) + yTileFrom + 2;
+    int xTileFrom = (camera->x / tileWidth);
+    int xTileTo = (camera->width / tileWidth) + xTileFrom + 2;
+    int yTileFrom = (camera->y / tileHeight);
+    int yTileTo = (camera->height / tileHeight) + yTileFrom + 2;
     if (xTileFrom<0) xTileFrom = 0;
     if (yTileFrom<0) yTileFrom = 0;
     if (xTileTo>tilesPerWidth) xTileTo = tilesPerWidth;
@@ -72,8 +70,8 @@ void Map::render(State* state) {
     //printf("map render region: %d,%d x %d,%d\n", xTileFrom, yTileFrom, xTileTo, yTileTo);
 
     SDL_FRect location;
-    location.w = tileWidth*tileScale;
-    location.h = tileHeight*tileScale;
+    location.w = tileWidth;
+    location.h = tileHeight;
     SDL_FRect* position;
 
     for (int x = xTileFrom; x < xTileTo; x++)
@@ -81,12 +79,13 @@ void Map::render(State* state) {
         for (int y = yTileFrom; y < yTileTo; y++)
         {
             //grid[x][y]
-            location.x = x*tileWidth*tileScale;
-            location.y = y*tileHeight*tileScale;
+            location.x = x*tileWidth;
+            location.y = y*tileHeight;
             if (state->camera->isVisible(&location)) {
                 position = state->camera->translate(&location);
                 image->render(grid[x][y]->rect, position);
                 
+                // Debug
                 if (true){
 
                     // printf("%d ", clip->getFrame(grid[x][y])->rect.x);
@@ -94,143 +93,21 @@ void Map::render(State* state) {
                     SDL_RenderDrawRectF(image->renderer, position);
                     SDL_SetRenderDrawColor(image->renderer, 0, 0, 0, 0);
 
-                    Cell* cell = grid[x][y]; 
-                    int type = cell->terrain->id;
-                    
-                    int borders[] = {
-                        type, type, type, // 0 1 2 
-                        type, type, type, // 3 4 5
-                        type, type, type  // 6 7 8
-                    };
-                    // int borders[] = {
-                    //     9, 9, 9, // 0 1 2 
-                    //     9, 9, 9, // 3 4 5
-                    //     9, 9, 9  // 6 7 8
-                    // };
-                    
-                    int corners[] = {
-                        0, 0, // 0 1
-                        0, 0  // 2 3
-                    };
+                    std::array<int, 4> borders = getTileBorders(x, y);
 
-                    if (x!=0 && y!=0){
-                        borders[0] = this->grid[x-1][y-1]->terrain->id;
-                    }
-                    if (y!=0){
-                        borders[1] = this->grid[x  ][y-1]->terrain->id;
-                    }
-                    if (y!=0 && x<tilesPerWidth-1) {
-                        borders[2] = this->grid[x+1][y-1]->terrain->id;
-                    }
-                    if (x!=0) {
-                        borders[3] = this->grid[x-1][y  ]->terrain->id;
-                    }
-                    if (x<tilesPerWidth-1) {
-                        borders[5] = this->grid[x+1][y  ]->terrain->id;
-                    }
-                    if (x!=0 && y<tilesPerHeight-1) {
-                        borders[6] = this->grid[x-1][y+1]->terrain->id;
-                    }
-                    if (y<tilesPerHeight-1){
-                        borders[7] = this->grid[x  ][y+1]->terrain->id;
-                    }
-                    if (x<tilesPerWidth-1 && y<tilesPerHeight-1) {
-                        borders[8] = this->grid[x+1][y+1]->terrain->id;
-                    }
-
-                    corners[0] = borders[3] + borders[0] + borders[1];  
-                    corners[1] = borders[1] + borders[2] + borders[5];  
-                    corners[2] = borders[3] + borders[6] + borders[7];  
-                    corners[3] = borders[7] + borders[8] + borders[5];
-
-                    int corner = 0;
-                    int min = corners[0];
-
-                    for(int i=1; i<4; i++)
-                    {
-                        if(corners[i]<min)
-                        {
-                            min = corners[i];
-                            corner = i;
-                        }
-                    }
-
-                    int topLeft;
-                    int topRight;
-                    int botLeft;
-                    int botRight;
-
-                    if (corner==0) {
-                        topLeft = borders[0];
-                        topRight = borders[1];
-                        botLeft = borders[3];
-                        botRight = borders[4];
-                    }
-                    if (corner==1) {
-                        topLeft = borders[1];
-                        topRight = borders[2];
-                        botLeft = borders[4];
-                        botRight = borders[5];
-                
-                    }
-                    if (corner==2) { 
-                        topLeft = borders[3];
-                        topRight = borders[4];
-                        botLeft = borders[6];
-                        botRight = borders[7];
-                
-                    }
-                    if (corner==3) {
-                        topLeft = borders[4];
-                        topRight = borders[5];
-                        botLeft = borders[7];
-                        botRight = borders[8];
-                    }
-
-                    
-                    // text->setText(result); //+"tl"
-                    // text->setPosition(position->x+1, position->y+1);
-                    // text->render(state);
-                    
-                    text->setText(std::to_string(topLeft)); //+"tl"
+                    text->setText(std::to_string(borders[0])); //+"tl"
                     text->setPosition(position->x+1, position->y+1);
                     text->render(state);
 
-                        // text->setText(std::to_string(borders[1])); //+"tm"
-                        // text->setPosition(position->x+position->w/2-text->getWidth()/2, position->y+tileScale);
-                        // text->render(state);
-
-                    text->setColor({255,255,255,255});
-
-                    text->setText(std::to_string(topRight)); //+"tr"
+                    text->setText(std::to_string(borders[1])); //+"tr"
                     text->setPosition(position->x+position->w-text->getWidth()-1, position->y+1);
                     text->render(state);
 
-
-                        // text->setText(std::to_string(borders[3])); //+"ml"
-                        // text->setPosition(position->x+tileScale, position->y+position->h/2-text->getHeight()/2);
-                        // text->render(state);
-
-
-                        // text->setText(std::to_string(borders[4])); //+"mid"
-                        // text->setPosition(position->x+position->w/2-text->getWidth()/2, position->y+position->h/2-text->getHeight()/2);
-                        // text->render(state);
-
-                        // text->setText(std::to_string(borders[5])); //+"mr"
-                        // text->setPosition(position->x+position->w-text->getWidth()-tileScale, position->y+position->h/2-text->getHeight()/2);
-                        // text->render(state);
-
-
-                    text->setText(std::to_string(botLeft)); //+"bl"
+                    text->setText(std::to_string(borders[2])); //+"bl"
                     text->setPosition(position->x+1, position->y+position->h-text->getHeight()-1);
                     text->render(state);
 
-                        // text->setText(std::to_string(borders[7])); //+"bm"
-                        // text->setPosition(position->x+position->w/2-text->getWidth()/2, position->y+position->h-text->getHeight()-tileScale);
-                        // text->render(state);
-
-
-                    text->setText(std::to_string(botRight)); //+"br"
+                    text->setText(std::to_string(borders[3])); //+"br"
                     text->setPosition(position->x+position->w-text->getWidth()-1, position->y+position->h-text->getHeight()-1);
                     text->render(state);
                 }
@@ -324,25 +201,46 @@ void Map::generate2(
 
 }  
 
-
-void Map::fillMap2() {
+void Map::fillMap() {
     
     for (int x=0; x<tilesPerWidth; x++) {
         for (int y=0; y<tilesPerHeight; y++) {
-            grid[x][y]->tile = getTile2(x, y);
+            grid[x][y]->tile = calculateTile(x, y);
             grid[x][y]->rect = &clip->getFrame(grid[x][y]->tile)->rect;
         }
     }
     printf("filled map 2\n");
 }
 
-int Map::getTile2(int x, int y) {
+int Map::calculateTile(int x, int y) {
+
+    std::array<int, 4> borders = getTileBorders(x, y);
+
+    std::string result = 
+        std::to_string(borders[0]) + "." +
+        std::to_string(borders[1]) + "." +
+        std::to_string(borders[2]) + "." +
+        std::to_string(borders[3]);
+    
+    if (result.compare("1.1.1.1")==0) {
+        return getTile("1.1.1.1");
+    }
+    return getTile(result);
+}
+
+// In a cold winter I made this algorithm on a paper
+// Everybody had fever at home
+// This scans neigboars and genrates an array [*,*,*,*] 
+// Where each element encoded terrain type for 4 corners of tile (from top left clockwise)
+// This is for smooth terrain transitions
+std::array<int, 4> Map::getTileBorders(int x, int y) {
     // Get corner sum
     Cell* cell = this->grid[x][y]; 
     int type = cell->terrain->id;
     // Terrain* terrain = cell->terrain;
-    if (type==0) {
-        return getTile("0.0.0.0");
+
+    if (type == 0) {
+        return {0, 0, 0, 0}; // Simple return for type 0
     }
     //   x x x
     // y 0 0 0
@@ -400,61 +298,19 @@ int Map::getTile2(int x, int y) {
         }
     }
 
-    // int borders[] = {
-    //     1, 1, 1, // 0 1 2 
-    //     1, 1, 1, // 3 4 5
-    //     1, 1, 1  // 6 7 8
-    // };
-    // int corners[] = {
-    //     0, 0, // 0 1
-    //     0, 0  // 2 3
-    // };
-    
-    std::string result;
-    if (corner==0) {
-        result = 
-        std::to_string(borders[0]) + "." +
-        std::to_string(borders[1]) + "." +
-        std::to_string(borders[3]) + "." +
-        std::to_string(borders[4]);
-    }
-    if (corner==1) {
-        result = 
-        std::to_string(borders[1]) + "." +
-        std::to_string(borders[2]) + "." +
-        std::to_string(borders[4]) + "." +
-        std::to_string(borders[5]);
-
-    }
-    if (corner==2) { 
-        result = 
-        std::to_string(borders[3]) + "." +
-        std::to_string(borders[4]) + "." +
-        std::to_string(borders[6]) + "." +
-        std::to_string(borders[7]);
-
-    }
-    if (corner==3) {
-        result = 
-        std::to_string(borders[4]) + "." +
-        std::to_string(borders[5]) + "." +
-        std::to_string(borders[7]) + "." +
-        std::to_string(borders[8]);        
+    // Return the selected four border values based on the determined corner
+    switch (corner) {
+        case 0:
+            return {borders[0], borders[1], borders[3], borders[4]};
+        case 1:
+            return {borders[1], borders[2], borders[4], borders[5]};
+        case 2:
+            return {borders[3], borders[4], borders[6], borders[7]};
+        case 3:
+            return {borders[4], borders[5], borders[7], borders[8]};
     }
 
-    // printf("-- x: %d y: %d c: %d\n%d %d %d\n%d %d %d\n%d %d %d\n",
-    // x, y, corner, borders[0],borders[1], borders[2], borders[3], borders[4], borders[5], borders[6], borders[7], borders[8]        
-    // );
-    
-    // Mark bad tile
-    // if (result=="1.0.0.1") {
-    //     this->setPixel(x, y, 0, 0, 0, 255);
-    // }
-
-    if (result.compare("1.1.1.1")==0) {
-        return getTile("1.1.1.1");
-    }
-    return getTile(result);
+    return {0, 0, 0, 0}; // Fallback (should never be reached)    
 }
 
 int Map::random(int min, int max) {

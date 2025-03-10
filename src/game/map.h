@@ -8,6 +8,7 @@
 #include <string>
 
 #include "game/object.h"
+#include "game/text.h"
 
 // class Object;
 class Text;
@@ -20,7 +21,7 @@ class State;
 
 class Map : public Object {
 public:
-    Map(Image* image, int tileWidth, int tileHeight, int tilesPerWidth, int tilesPerHeight, float tileScale=1, int layerCount=3, Text* text = NULL);
+    Map(Image* image, int tileWidth, int tileHeight, int tilesPerWidth, int tilesPerHeight, int layerCount=3, TTF_Font* font = NULL);
     float getWidth();
     float getHeight();
     virtual void render(State* state);
@@ -31,8 +32,9 @@ public:
     void import(std::vector<std::vector<int>> data);
     void generate1(int seed, float intensity, std::vector<float> ranges);
     void generate2(int seed, float intensity, std::vector<float> ranges);
-    void fillMap2();
-    int getTile2(int x, int y);
+    void fillMap();
+    int calculateTile(int x, int y);
+    std::array<int, 4> getTileBorders(int x, int y);    
     int random(int min, int max);
     std::vector<Terrain*> terrains;
     std::map<std::string, std::vector<int>> tiles;
@@ -40,7 +42,6 @@ public:
     std::vector<std::vector<Cell*>> grid;
     int tileWidth;
     int tileHeight;
-    float tileScale;
     int tilesPerWidth;
     int tilesPerHeight;
     Image* image;

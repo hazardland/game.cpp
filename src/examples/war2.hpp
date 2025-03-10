@@ -18,8 +18,8 @@
 #include <examples/footman.hpp>
 #include <examples/farm.hpp>
 
-int WIDTH = 200;
-int HEIGHT = 200;
+int WIDTH = 500;
+int HEIGHT = 500;
 int SPRITE_FOOTMAN_RED = 1;
 int SPRITE_HUMAN_FARM = 2;
 
@@ -51,14 +51,14 @@ class Warcraft : public Scene {
         map = new Map(
             new Image(renderer, "assets/sprites/winter.png"), 
             32, 32, 
-            WIDTH, HEIGHT, 1, 3,
-            new Text(fontSmall)
+            WIDTH, HEIGHT, 3,
+            fontSmall
         );
 
         minimap = new Minimap(
             renderer, 
-            500, 500, 
-            WIDTH, HEIGHT, 3
+            300, 300, 
+            WIDTH, HEIGHT, 2
         );
 
         map->setMinimap(minimap);
@@ -119,16 +119,16 @@ class Warcraft : public Scene {
             // Forest crossing ground
             {"2.3.3.3", {129, 104}},
             {"3.2.3.3", {107, 131}},
-            {"2.2.3.3", {121}},
+            {"2.2.3.3", {106, 130}},
             {"3.3.2.3", {102, 127}},
             {"2.3.2.3", {115, 117, 128}},
-            {"2.2.2.3", {379}},
+            {"2.2.2.3", {129}},
             {"3.3.3.2", {133, 110}},
             {"3.2.3.2", {115, 118}},
-            {"2.2.3.2", {379}},
+            {"2.2.3.2", {131}},
             {"3.3.2.2", {124, 134}},
             {"2.3.2.2", {102}},
-            {"3.2.2.2", {379}},
+            {"3.2.2.2", {110}},
             {"3.2.2.3", {379}}, //372
             {"2.3.3.2", {379}}, //372,
 
@@ -176,8 +176,8 @@ class Warcraft : public Scene {
                                     true))->addClip();
 
 
-        for (int x=128; x<20*128; x+=128) {
-            for (int y=128; y<20*128; y+=128) {
+        for (int x=128; x<100*128; x+=128) {
+            for (int y=128; y<100*128; y+=128) {
                 Farm* farm = new Farm(sprites[SPRITE_HUMAN_FARM]);
                 farm->setMap(map);
                 if (farm->canExist(x-20, y-20, 64+20, 64+20)) {
@@ -189,8 +189,8 @@ class Warcraft : public Scene {
         }
 
         Footman* lastFootman = NULL;
-        for (int x=0; x<20*32; x+=32) {
-            for (int y=10; y<20*32; y+=32) {
+        for (int x=0; x<100*32; x+=32) {
+            for (int y=10; y<100*32; y+=32) {
                 Footman* footman = new Footman(sprites[SPRITE_FOOTMAN_RED], fontSmall);
                 footman->setMap(map);
                 if (footman->canExist(x, y, 32, 32)) {
@@ -238,7 +238,7 @@ class Warcraft : public Scene {
         //         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
         //     }
         // );
-        map->fillMap2();
+        map->fillMap();
     }
 
     // virtual void update(State* state) {
