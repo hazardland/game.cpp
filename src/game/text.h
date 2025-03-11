@@ -28,7 +28,7 @@ private:
     std::string text;
     std::map<std::string, SDL_Texture*> cache;
     bool prepared = false;
-    bool positionFixed = true;
+    bool positionFixed = false;
     bool cacheEnabled;
 public:
     Text(TTF_Font* font, std::string text = "", int x = 0, int y = 0, SDL_Color color = {255, 255, 255});
@@ -39,6 +39,7 @@ public:
     Text* setColor(SDL_Color color);
     Text* setPositionFixed(bool value);
     virtual void render(State* state) override;
+    void render(State* state, Position* position);
     ~Text();
 };
 

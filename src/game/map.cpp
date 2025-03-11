@@ -86,7 +86,7 @@ void Map::render(State* state) {
                 image->render(grid[x][y]->rect, position);
                 
                 // Debug
-                if (true){
+                if (debug){
 
                     // printf("%d ", clip->getFrame(grid[x][y])->rect.x);
                     SDL_SetRenderDrawColor(image->renderer, 0, 0, 0, 255);
@@ -148,31 +148,10 @@ void Map::import(std::vector<std::vector<int>> data) {
     }
     //map->grid = this->grid;
     printf("imported custom map\n");
+    fillMap();
 }
 
-void Map::generate1(int seed, 
-                float intensity,
-                std::vector<float> ranges) {
-
-    OpenSimplexNoise::Noise noise{seed};
-    for (int x=0; x<tilesPerWidth; x++) {
-        for (int y=0; y<tilesPerHeight; y++)
-        {
-            // alpha = (noise.eval(x*0.01, y*0.01) + 1) / 2.0  * 255.0;
-            // minimap->setPixel(x, y, 255, 255, 255, alpha);       
-            float depth = (noise.eval(x*intensity, y*intensity) + 1) / 2.0;
-            for (int terrain=0; terrain<terrains.size(); terrain++){
-                if (depth<=ranges[terrain]) {
-                    setTerrain(x, y, terrain);
-                    break;
-                }
-            }
-        }
-    }
-    //map->grid = this->grid;
-}
-
-void Map::generate2(
+void Map::generate(
                 int seed, 
                 float intensity,
                 std::vector<float> ranges) {
@@ -198,6 +177,7 @@ void Map::generate2(
     // fillMap2();
     // map->grid = this->grid;
     printf("generated map 2\n");
+    fillMap();
 
 }  
 
@@ -315,4 +295,8 @@ std::array<int, 4> Map::getTileBorders(int x, int y) {
 
 int Map::random(int min, int max) {
     return rand() % (max-min+1) + min;   
+}
+
+void Map::setDebug (bool value) {
+    debug = true;
 }

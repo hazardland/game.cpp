@@ -8,6 +8,7 @@
 #include "game/object.h"
 #include "game/state.h"
 #include "game/camera.h"
+#include "game/position.h"
 
 Text::Text(TTF_Font* font, std::string text, int x, int y, SDL_Color color) {
     setPosition(x, y);
@@ -52,7 +53,7 @@ Text* Text::enableCache() {
     return this;
 }
 
-void Text::render(State* state) {
+void Text::render(State* state, Position* position) {
     if (text.empty()) {
         return;
     }
@@ -63,13 +64,13 @@ void Text::render(State* state) {
             int width;
             int height;
             SDL_QueryTexture(texture, NULL, NULL, &width, &height);
-            setSize(width, height);
+            position->setSize(width, height);
         } else {
             SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
             if (surface==NULL) {
                 printf("Failed to render text: %s", SDL_GetError());            
             }
-            setSize(surface->w, surface->h);
+            position->setSize(surface->w, surface->h);
             if (texture!=nullptr) {
                 if (!cacheEnabled) {
                     SDL_DestroyTexture(texture);            
@@ -85,10 +86,14 @@ void Text::render(State* state) {
     }
     // printf("rendering tex");
     if (positionFixed) {
-        SDL_RenderCopyF(state->renderer, texture, NULL, getPosition());
+        SDL_RenderCopyF(state->renderer, texture, NULL, position->getPosition());
     } else {
-        SDL_RenderCopyF(state->renderer, texture, NULL, state->camera->translate(getPosition()));
+        SDL_RenderCopyF(state->renderer, texture, NULL, state->camera->translate(position->getPosition()));
     }
+}
+
+void Text::render(State* state) {
+    render(state, position);
 }
 
 Text* Text::setPositionFixed(bool value) {

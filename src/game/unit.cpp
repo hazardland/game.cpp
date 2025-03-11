@@ -23,7 +23,7 @@ void Unit::render(State* state) {
 }
 
 SDL_FRect* Unit::getRenderPosition() {
-    return renderPosition->getSDL_FRect();
+    return renderPosition->getPosition();
 }
 
 

@@ -41,7 +41,7 @@ public:
     void setWidth(float width);
     
     void setRequiresUpdate();  // Mark that recalculation is needed
-    SDL_FRect* getSDL_FRect();
+    SDL_FRect* getPosition();
     void draw(State* state);
     
     SDL_FRect rect;

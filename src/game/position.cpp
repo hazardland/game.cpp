@@ -87,7 +87,7 @@ float Position::getHeight() {
     return rect.h;
 }
 
-SDL_FRect* Position::getSDL_FRect() {
+SDL_FRect* Position::getPosition() {
     recalculateIfNeeded();
     return &rect;
 }
@@ -203,7 +203,7 @@ void Position::setRequiresUpdate() {
 void Position::draw(State* state) {
     if (color.a > 0){
         SDL_SetRenderDrawColor(state->renderer, color.r, color.g, color.b, color.a);
-        SDL_RenderDrawRectF(state->renderer, state->camera->translate(getSDL_FRect()));
+        SDL_RenderDrawRectF(state->renderer, state->camera->translate(getPosition()));
         SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 0);
     }
 }

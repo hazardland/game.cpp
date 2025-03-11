@@ -93,7 +93,7 @@ class Footman: public Unit {
                 } else {
                     if (move(state->clock->delta, directionX, directionY)) {
                         mode = MOVE;
-                        text->setText(std::to_string((int)getX())+", "+std::to_string((int)getY()));
+                        // text->setText(std::to_string((int)getX())+", "+std::to_string((int)getY()));
                     } else {
                         mode = IDLE;
                     }

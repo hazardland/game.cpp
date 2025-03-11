@@ -39,6 +39,8 @@ class Warcraft : public Scene {
     TTF_Font* font;
     TTF_Font* fontSmall;
     Text* fps;
+    // Text* footmanDebugText;
+
     int ticks;
 
     public:
@@ -46,7 +48,7 @@ class Warcraft : public Scene {
     virtual void prepare() {
         font = TTF_OpenFont("assets/fonts/titillium.ttf", 20);
         fontSmall = TTF_OpenFont("assets/fonts/titillium.ttf", 10);
-        fps = new Fps(font);
+        fps = (new Fps(font))->setPositionFixed(true);
                 
         map = new Map(
             new Image(renderer, "assets/sprites/winter.png"), 
@@ -62,7 +64,7 @@ class Warcraft : public Scene {
         );
 
         map->setMinimap(minimap);
-        map->debug = false;
+        // map->debug = false;
 
         minimap->setPosition(0, 0);
 
@@ -188,6 +190,10 @@ class Warcraft : public Scene {
             }
         }
 
+        // footmanDebugText = (new Text(fontSmall))
+        //                     ->enableCache()
+        //                     ->setPositionFixed(false);
+
         Footman* lastFootman = NULL;
         for (int x=0; x<100*32; x+=32) {
             for (int y=10; y<100*32; y+=32) {
@@ -213,7 +219,7 @@ class Warcraft : public Scene {
 
     void generate() {
         srand(clock());
-        map->generate2(rand(), 0.05, {0.2, 0.45, 0.8, 1});
+        map->generate(rand(), 0.05, {0.2, 0.45, 0.8, 1});
         // map->import(
         //     {
         //         {0,1,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -238,7 +244,6 @@ class Warcraft : public Scene {
         //         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
         //     }
         // );
-        map->fillMap();
     }
 
     // virtual void update(State* state) {
