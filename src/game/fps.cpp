@@ -6,11 +6,12 @@
 #include <game/state.h>
 #include <game/clock.h>
 #include <game/camera.h>
+#include <game/screen.h>
 
 void Fps::update(State* state) {
     if (SDL_GetTicks() - ticks > 500) {
         setText(std::to_string(state->clock->fps) + " FPS / DELTA " + std::to_string(state->clock->delta));
-        setX(static_cast<float>(state->camera->width - getWidth() - 5));
+        setX(static_cast<float>(state->screen->getWidth() - getWidth() - 5));
         ticks = SDL_GetTicks();
     }
 }

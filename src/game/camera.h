@@ -7,6 +7,7 @@
 #define GAME_CAMERA_H
 
 #include <SDL2/SDL.h>
+#include <chrono>
 
 /**
  * @class Camera
@@ -17,14 +18,40 @@
  * It can also translate absolute position from game world into screen position
  */
 class Camera {
-    public:
-
-    SDL_FRect result;  ///< The rectangle representing the resulting camera view after translation
+    private:
+    
     int x=0;           ///< The x-coordinate of the camera
     int y=0;           ///< The y-coordinate of the camera
     int width;         ///< The width of the camera view
     int height;        ///< The height of the camera view
+    
+    SDL_FRect result;  ///< The rectangle representing the resulting camera view after translation
+    
+    float zoom = 3;
+    const float zoomStep = 0.2f;  // Increment for zooming
+    const float minZoom = 0.1f;
+    const float maxZoom = 10.0f;
 
+    std::chrono::steady_clock::time_point lastZoomTime;
+    std::chrono::milliseconds zoomCooldown{150}; // 150ms cooldown
+
+    public:
+    
+    int getX();
+    int getY();
+    int getWidth();
+    int getHeight();
+    float getZoom();
+    void setX(int newX);
+    void setY(int newY);
+    void setWidth(int newWidth);
+    void setHeight(int newHeight);
+    void setZoom(float newZoom);
+    void zoomIn();
+    void zoomOut();
+    
+    void setPosition(int x, int y);
+    
     /**
      * @brief Sets the size of the camera view.
      * @param width The width of the camera view.

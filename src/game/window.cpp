@@ -8,10 +8,11 @@
 
 #include "game/scene.h"
 #include "game/state.h"
-#include "game/camera.h"
 #include "game/state.h"
 #include "game/event.h"
 #include "game/clock.h"
+#include "game/camera.h"
+#include "game/screen.h"
 
 bool SDL_STARTED = false;  // Define the global variable here.
 
@@ -42,7 +43,9 @@ Window::Window(const char* title, const int width, const int height, State* stat
         this->state = new State();
     }
     this->state->event->setWindow(this);
-    SDL_GetWindowSize(window, &this->state->camera->width, &this->state->camera->height);
+    SDL_GetWindowSize(window, &this->state->screen->width, &this->state->screen->height);
+    // SDL_GetWindowSize(window, &this->state->camera->width, &this->state->camera->height);
+    this->state->camera->setSize(this->state->screen->width, this->state->screen->height);
 }
 
 void Window::setScene(Scene* scene) {
@@ -52,15 +55,20 @@ void Window::setScene(Scene* scene) {
     this->scene = scene;
     std::cout << "Resizing window to scene size\n";
     SDL_GetWindowSize(window, &scene->width, &scene->height);
-    SDL_GetWindowSize(window, &this->state->camera->width, &this->state->camera->height);
+    SDL_GetWindowSize(window, &this->state->screen->width, &this->state->screen->height);
+    // SDL_GetWindowSize(window, &this->state->camera->width, &this->state->camera->height);
+    this->state->camera->setSize(this->state->screen->width, this->state->screen->height);
+
 
 }
 
 void Window::onResize(int width, int height) {
     scene->width = width;
     scene->height = height;
-    state->camera->width = width;
-    state->camera->height = height;
+    // state->camera->setWidth(width);
+    // state->camera->setHeight(height);
+    state->camera->setSize(width, height);
+    state->screen->setSize(width, height);
 }
 
 int Window::run() {

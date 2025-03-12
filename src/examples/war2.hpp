@@ -246,30 +246,37 @@ class Warcraft : public Scene {
         // );
     }
 
-    // virtual void update(State* state) {
+    virtual void update(State* state) {
 
-    //     // Keyboard* keyboard = state->event->keyboard; 
+        Keyboard* keyboard = state->event->keyboard; 
 
-    //     // if (keyboard->down) {
-    //     //     state->camera->y += 50;
-    //     // }
-    //     // if (keyboard->up) {
-    //     //     state->camera->y -= 50;
-    //     // }
-    //     // if (keyboard->right) {
-    //     //     state->camera->x += 50;
-    //     // }
-    //     // if (keyboard->left) {
-    //     //     state->camera->x -= 50;
-    //     // }
+        if (keyboard->plus) {
+            state->camera->zoomIn();
+        }
+        if (keyboard->minus) {
+            state->camera->zoomOut();
+        }
 
-    //     // if (keyboard->space) {
-    //     //     generate();
-    //     // }
+        // if (keyboard->down) {
+        //     state->camera->y += 50;
+        // }
+        // if (keyboard->up) {
+        //     state->camera->y -= 50;
+        // }
+        // if (keyboard->right) {
+        //     state->camera->x += 50;
+        // }
+        // if (keyboard->left) {
+        //     state->camera->x -= 50;
+        // }
 
-    //     Scene::update(state);
+        // if (keyboard->space) {
+        //     generate();
+        // }
 
-    // }
+        Scene::update(state);
+
+    }
 
     // virtual void render(State* state){
     //     clear();

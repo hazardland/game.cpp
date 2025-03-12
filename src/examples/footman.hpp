@@ -132,19 +132,19 @@ class Footman: public Unit {
             if (!isSelected()) {
                 return;
             }
-            SDL_FRect* renderRect = getRenderPosition();
-            if (renderRect->y - camera->y < cameraEdge) {
-                camera->y -= cameraEdge - (renderRect->y - camera->y);
-            }
-            if (renderRect->x - camera->x < cameraEdge) {
-                camera->x -= cameraEdge - (renderRect->x - camera->x);
-            }
-            if (camera->y + camera->height - renderRect->y - renderRect->w < cameraEdge) {
-                camera->y += cameraEdge - (camera->y + camera->height - renderRect->y - renderRect->w);
-            }
-            if (camera->x + camera->width - renderRect->x - renderRect->h < cameraEdge) {
-                camera->x += cameraEdge - (camera->x + camera->width - renderRect->x - renderRect->h);
-            }
+            // SDL_FRect* renderRect = getRenderPosition();
+            // if (renderRect->y - camera->y < cameraEdge) {
+            //     camera->y -= cameraEdge - (renderRect->y - camera->y);
+            // }
+            // if (renderRect->x - camera->x < cameraEdge) {
+            //     camera->x -= cameraEdge - (renderRect->x - camera->x);
+            // }
+            // if (camera->y + camera->height - renderRect->y - renderRect->w < cameraEdge) {
+            //     camera->y += cameraEdge - (camera->y + camera->height - renderRect->y - renderRect->w);
+            // }
+            // if (camera->x + camera->width - renderRect->x - renderRect->h < cameraEdge) {
+            //     camera->x += cameraEdge - (camera->x + camera->width - renderRect->x - renderRect->h);
+            // }
         }
 
         virtual void render(State* state) {

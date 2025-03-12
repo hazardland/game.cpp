@@ -71,8 +71,8 @@ class Planet: public Object {
     }
 
     virtual void update(State* state) {
-        setPosition (state->camera->width/2 - getWidth()/2,
-                     state->camera->height/2 - getHeight()/2);
+        setPosition (state->camera->getWidth()/2 - getWidth()/2,
+                     state->camera->getHeight()/2 - getHeight()/2);
         animation->update(state->clock->delta);
     }
 

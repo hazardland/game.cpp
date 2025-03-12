@@ -19,6 +19,8 @@ public:
     bool left = false;  ///< Boolean representing if 'left' key is pressed.
     bool right = false;  ///< Boolean representing if 'right' key is pressed.
     bool space = false;  ///< Boolean representing if 'space' key is pressed.
+    bool plus = false;  ///< Boolean representing if 'space' key is pressed.
+    bool minus = false;  ///< Boolean representing if 'space' key is pressed.
     const Uint8* keys;  ///< SDL key state array for checking specific keys.
     void reset();  ///< Resets the state of the keys.
 };

@@ -8,6 +8,7 @@
 class Clock;
 class Event;
 class Camera;
+class Screen;
 
 /**
  * @class State
@@ -24,6 +25,7 @@ public:
     Clock* clock;
     Event* event;
     Camera* camera;
+    Screen* screen;
     SDL_Renderer* renderer;
 };
 

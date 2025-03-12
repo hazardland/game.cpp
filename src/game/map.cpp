@@ -59,10 +59,10 @@ void Map::render(State* state) {
 
     // Choose renderable tiles
     // @todo Code can be optimized furzer
-    int xTileFrom = (camera->x / tileWidth);
-    int xTileTo = (camera->width / tileWidth) + xTileFrom + 2;
-    int yTileFrom = (camera->y / tileHeight);
-    int yTileTo = (camera->height / tileHeight) + yTileFrom + 2;
+    int xTileFrom = (camera->getX() / tileWidth);
+    int xTileTo = (camera->getWidth() / tileWidth) + xTileFrom + 2;
+    int yTileFrom = (camera->getY() / tileHeight);
+    int yTileTo = (camera->getHeight() / tileHeight) + yTileFrom + 2;
     if (xTileFrom<0) xTileFrom = 0;
     if (yTileFrom<0) yTileFrom = 0;
     if (xTileTo>tilesPerWidth) xTileTo = tilesPerWidth;

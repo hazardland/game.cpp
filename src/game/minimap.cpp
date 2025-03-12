@@ -5,6 +5,7 @@
 #include "game/cell.h"
 #include "game/camera.h"
 #include "game/event.h"
+#include "game/screen.h"
 
 Minimap::Minimap(SDL_Renderer* renderer, 
         int minimapWidth,
@@ -80,15 +81,14 @@ void Minimap::prepare() {
 void Minimap::setMapData(std::vector<std::vector<Cell*>>& grid, int mapTileWidth, int mapTileHeight) {
     this->grid = &grid;
     this->mapTileWidth = mapTileWidth; 
-    this->mapTileHeight = mapTileHeight; 
-    // widthRatio = mapTileWidth / minimapScale;
-    // heightRatio = mapTileHeight / minimapScale;
+    this->mapTileHeight = mapTileHeight;
 }
 
 void Minimap::update(State* state) {
 
     Mouse* mouse = state->event->mouse;
     Camera* camera = state->camera;
+    Screen* screen = state->screen;
 
     drag->update(state);
 
@@ -96,21 +96,22 @@ void Minimap::update(State* state) {
     bool manualPick = false;
     if ((mouse->leftClick || mouse->leftDragActive) && mouse->inside(getPosition())) {
 
-        camera->x = (((mouse->x - getX() + frame.x)) / minimapScale) * mapTileWidth - camera->width/2; 
-        camera->y = (((mouse->y - getY() + frame.y)) / minimapScale) * mapTileHeight - camera->height/2;
-
+        camera->setPosition(
+            (((mouse->x - getX() + frame.x)) / minimapScale) * mapTileWidth - camera->getWidth()/2,
+            (((mouse->y - getY() + frame.y)) / minimapScale) * mapTileHeight - camera->getHeight()/2
+        );
         manualPick = true;
     }
 
     // Prepare scope rectangle
-    scope.x = (camera->x/mapTileWidth) * minimapScale - frame.x + getX();
-    scope.y = (camera->y/mapTileHeight) * minimapScale - frame.y + getY();
-    scope.w = (camera->width/mapTileWidth) * minimapScale;
-    scope.h = (camera->height/mapTileHeight) * minimapScale;
+    scope.x = (camera->getX()/mapTileWidth) * minimapScale - frame.x + getX();
+    scope.y = (camera->getY()/mapTileHeight) * minimapScale - frame.y + getY();
+    scope.w = ((screen->getWidth()/mapTileWidth) * minimapScale) / camera->getZoom();
+    scope.h = ((screen->getHeight()/mapTileHeight) * minimapScale) / camera->getZoom();
 
     if (!manualPick) {
-        frame.x = ((camera->x/mapTileWidth) * minimapScale) - frame.w / 2;
-        frame.y = ((camera->y/mapTileWidth) * minimapScale) - frame.h / 2;
+        frame.x = ((camera->getX()/mapTileWidth) * minimapScale) - frame.w / 2;
+        frame.y = ((camera->getY()/mapTileWidth) * minimapScale) - frame.h / 2;
         if (frame.x<0) {frame.x=0;};
         if (frame.y<0) {frame.y=0;};
         if ((frame.x+frame.w)/minimapScale>tilesPerWidth) {frame.x=tilesPerWidth*minimapScale-frame.w;};

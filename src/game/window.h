@@ -13,6 +13,7 @@
 
 class State;
 class Scene;
+class Screen;
 
 
 extern bool SDL_STARTED;  // Declare the global variable; it will be defined in the .cpp file.
@@ -27,6 +28,7 @@ public:
     SDL_Window *window;
     Scene* scene;
     State* state;
+    Screen* screen;
 
     Window(const char* title, const int width, const int height, State* state = NULL);
     void setScene(Scene* scene);
