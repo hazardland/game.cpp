@@ -6,6 +6,7 @@
 #include "game/camera.h"
 #include "game/event.h"
 #include "game/screen.h"
+#include "game/position.h"
 
 Minimap::Minimap(SDL_Renderer* renderer, 
         int minimapWidth,
@@ -15,6 +16,7 @@ Minimap::Minimap(SDL_Renderer* renderer,
         float minimapScale
         ) {
 
+    printf("Minmap 1\n");
     this->tilesPerWidth = tilesPerWidth;
     this->tilesPerHeight = tilesPerHeight;
     this->minimapScale = minimapScale;
@@ -25,14 +27,24 @@ Minimap::Minimap(SDL_Renderer* renderer,
     frame.y = 0;
     frame.w = minimapWidth;
     frame.h = minimapHeight;
-    setPosition(0, 0);
+    
+    printf("Minmap Position\n");
+    position = new Position(0,0);
+    
+    printf("Minmap 2a\n");
     setSize(minimapWidth, minimapHeight);
+    
+    printf("Minmap 3\n");
+
     backgroundSurface = SDL_CreateRGBSurfaceWithFormat(0, tilesPerWidth * minimapScale, tilesPerHeight * minimapScale, 0, SDL_PIXELFORMAT_RGBA32);
+    printf("Minmap 4\n");
     
     prepare();
+    printf("Minmap 5\n");
 
     foreground = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, frame.w, frame.h);
     SDL_SetTextureBlendMode(foreground, SDL_BLENDMODE_BLEND);
+    printf("Minmap 6\n");
 
     drag = new Drag(getPosition(), false, true);
 

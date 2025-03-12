@@ -64,13 +64,20 @@ void Camera::setHeight(int newHeight) {
 }
 
 void Camera::setZoom(float newZoom) {
-    zoom = std::max(0.1f, std::min(newZoom, 10.0f)); // Clamp zoom between 0.1x and 10x
+    zoom = std::max(minZoom, std::min(newZoom, maxZoom)); // Clamp zoom between 0.1x and 10x
 }
 
 void Camera::zoomIn() {
     auto now = std::chrono::steady_clock::now();
     if (now - lastZoomTime > zoomCooldown) {
+
+        int lastWidth = getWidth();
+        int lastHeight = getHeight();
         zoom = std::min(zoom + zoomStep, maxZoom);
+        
+        x += (lastWidth-getWidth())/2;
+        y += (lastHeight-getHeight())/2;
+        
         lastZoomTime = now;
     }
 }
@@ -78,8 +85,17 @@ void Camera::zoomIn() {
 void Camera::zoomOut() {
     auto now = std::chrono::steady_clock::now();
     if (now - lastZoomTime > zoomCooldown) {
+        
+        int lastWidth = getWidth();
+        int lastHeight = getHeight();
+        
         zoom = std::max(zoom - zoomStep, minZoom);
+        
+        x += (lastWidth-getWidth())/2;
+        y += (lastHeight-getHeight())/2;
+        
         lastZoomTime = now;
+
     }
 }
 

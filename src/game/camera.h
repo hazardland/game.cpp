@@ -29,7 +29,7 @@ class Camera {
     
     float zoom = 3;
     const float zoomStep = 0.2f;  // Increment for zooming
-    const float minZoom = 0.1f;
+    const float minZoom = 0.2f;
     const float maxZoom = 10.0f;
 
     std::chrono::steady_clock::time_point lastZoomTime;

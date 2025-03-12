@@ -58,8 +58,6 @@ void Window::setScene(Scene* scene) {
     SDL_GetWindowSize(window, &this->state->screen->width, &this->state->screen->height);
     // SDL_GetWindowSize(window, &this->state->camera->width, &this->state->camera->height);
     this->state->camera->setSize(this->state->screen->width, this->state->screen->height);
-
-
 }
 
 void Window::onResize(int width, int height) {

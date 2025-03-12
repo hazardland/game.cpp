@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <SDL2/SDL_image.h>
 
-#include <game/util.hpp>
+#include <game/util.cpp>
 
 /**
  * @brief Image class loads and stores texture into memory for further use
