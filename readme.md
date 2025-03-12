@@ -1,3 +1,16 @@
+## Ubuntu
+
+```
+sudo apt install g++ libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
+```
+And
+
+```
+make
+./main
+```
+
+
 # Setup things
 This is for me because I every time forget how to setup dev env on windows
 ![](/doc/images/intro.gif)
@@ -34,14 +47,12 @@ Usually this three paths solve everything
 So for now I am a bit lazy to instruct how to download SDL libs and includes and organize in folder let us do ubuntu instead of it then
 
 ## Ubuntu
-1. Of course ```sudo apt install g++```
 
-2. ```sudo apt install libsdl2-dev```
-
-3. ```sudo apt install libsdl2-image-dev libsdl2-ttf-dev```
-
-    ```g++ -std=c++17 -O3 -m64 -Isrc -s -o main main.cpp src/game/*.cpp  -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf```
-
+```
+sudo apt install g++ libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
+make
+./main
+```
 
 # Hello World - Object
 
