@@ -182,7 +182,7 @@ class Warcraft : public Scene {
             for (int y=128; y<100*128; y+=128) {
                 Farm* farm = new Farm(sprites[SPRITE_HUMAN_FARM]);
                 farm->setMap(map);
-                if (farm->canExist(x-20, y-20, 64+20, 64+20)) {
+                if (farm->canOccupy(x-20, y-20, 64+20, 64+20)) {
                     farm->setPosition(x, y); 
                     addObject(farm);
                 }
@@ -199,7 +199,7 @@ class Warcraft : public Scene {
             for (int y=10; y<100*32; y+=32) {
                 Footman* footman = new Footman(sprites[SPRITE_FOOTMAN_RED], fontSmall);
                 footman->setMap(map);
-                if (footman->canExist(x, y, 32, 32)) {
+                if (footman->canOccupy(x, y, 32, 32)) {
                     footman->setPosition(x, y);
                     addObject(footman);
                     lastFootman = footman;

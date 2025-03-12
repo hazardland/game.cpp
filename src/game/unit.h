@@ -55,11 +55,10 @@ private:
 
     // Map cell methods
     void updateMapCells();
-    bool canExist(float newX, float newY, float newWidth, float newHeight);
+    bool canOccupy(float newX, float newY, float newWidth, float newHeight);
     bool canMove(float dx, float dy);
 
     // Position methods
-    bool changePosition(float x, float y);
     void setPosition(float x, float y) override;
 
     // Selection methods

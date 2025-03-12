@@ -27,26 +27,6 @@ SDL_FRect* Unit::getRenderPosition() {
 }
 
 
-bool Unit::changePosition(float byX, float byY) {
-    if (canMove(byX, byY)) {
-        addPosition(byX, byY);
-        updateMapCells();
-        updateChildPositions();        
-        return true;
-    } else if (canMove(byX, 0)) {
-        addPosition(byX, 0);
-        updateMapCells();
-        updateChildPositions();        
-        return true;
-    } else if (canMove(0, byY)) {
-        addPosition(0, byY);
-        updateMapCells();
-        updateChildPositions();
-        return true;
-    }
-    return false;
-}
-
 void Unit::setPosition(float x, float y) {
     Object::setPosition(x, y);
     updateMapCells();
@@ -60,18 +40,19 @@ void Unit::select() {
     selected = true;
 }
 
-bool Unit::canMove(float dx, float dy) {
-    // return true;
-    // Calculate the prospective new position and dimensions
-    float newX = getX() + dx;
-    float newY = getY() + dy;
-    float newWidth = getWidth(); // + dw;
-    float newHeight = getHeight(); // + dh;
-    return canExist(newX, newY, newWidth, newHeight);
-
+bool Unit::canMove(float deltaX, float deltaY) {
+    // Compute the target position based on the movement delta
+    float targetX = getX() + deltaX;
+    float targetY = getY() + deltaY;
+    float targetWidth = getWidth();
+    float targetHeight = getHeight();
+    
+    // Check if the unit can legally occupy the target position
+    return canOccupy(targetX, targetY, targetWidth, targetHeight);
 }
 
-bool Unit::canExist(float newX, float newY, float newWidth, float newHeight) {
+
+bool Unit::canOccupy (float newX, float newY, float newWidth, float newHeight) {
 
     // std::cout << "Checking farm can exist " << newX << "," << newY << std::endl;
 

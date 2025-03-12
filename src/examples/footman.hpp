@@ -63,10 +63,29 @@ class Footman: public Unit {
                 }
             }
         }
+        bool safeMove(float byX, float byY) {
+            if (canMove(byX, byY)) {
+                addPosition(byX, byY);
+                updateMapCells();
+                updateChildPositions();        
+                return true;
+            } else if (canMove(byX, 0)) {
+                addPosition(byX, 0);
+                updateMapCells();
+                updateChildPositions();        
+                return true;
+            } else if (canMove(0, byY)) {
+                addPosition(0, byY);
+                updateMapCells();
+                updateChildPositions();
+                return true;
+            }
+            return false;
+        }        
         // Speed concept needs to be solved
         // Here for example we have maximum speed 100
         virtual bool move(int deltaTime, float directionX, float directionY) {
-            return changePosition ((directionX*deltaTime)/(maxSpeed+1-speed), (directionY*deltaTime)/(maxSpeed+1-speed));
+            return safeMove ((directionX*deltaTime)/(maxSpeed+1-speed), (directionY*deltaTime)/(maxSpeed+1-speed));
         }
 
         virtual void update(State* state) override {
