@@ -13,8 +13,6 @@
 
 class State;
 class Scene;
-class Screen;
-
 
 extern bool SDL_STARTED;  // Declare the global variable; it will be defined in the .cpp file.
 
@@ -23,12 +21,15 @@ extern bool SDL_STARTED;  // Declare the global variable; it will be defined in 
  *
  * This class manages an SDL_Window object, and provides methods for rendering and updating scenes, resizing the window, and running the game loop.
  */
-class Window { //: public Screen
-public:
+class Window {
+
+private:
+
     SDL_Window *window;
     Scene* scene;
     State* state;
-    Screen* screen;
+
+public:
 
     Window(const char* title, const int width, const int height, State* state = NULL);
     void setScene(Scene* scene);

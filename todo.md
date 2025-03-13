@@ -1,3 +1,21 @@
+. Restore cameraFollow from git commit history
+. Fix diagonal movment (Shrink if diagal movement detected both vectors with 40%)
+. Alt + Enter = Toggle Fullscreen
+. Mouse scroll = Zoom in / Zoom out from mouse position
+. Character movement A W S D
+. F5 - Regenerate
+. Arrow Keys - Scroll camera with cooldown
+. Camera zoom cooldown config
+
+-------------------------------
+
+
+Unit now has
+position - Which descirbes position of an object in the map, position is x,y,w,h collisions are calculated based on this
+selectPosition - Means which region is effective during unit selection, it is relative to units position
+renderPosition - Means from where are we rendering the unit sprite, relative to units worl map position
+
+position is stored inside map cells grid[x][y][layer][unit]
 
 unit: object
     

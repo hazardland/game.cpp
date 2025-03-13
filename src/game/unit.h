@@ -22,9 +22,12 @@ class Terrain;
 */
 class Unit: public Object {
 private:
+  
     int lastCellLeft, lastCellTop, lastCellRight, lastCellBottom;
     bool selected;
+  
     int layer = 0;    // Layer where the unit exists in map
+  
     uint16_t allowedTerrains = 0;  // Default: No terrain allowed
     bool ignoresTerrain = true;   // If true, unit ignores terrain checks
     std::vector<std::pair<int, int>> cells; // Cells where unit exist in map

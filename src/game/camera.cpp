@@ -102,5 +102,3 @@ void Camera::zoomOut() {
 float Camera::getZoom() {
     return zoom;
 }
-    // void zoomIn();
-    // void zoomOut();

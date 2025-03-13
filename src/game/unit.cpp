@@ -141,7 +141,7 @@ void Unit::updateMapCells() {
             map->grid[i][j]->units[getLayer()].push_back(this);
             cells.push_back(std::make_pair(i, j));
         }
-    }     
+    }
 
     lastCellLeft = left;
     lastCellTop = top;
