@@ -9,7 +9,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
-// #include "game/screen.h"
+#include "game/cooldown.h"
 
 class State;
 class Scene;
@@ -25,15 +25,22 @@ class Window {
 
 private:
 
-    SDL_Window *window;
+    SDL_Window* window;
     Scene* scene;
     State* state;
+    bool fullscreen = false;  // Track fullscreen state
+    Cooldown* fullscreenCooldown;
+    int originalWidth;
+    int originalHeight;
 
 public:
 
     Window(const char* title, const int width, const int height, State* state = NULL);
     void setScene(Scene* scene);
     void onResize(int width, int height); //override;
+    SDL_Window* getInstance();
+    void toggleFullscreen();  // New method
+    bool isFullscreen();
     int run();
 };
 

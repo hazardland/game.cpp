@@ -46,6 +46,8 @@ Window::Window(const char* title, const int width, const int height, State* stat
     SDL_GetWindowSize(window, &this->state->screen->width, &this->state->screen->height);
     // SDL_GetWindowSize(window, &this->state->camera->width, &this->state->camera->height);
     this->state->camera->setSize(this->state->screen->width, this->state->screen->height);
+
+    fullscreenCooldown = new Cooldown(200);
 }
 
 void Window::setScene(Scene* scene) {
@@ -68,6 +70,55 @@ void Window::onResize(int width, int height) {
     state->camera->setSize(width, height);
     state->screen->setSize(width, height);
 }
+
+bool Window::isFullscreen() {
+    return fullscreen;
+}
+
+SDL_Window* Window::getInstance() {
+    return window;
+}
+
+void Window::toggleFullscreen() {
+    if (fullscreenCooldown->isReady()) {
+        if (!window) return;
+
+        if (!fullscreen) {
+            printf("Going fullscreen\n");
+
+            // Backup original size before switching to fullscreen
+            SDL_GetWindowSize(window, &originalWidth, &originalHeight);
+
+            SDL_DisplayMode displayMode;
+            if (SDL_GetCurrentDisplayMode(0, &displayMode) == 0) { // Get current monitor resolution
+                SDL_SetWindowSize(window, displayMode.w, displayMode.h);  // Set window size to match screen
+            }
+
+            SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+            fullscreen = true;
+        } else {
+            printf("Going normal screen\n");
+
+            SDL_SetWindowFullscreen(window, 0);
+
+            // Restore previous window size if available, otherwise use default 1280x720
+            if (originalWidth > 0 && originalHeight > 0) {
+                SDL_SetWindowSize(window, originalWidth, originalHeight);
+            } else {
+                SDL_SetWindowSize(window, 1280, 720);
+            }
+
+            fullscreen = false;
+        }
+
+        // Update state dimensions after toggling fullscreen
+        SDL_GetWindowSize(window, &this->state->screen->width, &this->state->screen->height);
+        this->state->camera->setSize(this->state->screen->width, this->state->screen->height);
+        
+        fullscreenCooldown->reset();
+    }
+}
+
 
 int Window::run() {
     scene->prepare();

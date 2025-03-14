@@ -11,14 +11,13 @@
 Minimap::Minimap(SDL_Renderer* renderer, 
         int minimapWidth,
         int minimapHeight,
-        int tilesPerWidth,
-        int tilesPerHeight, 
+        int gridWidth,
+        int gridHeight, 
         float minimapScale
         ) {
 
-    printf("Minmap 1\n");
-    this->tilesPerWidth = tilesPerWidth;
-    this->tilesPerHeight = tilesPerHeight;
+    this->gridWidth = gridWidth;
+    this->gridHeight = gridHeight;
     this->minimapScale = minimapScale;
 
     this->renderer = renderer;
@@ -28,23 +27,16 @@ Minimap::Minimap(SDL_Renderer* renderer,
     frame.w = minimapWidth;
     frame.h = minimapHeight;
     
-    printf("Minmap Position\n");
     position = new Position(0,0);
     
-    printf("Minmap 2a\n");
     setSize(minimapWidth, minimapHeight);
     
-    printf("Minmap 3\n");
-
-    backgroundSurface = SDL_CreateRGBSurfaceWithFormat(0, tilesPerWidth * minimapScale, tilesPerHeight * minimapScale, 0, SDL_PIXELFORMAT_RGBA32);
-    printf("Minmap 4\n");
+    backgroundSurface = SDL_CreateRGBSurfaceWithFormat(0, gridWidth * minimapScale, gridHeight * minimapScale, 0, SDL_PIXELFORMAT_RGBA32);
     
     prepare();
-    printf("Minmap 5\n");
 
     foreground = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, frame.w, frame.h);
     SDL_SetTextureBlendMode(foreground, SDL_BLENDMODE_BLEND);
-    printf("Minmap 6\n");
 
     drag = new Drag(getPosition(), false, true);
 
@@ -90,10 +82,10 @@ void Minimap::prepare() {
     modified = false;
 }
 
-void Minimap::setMapData(std::vector<std::vector<Cell*>>& grid, int mapTileWidth, int mapTileHeight) {
+void Minimap::setMapData(std::vector<std::vector<Cell*>>& grid, int cellWidth, int cellHeight) {
     this->grid = &grid;
-    this->mapTileWidth = mapTileWidth; 
-    this->mapTileHeight = mapTileHeight;
+    this->cellWidth = cellWidth; 
+    this->cellHeight = cellHeight;
 }
 
 void Minimap::update(State* state) {
@@ -109,25 +101,25 @@ void Minimap::update(State* state) {
     if ((mouse->leftClick || mouse->leftDragActive) && mouse->inside(getPosition())) {
 
         camera->setPosition(
-            (((mouse->x - getX() + frame.x)) / minimapScale) * mapTileWidth - camera->getWidth()/2,
-            (((mouse->y - getY() + frame.y)) / minimapScale) * mapTileHeight - camera->getHeight()/2
+            (((mouse->x - getX() + frame.x)) / minimapScale) * cellWidth - camera->getWidth()/2,
+            (((mouse->y - getY() + frame.y)) / minimapScale) * cellHeight - camera->getHeight()/2
         );
         manualPick = true;
     }
 
     // Prepare scope rectangle
-    scope.x = (camera->getX()/mapTileWidth) * minimapScale - frame.x + getX();
-    scope.y = (camera->getY()/mapTileHeight) * minimapScale - frame.y + getY();
-    scope.w = ((screen->getWidth()/mapTileWidth) * minimapScale) / camera->getZoom();
-    scope.h = ((screen->getHeight()/mapTileHeight) * minimapScale) / camera->getZoom();
+    scope.x = (camera->getX()/cellWidth) * minimapScale - frame.x + getX();
+    scope.y = (camera->getY()/cellHeight) * minimapScale - frame.y + getY();
+    scope.w = ((screen->getWidth()/cellWidth) * minimapScale) / camera->getZoom();
+    scope.h = ((screen->getHeight()/cellHeight) * minimapScale) / camera->getZoom();
 
     if (!manualPick) {
-        frame.x = ((camera->getX()/mapTileWidth) * minimapScale) - frame.w / 2;
-        frame.y = ((camera->getY()/mapTileWidth) * minimapScale) - frame.h / 2;
+        frame.x = ((camera->getX()/cellWidth) * minimapScale) - frame.w / 2;
+        frame.y = ((camera->getY()/cellHeight) * minimapScale) - frame.h / 2;
         if (frame.x<0) {frame.x=0;};
         if (frame.y<0) {frame.y=0;};
-        if ((frame.x+frame.w)/minimapScale>tilesPerWidth) {frame.x=tilesPerWidth*minimapScale-frame.w;};
-        if ((frame.y+frame.h)/minimapScale>tilesPerHeight) {frame.y=tilesPerHeight*minimapScale-frame.h;};
+        if ((frame.x+frame.w)/minimapScale>gridWidth) {frame.x=gridWidth*minimapScale-frame.w;};
+        if ((frame.y+frame.h)/minimapScale>gridHeight) {frame.y=gridHeight*minimapScale-frame.h;};
     }
 
     // if (!manualPick) {
@@ -135,11 +127,11 @@ void Minimap::update(State* state) {
     //     frame.x = scope.x + scope.w/2 - frame.w/2;
     //     frame.y = scope.y + scope.h/2 - frame.h/2;
         
-    //     if (frame.x+frame.w > tilesPerWidth*minimapScale) {
-    //         frame.x = ((frame.x+frame.w) - (tilesPerWidth*minimapScale)); 
+    //     if (frame.x+frame.w > gridWidth*minimapScale) {
+    //         frame.x = ((frame.x+frame.w) - (gridWidth*minimapScale)); 
     //     }
-    //     if (frame.y+frame.h > tilesPerHeight*minimapScale) {
-    //         frame.y = ((frame.y+frame.h) - (tilesPerHeight*minimapScale)); 
+    //     if (frame.y+frame.h > gridHeight*minimapScale) {
+    //         frame.y = ((frame.y+frame.h) - (gridHeight*minimapScale)); 
     //     }
         
     //     if (frame.x<0) {
@@ -174,18 +166,18 @@ void Minimap::render(State* state) {
 
     std::map<Uint32, std::vector<SDL_Rect>> rects;
 
-    int xTileFrom = frame.x / minimapScale - 2;
-    int xTileTo = xTileFrom + frame.w / minimapScale + 4;
-    int yTileFrom = frame.y / minimapScale - 2;
-    int yTileTo = frame.h / minimapScale + yTileFrom + 4;
-    if (xTileFrom<0) xTileFrom = 0;
-    if (yTileFrom<0) yTileFrom = 0;
-    if (xTileTo>tilesPerWidth) xTileTo = tilesPerWidth;
-    if (yTileTo>tilesPerHeight) yTileTo = tilesPerHeight;
+    int xCellFrom = frame.x / minimapScale - 2;
+    int xCellTo = xCellFrom + frame.w / minimapScale + 4;
+    int yCellFrom = frame.y / minimapScale - 2;
+    int yCellTo = frame.h / minimapScale + yCellFrom + 4;
+    if (xCellFrom<0) xCellFrom = 0;
+    if (yCellFrom<0) yCellFrom = 0;
+    if (xCellTo>gridWidth) xCellTo = gridWidth;
+    if (yCellTo>gridHeight) yCellTo = gridHeight;
 
     // Iterate over cells within the frame
-    for (int i = xTileFrom; i < xTileTo; i++) {
-        for (int j = yTileFrom; j < yTileTo; j++) {
+    for (int i = xCellFrom; i < xCellTo; i++) {
+        for (int j = yCellFrom; j < yCellTo; j++) {
             // Make sure indices are in bounds
             if(i >= 0 && j >= 0 && i < grid->size() && j < (*grid)[0].size()){
                 // Get cell
@@ -195,10 +187,10 @@ void Minimap::render(State* state) {
                 for(auto& unitList : cell->units){
                     for(Unit* unit : unitList){
                         SDL_Rect rect = {
-                            int((unit->getX() / mapTileWidth) * minimapScale), 
-                            int((unit->getY() / mapTileHeight) * minimapScale),
-                            int((unit->getWidth() / mapTileWidth) * minimapScale),
-                            int((unit->getHeight() / mapTileHeight) * minimapScale)
+                            int((unit->getX() / cellWidth) * minimapScale), 
+                            int((unit->getY() / cellHeight) * minimapScale),
+                            int((unit->getWidth() / cellWidth) * minimapScale),
+                            int((unit->getHeight() / cellHeight) * minimapScale)
                         };
 
                         rect.h = rect.h<2?2:rect.h;

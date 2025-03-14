@@ -36,15 +36,15 @@ private:
     
 public:
     
-    int tileWidth;
-    int tileHeight;
-    int tilesPerWidth;
-    int tilesPerHeight;
+    int cellWidth;
+    int cellHeight;
+    int gridWidth;
+    int gridHeight;
     std::vector<std::vector<Cell*>> grid;
     std::vector<Terrain*> terrains;
     std::map<std::string, std::vector<int>> tiles;
 
-    Map(Image* image, int tileWidth, int tileHeight, int tilesPerWidth, int tilesPerHeight, int layerCount=3, TTF_Font* font = NULL);
+    Map(Image* image, int cellWidth, int cellHeight, int gridWidth, int gridHeight, int layerCount=3, TTF_Font* font = NULL);
     virtual void render(State* state);
     float getWidth();
     float getHeight();

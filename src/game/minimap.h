@@ -18,8 +18,8 @@ public:
     Minimap(SDL_Renderer* renderer, 
            int minimapWidth,
            int minimapHeight,
-           int tilesPerWidth,
-           int tilesPerHeight, 
+           int gridWidth,
+           int gridHeight, 
            float minimapScale
     );
 
@@ -28,7 +28,7 @@ public:
     void addUnit(Unit* unit);
     void clearUnits();
     void prepare();
-    void setMapData(std::vector<std::vector<Cell*>>& grid, int mapTileWidth, int mapTileHeight);
+    void setMapData(std::vector<std::vector<Cell*>>& grid, int cellWidth, int cellHeight);
     virtual void update(State* state) override;
     virtual void render(State* state) override;
     void renderRectColor(SDL_FRect* rect, int red, int green, int blue, int alpha=255);
@@ -48,8 +48,8 @@ private:
     SDL_FRect scope;
     SDL_Rect frame;
     std::vector<Unit*> units;
-    int tilesPerWidth;
-    int tilesPerHeight;
+    int gridWidth;
+    int gridHeight;
     float minimapScale;
     int scopeWidth = 2;
     SDL_Color scopeColor = {50, 205, 50};
@@ -57,8 +57,8 @@ private:
     Drag* drag;
     // float widthRatio;
     // float heightRatio;
-    float mapTileWidth;
-    float mapTileHeight;
+    float cellWidth;
+    float cellHeight;
     std::vector<std::vector<Cell*>>* grid;
 };
 

@@ -14,28 +14,28 @@
 #include "game/event.h"
 
 Map::Map(Image* image, 
-         int tileWidth, 
-         int tileHeight, 
-         int tilesPerWidth, 
-         int tilesPerHeight, 
+         int cellWidth, 
+         int cellHeight, 
+         int gridWidth, 
+         int gridHeight, 
          int layerCount, 
          TTF_Font* font) {
 
     this->image = image;
-    this->tileWidth = tileWidth;
-    this->tileHeight = tileHeight;
-    this->tilesPerWidth = tilesPerWidth;
-    this->tilesPerHeight = tilesPerHeight;
+    this->cellWidth = cellWidth;
+    this->cellHeight = cellHeight;
+    this->gridWidth = gridWidth;
+    this->gridHeight = gridHeight;
     clip = new Clip(image, 
-                        tileWidth, 
-                        tileHeight, 
+                        cellWidth, 
+                        cellHeight, 
                         1, 1, 
-                        (image->getWidth()/tileWidth)*(image->getHeight()/tileHeight));
+                        (image->getWidth()/cellWidth)*(image->getHeight()/cellHeight));
     
-    for (int x = 0; x < tilesPerWidth; x++)
+    for (int x = 0; x < gridWidth; x++)
     {
         grid.push_back(std::vector<Cell*>());
-        for (int y = 0; y < tilesPerHeight; y++) {
+        for (int y = 0; y < gridHeight; y++) {
             grid[x].push_back(new Cell(layerCount));
         }
     }
@@ -46,11 +46,11 @@ Map::Map(Image* image,
 
 
 float Map::getWidth() {
-    return tilesPerWidth*tileWidth;
+    return gridWidth*cellWidth;
 }
 
 float Map::getHeight() {
-    return tilesPerHeight*tileHeight;
+    return gridHeight*cellHeight;
 }
 
 void Map::render(State* state) {
@@ -59,28 +59,28 @@ void Map::render(State* state) {
 
     // Choose renderable tiles
     // @todo Code can be optimized furzer
-    int xTileFrom = (camera->getX() / tileWidth);
-    int xTileTo = (camera->getWidth() / tileWidth) + xTileFrom + 2;
-    int yTileFrom = (camera->getY() / tileHeight);
-    int yTileTo = (camera->getHeight() / tileHeight) + yTileFrom + 2;
-    if (xTileFrom<0) xTileFrom = 0;
-    if (yTileFrom<0) yTileFrom = 0;
-    if (xTileTo>tilesPerWidth) xTileTo = tilesPerWidth;
-    if (yTileTo>tilesPerHeight) yTileTo = tilesPerHeight;
-    //printf("map render region: %d,%d x %d,%d\n", xTileFrom, yTileFrom, xTileTo, yTileTo);
+    int xCellFrom = (camera->getX() / cellWidth);
+    int xCellTo = (camera->getWidth() / cellWidth) + xCellFrom + 2;
+    int yCellFrom = (camera->getY() / cellHeight);
+    int yCellTo = (camera->getHeight() / cellHeight) + yCellFrom + 2;
+    if (xCellFrom<0) xCellFrom = 0;
+    if (yCellFrom<0) yCellFrom = 0;
+    if (xCellTo>gridWidth) xCellTo = gridWidth;
+    if (yCellTo>gridHeight) yCellTo = gridHeight;
+    //printf("map render region: %d,%d x %d,%d\n", xCellFrom, yCellFrom, xCellTo, yCellTo);
 
     SDL_FRect location;
-    location.w = tileWidth;
-    location.h = tileHeight;
+    location.w = cellWidth;
+    location.h = cellHeight;
     SDL_FRect* position;
 
-    for (int x = xTileFrom; x < xTileTo; x++)
+    for (int x = xCellFrom; x < xCellTo; x++)
     {
-        for (int y = yTileFrom; y < yTileTo; y++)
+        for (int y = yCellFrom; y < yCellTo; y++)
         {
             //grid[x][y]
-            location.x = x*tileWidth;
-            location.y = y*tileHeight;
+            location.x = x*cellWidth;
+            location.y = y*cellHeight;
             if (state->camera->isVisible(&location)) {
                 position = state->camera->translate(&location);
                 image->render(grid[x][y]->rect, position);
@@ -127,7 +127,7 @@ void Map::setTerrain(int x, int y, int type) {
 
 void Map::setMinimap(Minimap* minimap) {
     this->minimap = minimap;
-    minimap->setMapData(grid, tileWidth, tileHeight);
+    minimap->setMapData(grid, cellWidth, cellHeight);
     // minimap->updateMapSize(getWidth(), getHeight(), tileScale);
 }
 
@@ -157,8 +157,8 @@ void Map::generate(
                 std::vector<float> ranges) {
 
     OpenSimplexNoise::Noise noise{seed};
-    for (int x=0; x<tilesPerWidth; x+=2) {
-        for (int y=0; y<tilesPerHeight; y+=2)
+    for (int x=0; x<gridWidth; x+=2) {
+        for (int y=0; y<gridHeight; y+=2)
         {
             // alpha = (noise.eval(x*0.01, y*0.01) + 1) / 2.0  * 255.0;
             // minimap->setPixel(x, y, 255, 255, 255, alpha);       
@@ -183,8 +183,8 @@ void Map::generate(
 
 void Map::fillMap() {
     
-    for (int x=0; x<tilesPerWidth; x++) {
-        for (int y=0; y<tilesPerHeight; y++) {
+    for (int x=0; x<gridWidth; x++) {
+        for (int y=0; y<gridHeight; y++) {
             grid[x][y]->tile = calculateTile(x, y);
             grid[x][y]->rect = &clip->getFrame(grid[x][y]->tile)->rect;
         }
@@ -242,22 +242,22 @@ std::array<int, 4> Map::getTileBorders(int x, int y) {
     if (y!=0){
         borders[1] = this->grid[x  ][y-1]->terrain->id < type ? type-1 : type;
     }
-    if (y!=0 && x<tilesPerWidth-1) {
+    if (y!=0 && x<gridWidth-1) {
         borders[2] = this->grid[x+1][y-1]->terrain->id < type ? type-1 : type;
     }
     if (x!=0) {
         borders[3] = this->grid[x-1][y  ]->terrain->id < type ? type-1 : type;
     }
-    if (x<tilesPerWidth-1) {
+    if (x<gridWidth-1) {
         borders[5] = this->grid[x+1][y  ]->terrain->id < type ? type-1 : type;
     }
-    if (x!=0 && y<tilesPerHeight-1) {
+    if (x!=0 && y<gridHeight-1) {
         borders[6] = this->grid[x-1][y+1]->terrain->id < type ? type-1 : type;
     }
-    if (y<tilesPerHeight-1){
+    if (y<gridHeight-1){
         borders[7] = this->grid[x  ][y+1]->terrain->id < type ? type-1 : type;
     }
-    if (x<tilesPerWidth-1 && y<tilesPerHeight-1) {
+    if (x<gridWidth-1 && y<gridHeight-1) {
         borders[8] = this->grid[x+1][y+1]->terrain->id < type ? type-1 : type;
     }
 

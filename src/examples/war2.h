@@ -13,6 +13,7 @@
 #include "game/terrain.h"
 #include "game/image.h"
 #include "game/select.h"
+#include "game/window.h"
 
 #include "examples/enum.h"
 #include "examples/footman.h"

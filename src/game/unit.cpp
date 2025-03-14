@@ -57,23 +57,23 @@ bool Unit::canOccupy (float newX, float newY, float newWidth, float newHeight) {
     // std::cout << "Checking farm can exist " << newX << "," << newY << std::endl;
 
     // Check if the new position would be outside the map's bounds
-    if (newX < 0 || newX + newWidth > map->tilesPerWidth * map->tileWidth ||
-        newY < 0 || newY + newHeight > map->tilesPerHeight * map->tileHeight) {
+    if (newX < 0 || newX + newWidth > map->gridWidth * map->cellWidth ||
+        newY < 0 || newY + newHeight > map->gridHeight * map->cellHeight) {
         return false;
     }
 
 
     // Calculate the cells this object would occupy after moving
-    int left = static_cast<int>(newX / map->tileWidth);
-    int top = static_cast<int>(newY / map->tileHeight);
-    int right = static_cast<int>((newX + newWidth) / map->tileWidth);
-    int bottom = static_cast<int>((newY + newHeight) / map->tileHeight);
+    int left = static_cast<int>(newX / map->cellWidth);
+    int top = static_cast<int>(newY / map->cellHeight);
+    int right = static_cast<int>((newX + newWidth) / map->cellWidth);
+    int bottom = static_cast<int>((newY + newHeight) / map->cellHeight);
 
     // Correct the boundaries if they are out of the map's bounds
     left = std::max(0, left);
     top = std::max(0, top);
-    right = std::min(map->tilesPerWidth - 1, right);
-    bottom = std::min(map->tilesPerHeight - 1, bottom);
+    right = std::min(map->gridWidth - 1, right);
+    bottom = std::min(map->gridHeight - 1, bottom);
 
     // Check every cell this object would occupy after moving
     for (int i = left; i <= right; i++) {
@@ -113,16 +113,16 @@ void Unit::updateMapCells() {
     }
 
     // Calculate the new cells this object should occupy
-    int left = static_cast<int>(getX() / map->tileWidth);
-    int top = static_cast<int>(getY() / map->tileHeight);
-    int right = static_cast<int>((getX() + getWidth()) / map->tileWidth);
-    int bottom = static_cast<int>((getY() + getHeight()) / map->tileHeight);
+    int left = static_cast<int>(getX() / map->cellWidth);
+    int top = static_cast<int>(getY() / map->cellHeight);
+    int right = static_cast<int>((getX() + getWidth()) / map->cellWidth);
+    int bottom = static_cast<int>((getY() + getHeight()) / map->cellHeight);
 
     // Correct the boundaries if they are out of the map's bounds
     left = std::max(0, left);
     top = std::max(0, top);
-    right = std::min(map->tilesPerWidth - 1, right);
-    bottom = std::min(map->tilesPerHeight - 1, bottom);
+    right = std::min(map->gridWidth - 1, right);
+    bottom = std::min(map->gridHeight - 1, bottom);
 
     if(left == lastCellLeft && top == lastCellTop && right == lastCellRight && bottom == lastCellBottom){
         return;

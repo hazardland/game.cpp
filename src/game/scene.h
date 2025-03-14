@@ -14,6 +14,7 @@ class Minimap;
 class Map;
 class Sprite;
 class State;
+class Window;
 
 /**
  * @brief The Scene class is responsible for managing and rendering objects, sprites,
@@ -24,15 +25,17 @@ class State;
 class Scene {
     // A list of objects that are currently visible in the scene
     std::list<Object*> visibleObjects;
-
+    
 public:
+    Window* window;
+
     // The width and height of the scene
     int width;
     int height;
 
     // SDL Renderer and Window context
     SDL_Renderer *renderer;
-    SDL_Window *window;
+    // SDL_Window* window;
 
     // Map of sprite ID to Sprite object
     std::map<int, Sprite*> sprites;
@@ -53,7 +56,7 @@ public:
      * @param width An integer representing the width of the Scene
      * @param height An integer representing the height of the Scene
      */
-    Scene(SDL_Window* window, int width=0, int height=0);
+    Scene(Window* window, int width=0, int height=0);
 
     /**
      * @brief Sets the size of the Scene

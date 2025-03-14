@@ -7,7 +7,7 @@
 #define GAME_CAMERA_H
 
 #include <SDL2/SDL.h>
-#include <chrono>
+#include "game/cooldown.h"
 
 /**
  * @class Camera
@@ -31,12 +31,10 @@ class Camera {
     const float zoomStep = 0.2f;  // Increment for zooming
     const float minZoom = 0.2f;
     const float maxZoom = 10.0f;
-
-    std::chrono::steady_clock::time_point lastZoomTime;
-    std::chrono::milliseconds zoomCooldown{150}; // 150ms cooldown
+    Cooldown* zoomCooldown; 
 
     public:
-    
+    Camera();
     int getX();
     int getY();
     int getWidth();

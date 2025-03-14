@@ -1,6 +1,10 @@
 #include "game/camera.h"
 #include <algorithm> // For std::min, std::max
 
+Camera::Camera() {
+    zoomCooldown = new Cooldown(150);
+}
+
 void Camera::setPosition(int x, int y) {
     this->x = x;
     this->y = y;
@@ -32,6 +36,7 @@ SDL_FRect* Camera::translate(SDL_FRect* position) {
 }
 
 int Camera::getX() {
+
     return x; // Camera's top-left X position remains the same
 }
 
@@ -69,7 +74,7 @@ void Camera::setZoom(float newZoom) {
 
 void Camera::zoomIn() {
     auto now = std::chrono::steady_clock::now();
-    if (now - lastZoomTime > zoomCooldown) {
+    if (zoomCooldown->isReady()) {
 
         int lastWidth = getWidth();
         int lastHeight = getHeight();
@@ -78,13 +83,13 @@ void Camera::zoomIn() {
         x += (lastWidth-getWidth())/2;
         y += (lastHeight-getHeight())/2;
         
-        lastZoomTime = now;
+        zoomCooldown->reset();
     }
 }
 
 void Camera::zoomOut() {
     auto now = std::chrono::steady_clock::now();
-    if (now - lastZoomTime > zoomCooldown) {
+    if (zoomCooldown->isReady()) {
         
         int lastWidth = getWidth();
         int lastHeight = getHeight();
@@ -94,7 +99,7 @@ void Camera::zoomOut() {
         x += (lastWidth-getWidth())/2;
         y += (lastHeight-getHeight())/2;
         
-        lastZoomTime = now;
+        zoomCooldown->reset();
 
     }
 }

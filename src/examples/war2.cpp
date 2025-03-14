@@ -228,6 +228,11 @@ void Warcraft::update(State* state) {
         state->camera->zoomOut();
     }
 
+    if (keyboard->alt && keyboard->enter) {
+        printf("Fullscreen requested\n");
+        window->toggleFullscreen();
+    }
+
     // if (keyboard->down) {
     //     state->camera->y += 50;
     // }

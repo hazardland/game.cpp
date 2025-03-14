@@ -9,6 +9,6 @@ using namespace std;
 int main(int argc, char** argv){
     printf("Starting...\n");
     Window* window = new Window("", 1280, 720);
-    window->setScene(new Warcraft(window->window));
+    window->setScene(new Warcraft(window));
     return window->run();
 }

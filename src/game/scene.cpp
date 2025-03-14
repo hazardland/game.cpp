@@ -9,9 +9,11 @@
 #include "game/state.h"
 #include "game/map.h"
 #include "game/minimap.h"
+#include "game/window.h"
 
-Scene::Scene(SDL_Window* window, int width, int height) {
+Scene::Scene(Window* window, int width, int height) {
 
+    this->window = window;
     int driverCount = SDL_GetNumRenderDrivers();
     std::cout << "Number of renderer drivers: " << driverCount << std::endl;
 
@@ -30,7 +32,7 @@ Scene::Scene(SDL_Window* window, int width, int height) {
         }
     }
 
-    renderer = SDL_CreateRenderer(window, preferedDriverId, SDL_RENDERER_ACCELERATED);
+    renderer = SDL_CreateRenderer(window->getInstance(), preferedDriverId, SDL_RENDERER_ACCELERATED);
     // renderer = SDL_CreateRenderer(window, preferedDriverId, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
     if (SDL_GetRendererInfo(renderer, &driverInfo)==0) {
@@ -39,7 +41,7 @@ Scene::Scene(SDL_Window* window, int width, int height) {
 
     if(!renderer){
         std::cout << "Failed to create renderer: " << SDL_GetError() << std::endl;
-        SDL_DestroyWindow(window);
+        SDL_DestroyWindow(window->getInstance());
         SDL_Quit();
     }
 

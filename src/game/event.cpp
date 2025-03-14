@@ -7,7 +7,7 @@
 // #include <game/screen.h>
 
 void Keyboard::reset() {
-    up = down = left = right = space = plus = minus = false;
+    up = down = left = right = space = plus = minus = enter = alt = w = s = d = a = false;
 }
 
 void Mouse::reset() {
@@ -217,6 +217,36 @@ void Event::fetch() {
         keyboard->minus = true;
     } else {
         keyboard->minus = false;
+    }    
+    if (keyboard->keys[SDL_SCANCODE_LALT] || keyboard->keys[SDL_SCANCODE_RALT]) {
+        keyboard->alt = true;
+    } else {
+        keyboard->alt = false;
+    }    
+    if (keyboard->keys[SDL_SCANCODE_RETURN]) {
+        keyboard->enter = true;
+    } else {
+        keyboard->enter = false;
+    }    
+    if (keyboard->keys[SDL_SCANCODE_A]) {
+        keyboard->a = true;
+    } else {
+        keyboard->a = false;
+    }    
+    if (keyboard->keys[SDL_SCANCODE_W]) {
+        keyboard->w = true;
+    } else {
+        keyboard->w = false;
+    }    
+    if (keyboard->keys[SDL_SCANCODE_S]) {
+        keyboard->s = true;
+    } else {
+        keyboard->s = false;
+    }    
+    if (keyboard->keys[SDL_SCANCODE_D]) {
+        keyboard->d = true;
+    } else {
+        keyboard->d = false;
     }    
 
 }
