@@ -12,6 +12,7 @@
 #include "game/frame.h"
 #include "game/camera.h"
 #include "game/event.h"
+#include "game/noise.h"
 
 Map::Map(Image* image, 
          int cellWidth, 
@@ -32,11 +33,18 @@ Map::Map(Image* image,
                         1, 1, 
                         (image->getWidth()/cellWidth)*(image->getHeight()/cellHeight));
     
+   grid.resize(gridWidth, std::vector<Cell*>(gridHeight, nullptr));
+    // grid.resize(gridWidth, std::vector<std::unique_ptr<Cell>>(gridHeight));
+
     for (int x = 0; x < gridWidth; x++)
     {
-        grid.push_back(std::vector<Cell*>());
+        //grid.push_back(std::vector<Cell*>());
         for (int y = 0; y < gridHeight; y++) {
-            grid[x].push_back(new Cell(layerCount));
+            //grid[x].push_back(new Cell(layerCount));
+            grid[x][y] = new Cell(layerCount);
+            // grid[x][y] = std::make_unique<Cell>(layerCount);
+ 
+
         }
     }
     this->text = new Text(font);
@@ -299,4 +307,12 @@ int Map::random(int min, int max) {
 
 void Map::setDebug (bool value) {
     debug = true;
+}
+
+Map::~Map() {
+    for (int x = 0; x < gridWidth; x++) {
+        for (int y = 0; y < gridHeight; y++) {
+            delete grid[x][y];  // Free each Cell*
+        }
+    }
 }

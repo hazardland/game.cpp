@@ -108,6 +108,7 @@ void Position::addPosition(float x, float y) {
 }
 
 void Position::setPosition(float x, float y) {
+    ready = true;
     if (parentX!=nullptr) {
         this->x = x;
         needsUpdate = true;
@@ -207,3 +208,8 @@ void Position::draw(State* state) {
         SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 0);
     }
 }
+
+bool Position::isReady() {
+    return ready;
+}
+

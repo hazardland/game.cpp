@@ -30,6 +30,7 @@ void Warcraft::prepare() {
     printf("Setting minimap\n");
 
     map->setMinimap(minimap);
+    // map->setDebug(true);
     // map->debug = false;
     // objects.insert({map->getId(), map});
 

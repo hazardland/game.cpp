@@ -43,7 +43,8 @@ public:
     void setRequiresUpdate();  // Mark that recalculation is needed
     SDL_FRect* getPosition();
     void draw(State* state);
-    
+    bool isReady();
+
     SDL_FRect rect;
 
 private:
@@ -61,6 +62,7 @@ private:
     float width;
     float height;
     SDL_Color color = SDL_Color{161, 195, 69, 255};
+    bool ready = false;
 };
 
 #endif // GAME_POSITION_H

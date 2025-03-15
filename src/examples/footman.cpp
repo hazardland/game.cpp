@@ -31,17 +31,17 @@ void Footman::rotate(float directionX, float directionY) {
 bool Footman::safeMove(float byX, float byY) {
     if (canMove(byX, byY)) {
         addPosition(byX, byY);
-        updateMapCells();
+        updateGrid();
         updateChildPositions();
         return true;
     } else if (canMove(byX, 0)) {
         addPosition(byX, 0);
-        updateMapCells();
+        updateGrid();
         updateChildPositions();
         return true;
     } else if (canMove(0, byY)) {
         addPosition(0, byY);
-        updateMapCells();
+        updateGrid();
         updateChildPositions();
         return true;
     }
@@ -111,7 +111,7 @@ void Footman::render(State* state) {
     if (camera->isVisible(getRenderPosition())) {
         drawPosition(state);
         body->render(camera->translate(getRenderPosition()));
-        text->render(state);
+        // text->render(state);
     }
 }
 

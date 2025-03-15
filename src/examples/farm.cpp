@@ -2,8 +2,11 @@
 
 // Constructor
 Farm::Farm(Sprite* sprite) {
+    // printf("Farm %d,%d -> %d,%d\n", gridFromX, gridFromY, gridToX, gridToY);
     setLayer(1);
     setSize(64, 64);
+    // printf("Farm %d,%d -> %d,%d\n", gridFromX, gridFromY, gridToX, gridToY);
+
     allowTerrain(2);
     renderPosition = createChildPosition(0, 0, 64, 64);
     body = sprite;

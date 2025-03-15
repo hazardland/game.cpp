@@ -27,7 +27,7 @@ class Camera {
     
     SDL_FRect result;  ///< The rectangle representing the resulting camera view after translation
     
-    float zoom = 3;
+    float zoom = 1;
     const float zoomStep = 0.2f;  // Increment for zooming
     const float minZoom = 0.2f;
     const float maxZoom = 10.0f;

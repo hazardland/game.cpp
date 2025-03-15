@@ -41,6 +41,8 @@ public:
     int gridWidth;
     int gridHeight;
     std::vector<std::vector<Cell*>> grid;
+    // std::vector<std::vector<std::unique_ptr<Cell>>> grid;
+
     std::vector<Terrain*> terrains;
     std::map<std::string, std::vector<int>> tiles;
 
@@ -52,6 +54,7 @@ public:
     void import(std::vector<std::vector<int>> data);
     void generate(int seed, float intensity, std::vector<float> ranges);
     void setDebug(bool value);
+    ~Map();
     
 private:
 

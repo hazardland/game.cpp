@@ -21,16 +21,24 @@ class Terrain;
    determining its ability to move, and managing its selection state.
 */
 class Unit: public Object {
+protected:
+    int gridFromX;
+    int gridFromY;
+    int gridToX;
+    int gridToY;
+    bool gridSet = false;
 private:
   
-    int lastCellLeft, lastCellTop, lastCellRight, lastCellBottom;
+    // int lastCellLeft, lastCellTop, lastCellRight, lastCellBottom;
     bool selected;
   
     int layer = 0;    // Layer where the unit exists in map
   
     uint16_t allowedTerrains = 0;  // Default: No terrain allowed
     bool ignoresTerrain = true;   // If true, unit ignores terrain checks
-    std::vector<std::pair<int, int>> cells; // Cells where unit exist in map
+    // std::vector<std::pair<int, int>> cells; // Cells where unit exist in map
+
+
     
     public:
     bool moved;
@@ -57,7 +65,7 @@ private:
     //virtual void renderHitbox(State* state);
 
     // Map cell methods
-    void updateMapCells();
+    void updateGrid();
     bool canOccupy(float newX, float newY, float newWidth, float newHeight);
     bool canMove(float dx, float dy);
 
