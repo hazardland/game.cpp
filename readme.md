@@ -10,7 +10,9 @@ make
 ./main
 ```
 
-[![Watch the video](https://img.youtube.com/vi/WCk7HXVYhJs/maxresdefault.jpg)](https://www.youtube.com/watch?v=WCk7HXVYhJs)
+
+
+https://github.com/user-attachments/assets/1ad3bc6a-a406-40e3-a703-9e62ff356ae6
 
 
 # Setup things
