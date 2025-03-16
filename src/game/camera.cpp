@@ -56,9 +56,18 @@ void Camera::setX(int newX) {
     x = newX; 
 }
 
+void Camera::addX(int value) {
+    x += value; 
+}
+
 void Camera::setY(int newY) {
     y = newY;
 }
+
+void Camera::addY(int value) {
+    y += value; 
+}
+
 
 void Camera::setWidth(int newWidth) {
     width = newWidth; // Scale width based on zoom

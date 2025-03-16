@@ -148,6 +148,10 @@ void Minimap::update(State* state) {
 }
 
 void Minimap::render(State* state) {
+    if (!visible) {
+        return;
+    }
+
     Camera* camera = state->camera;
 
     if (modified) {
@@ -272,5 +276,9 @@ void Minimap::translate(SDL_Rect* position) {
 }
 
 bool Minimap::isVisible(State* state) {
-    return true;
+    return visible;
+}
+
+void Minimap::toggleVisible() {
+    visible = !visible;
 }

@@ -30,6 +30,7 @@ private:
     bool prepared = false;
     bool positionFixed = false;
     bool cacheEnabled;
+    bool visible = true;
 public:
     Text(TTF_Font* font, std::string text = "", int x = 0, int y = 0, SDL_Color color = {255, 255, 255});
     Text(TTF_Font* font, Position* position, std::string text = "", SDL_Color color = {255, 255, 255});
@@ -40,6 +41,7 @@ public:
     Text* setPositionFixed(bool value);
     virtual void render(State* state) override;
     void render(State* state, Position* position);
+    void toggleVisible();
     ~Text();
 };
 

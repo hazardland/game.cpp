@@ -3,11 +3,13 @@
 // Prepare function
 void Warcraft::prepare() {
 
+    cooldown = new Cooldown(200);
+
     printf("Preparing scene...\n");
 
 
     font = TTF_OpenFont("assets/fonts/titillium.ttf", 20);
-    fontSmall = TTF_OpenFont("assets/fonts/titillium.ttf", 10);
+    fontSmall = TTF_OpenFont("assets/fonts/titillium.ttf", 12);
     fps = (new Fps(font))->setPositionFixed(true);
             
     printf("Creating map\n");
@@ -85,14 +87,14 @@ void Warcraft::prepare() {
         // Base forest
         {"3.3.3.3", {108, 109, 111, 112, 113, 114, 119, 120}},
         // Forest crossing ground
-        {"2.3.3.3", {129, 104}},
-        {"3.2.3.3", {107, 131}},
+        {"2.3.3.3", {108, 109, 111, 112, 113, 114, 119, 120}}, // {129, 104}},
+        {"3.2.3.3", {108, 109, 111, 112, 113, 114, 119, 120}}, // {107, 131}},
         {"2.2.3.3", {106, 130}},
-        {"3.3.2.3", {102, 127}},
+        {"3.3.2.3", {108, 109, 111, 112, 113, 114, 119, 120}}, // {102, 127}},
         {"2.3.2.3", {115, 117, 128}},
         {"2.2.2.3", {129}},
-        {"3.3.3.2", {133, 110}},
-        {"3.2.3.2", {115, 118}},
+        {"3.3.3.2", {108, 109, 111, 112, 113, 114, 119, 120}}, // {133, 110}},
+        {"3.2.3.2", {116}}, // {115, 118}},
         {"2.2.3.2", {131}},
         {"3.3.2.2", {124, 134}},
         {"2.3.2.2", {102}},
@@ -234,22 +236,35 @@ void Warcraft::update(State* state) {
         window->toggleFullscreen();
     }
 
-    // if (keyboard->down) {
-    //     state->camera->y += 50;
-    // }
-    // if (keyboard->up) {
-    //     state->camera->y -= 50;
-    // }
-    // if (keyboard->right) {
-    //     state->camera->x += 50;
-    // }
-    // if (keyboard->left) {
-    //     state->camera->x -= 50;
-    // }
+    if (keyboard->down) {
+        state->camera->addY(1);
+    }
+    if (keyboard->up) {
+        state->camera->addY(-1);
+    }
+    if (keyboard->right) {
+        state->camera->addX(1);
+    }
+    if (keyboard->left) {
+        state->camera->addX(-1);
+    }
 
-    // if (keyboard->space) {
-    //     generate();
-    // }
+    if (keyboard->f5 && cooldown->isReady()) {
+        generate();
+        cooldown->reset();
+    }
+    if (keyboard->f12 && cooldown->isReady()) {
+        map->toggleDebug();
+        cooldown->reset();
+    }
+    if (keyboard->f11 && cooldown->isReady()) {
+        fps->toggleVisible();
+        cooldown->reset();
+    }
+    if (keyboard->tab && cooldown->isReady()) {
+        minimap->toggleVisible();
+        cooldown->reset();
+    }
 
     Scene::update(state);
 

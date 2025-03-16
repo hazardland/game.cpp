@@ -42,6 +42,8 @@ class Camera {
     float getZoom();
     void setX(int newX);
     void setY(int newY);
+    void addX(int value);
+    void addY(int value);
     void setWidth(int newWidth);
     void setHeight(int newHeight);
     void setZoom(float newZoom);

@@ -54,6 +54,7 @@ public:
     void import(std::vector<std::vector<int>> data);
     void generate(int seed, float intensity, std::vector<float> ranges);
     void setDebug(bool value);
+    void toggleDebug();
     ~Map();
     
 private:

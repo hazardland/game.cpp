@@ -309,6 +309,10 @@ void Map::setDebug (bool value) {
     debug = true;
 }
 
+void Map::toggleDebug () {
+    debug = !debug;
+}
+
 Map::~Map() {
     for (int x = 0; x < gridWidth; x++) {
         for (int y = 0; y < gridHeight; y++) {

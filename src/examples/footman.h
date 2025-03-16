@@ -18,7 +18,7 @@ class Footman : public Unit {
 public:
     Animation* body;
     int maxSpeed = 100;
-    int speed = 100;
+    int speed = 95;
     int mode = IDLE;
     int modeX = RIGHT;
     int modeY = DOWN;

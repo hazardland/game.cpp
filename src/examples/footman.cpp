@@ -5,6 +5,7 @@ Footman::Footman(Sprite* sprite, TTF_Font* font) {
     setLayer(1);
     allowTerrains({1, 2});
     setSize(24, 24);
+    speed = 95;
     body = new Animation(sprite, mode + modeX + modeY);
     body->pause = 0;
     renderPosition = createChildPosition(-24, -24, 72, 72);
@@ -29,17 +30,17 @@ void Footman::rotate(float directionX, float directionY) {
 
 // Safe movement function
 bool Footman::safeMove(float byX, float byY) {
-    if (canMove(byX, byY)) {
+    if (byX!=0 && byY!=0 && canMove(byX, byY)) {
         addPosition(byX, byY);
         updateGrid();
         updateChildPositions();
         return true;
-    } else if (canMove(byX, 0)) {
+    } else if (byX!=0 && canMove(byX, 0)) {
         addPosition(byX, 0);
         updateGrid();
         updateChildPositions();
         return true;
-    } else if (canMove(0, byY)) {
+    } else if (byY!=0 && canMove(0, byY)) {
         addPosition(0, byY);
         updateGrid();
         updateChildPositions();
@@ -60,15 +61,20 @@ void Footman::update(State* state) {
     float directionX = 0;
     float directionY = 0;
 
-    if (key->up) {
+    if (key->w) {
         directionY = -1;
-    } else if (key->down) {
+    } else if (key->s) {
         directionY = 1;
     }
-    if (key->left) {
+    if (key->a) {
         directionX = -1;
-    } else if (key->right) {
+    } else if (key->d) {
         directionX = 1;
+    }
+    // Reduce diagonal movement speed by 40%
+    if (directionX!=0 && directionY!=0) {
+        directionX *= 0.6;
+        directionY *= 0.6;
     }
 
     rotate(directionX, directionY);
@@ -88,7 +94,9 @@ void Footman::update(State* state) {
         }
     }
 
-    text->setText(std::to_string(mode + modeX + modeY));
+    // mode = 0;
+    text->setText(std::to_string(mode));
+    // text->setText(std::to_string(getX())+","+std::to_string(getY()));
     body->play(mode + modeX + modeY);
 
     if (isSelected()) {

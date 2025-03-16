@@ -27,6 +27,10 @@ public:
     bool s = false;
     bool a  = false;
     bool d  = false;
+    bool f5  = false;
+    bool f11  = false;
+    bool f12  = false;
+    bool tab  = false;
     const Uint8* keys;  ///< SDL key state array for checking specific keys.
     void reset();  ///< Resets the state of the keys.
 };

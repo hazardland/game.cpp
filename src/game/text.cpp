@@ -54,7 +54,7 @@ Text* Text::enableCache() {
 }
 
 void Text::render(State* state, Position* position) {
-    if (text.empty()) {
+    if (!visible || text.empty()) {
         return;
     }
     if (!prepared) {
@@ -100,6 +100,11 @@ Text* Text::setPositionFixed(bool value) {
     positionFixed = value;
     return this;
 }
+
+void Text::toggleVisible() {
+    visible = !visible;
+}
+
 
 Text::~Text() {
     if (texture) {

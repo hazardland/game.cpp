@@ -14,6 +14,7 @@
 #include "game/image.h"
 #include "game/select.h"
 #include "game/window.h"
+#include "game/cooldown.h"
 
 #include "examples/enum.h"
 #include "examples/footman.h"
@@ -26,6 +27,7 @@ private:
     TTF_Font* font;
     TTF_Font* fontSmall;
     Text* fps;
+    Cooldown* cooldown;
 
     int ticks;
 

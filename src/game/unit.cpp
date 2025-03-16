@@ -41,6 +41,9 @@ void Unit::select() {
 }
 
 bool Unit::canMove(float deltaX, float deltaY) {
+    if (deltaX==0 && deltaY==0){
+        return false;
+    }
     // Compute the target position based on the movement delta
     float targetX = getX() + deltaX;
     float targetY = getY() + deltaY;

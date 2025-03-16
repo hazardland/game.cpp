@@ -38,8 +38,9 @@ public:
     // SDL_Rect getMapFrame();
     void translate(SDL_Rect* position);
     virtual bool isVisible(State* state) override;
-
-private:
+    void toggleVisible();
+    
+    private:
     SDL_Renderer* renderer;
     SDL_Surface* backgroundSurface;
     SDL_Texture* background = NULL;
@@ -60,6 +61,7 @@ private:
     float cellWidth;
     float cellHeight;
     std::vector<std::vector<Cell*>>* grid;
+    bool visible = true;
 };
 
 #endif // GAME_MINIMAP_H
