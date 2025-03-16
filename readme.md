@@ -10,6 +10,8 @@ make
 ./main
 ```
 
+[![Watch the video](https://img.youtube.com/vi/WCk7HXVYhJs/maxresdefault.jpg)](https://www.youtube.com/watch?v=WCk7HXVYhJs)
+
 
 # Setup things
 This is for me because I every time forget how to setup dev env on windows
