@@ -24,7 +24,7 @@ class Window;
  */
 class Scene {
     // A list of objects that are currently visible in the scene
-    std::list<Object*> visibleObjects;
+    std::vector<Object*> visibleObjects;
     
 public:
     Window* window;

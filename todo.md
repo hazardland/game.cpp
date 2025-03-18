@@ -7,6 +7,12 @@
 . Arrow Keys - Scroll camera with cooldown
 . Camera zoom cooldown config
 
+. LUA - Try lua scripting
+. Network - Implement network thread
+. Map - Use tile description in the map instead of strings
+. Investigate minimap further optimization
+. Job system - Introduce job sysem for automated tasks
+
 -------------------------------
 
 

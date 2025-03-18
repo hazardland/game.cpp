@@ -100,7 +100,7 @@ void Scene::build(State* state) {
 void Scene::present(int delay) {
     SDL_RenderPresent(renderer);
     // cout << "Presenting new frame\n";
-    SDL_Delay(delay);
+    SDL_Delay(1);
 }
 
 void Scene::addObject(Object* obj) {
