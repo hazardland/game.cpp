@@ -1,14 +1,20 @@
+
+Todo ideas
+------------------
+
 . Restore cameraFollow from git commit history
-. Fix diagonal movment (Shrink if diagal movement detected both vectors with 40%)
-. Alt + Enter = Toggle Fullscreen
++ Fix diagonal movment (Shrink if diagal movement detected both vectors with 40%)
++ Alt + Enter = Toggle Fullscreen
 . Mouse scroll = Zoom in / Zoom out from mouse position
-. Character movement A W S D
-. F5 - Regenerate
-. Arrow Keys - Scroll camera with cooldown
-. Camera zoom cooldown config
++ Character movement A W S D
+- F5 - Regenerate (Lacks object destroy and recreate)
++ Arrow Keys - Scroll camera with cooldown
++ Camera zoom cooldown config
 
 . LUA - Try lua scripting
 . Network - Implement network thread
+. If those work can I update objects in another thread?
+
 . Map - Use tile description in the map instead of strings
 . Investigate minimap further optimization
 . Job system - Introduce job sysem for automated tasks
