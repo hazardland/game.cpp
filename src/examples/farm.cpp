@@ -10,11 +10,7 @@ Farm::Farm(Sprite* sprite) {
     allowTerrain(2);
     renderPosition = createChildPosition(0, 0, 64, 64);
     body = sprite;
-}
-
-// Get minimap color
-Uint32 Farm::getMinimapColor(SDL_PixelFormat* format) {
-    return SDL_MapRGBA(format, 255, 0, 0, 255);
+    setMinimapColor ({255, 0, 0, 255});
 }
 
 // Render function

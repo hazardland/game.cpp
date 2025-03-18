@@ -18,7 +18,7 @@ public:
     Farm(Sprite* sprite);
 
     // Virtual functions
-    virtual Uint32 getMinimapColor(SDL_PixelFormat* format) override;
+    // virtual Uint32 getMinimapColor(SDL_PixelFormat* format) override;
     virtual void render(State* state) override;
 };
 

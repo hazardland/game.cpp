@@ -10,6 +10,7 @@ Footman::Footman(Sprite* sprite, TTF_Font* font) {
     body->pause = 0;
     renderPosition = createChildPosition(-24, -24, 72, 72);
     text = new Text(font, createChildPosition(-10, -40));
+    setMinimapColor ({255, 255, 0, 255});
 }
 
 // Rotate the footman based on direction
@@ -120,11 +121,6 @@ void Footman::render(State* state) {
         body->render(camera->translate(getRenderPosition()));
         // text->render(state);
     }
-}
-
-// Get minimap color
-Uint32 Footman::getMinimapColor(SDL_PixelFormat* format) {
-    return SDL_MapRGBA(format, 255, 255, 0, 255);
 }
 
 // Destructor

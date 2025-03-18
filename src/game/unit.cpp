@@ -224,7 +224,15 @@ bool Unit::hasMinimap() {
 }
 
 Uint32 Unit::getMinimapColor(SDL_PixelFormat* format) {
-    return 0;
+    if (minimapColorCache==0) {
+        minimapColorCache = SDL_MapRGBA(format, minimapColor.r, minimapColor.g, minimapColor.b, minimapColor.a);
+    }
+    return minimapColorCache;
+}
+
+void Unit::setMinimapColor(SDL_Color color) {
+    minimapColorCache = 0;
+    minimapColor = color;
 }
 
 

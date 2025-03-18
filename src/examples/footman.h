@@ -39,7 +39,7 @@ public:
     virtual void update(State* state) override;
     virtual void cameraFollow(Camera* camera);
     virtual void render(State* state);
-    virtual Uint32 getMinimapColor(SDL_PixelFormat* format);
+    // virtual Uint32 getMinimapColor(SDL_PixelFormat* format);
 
     // Destructor
     ~Footman();

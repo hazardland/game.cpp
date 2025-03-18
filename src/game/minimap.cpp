@@ -1,3 +1,5 @@
+#include <unordered_map>
+
 #include <game/minimap.h>
 
 #include "game/state.h"
@@ -115,44 +117,135 @@ void Minimap::update(State* state) {
     scope.h = ((screen->getHeight()/cellHeight) * minimapScale) / camera->getZoom();
 
     if (!manualPick) {
+        int oldFrameX = frame.x;
+        int oldFrameY = frame.y;
         frame.x = ((camera->getX()/cellWidth) * minimapScale) - frame.w / 2;
         frame.y = ((camera->getY()/cellHeight) * minimapScale) - frame.h / 2;
         if (frame.x<0) {frame.x=0;};
         if (frame.y<0) {frame.y=0;};
         if ((frame.x+frame.w)/minimapScale>gridWidth) {frame.x=gridWidth*minimapScale-frame.w;};
         if ((frame.y+frame.h)/minimapScale>gridHeight) {frame.y=gridHeight*minimapScale-frame.h;};
+        if (oldFrameX!=frame.x || oldFrameY!=frame.y) {
+            objectPositionModified = true;
+        }
     }
 
-    // if (!manualPick) {
-
-    //     frame.x = scope.x + scope.w/2 - frame.w/2;
-    //     frame.y = scope.y + scope.h/2 - frame.h/2;
-        
-    //     if (frame.x+frame.w > gridWidth*minimapScale) {
-    //         frame.x = ((frame.x+frame.w) - (gridWidth*minimapScale)); 
-    //     }
-    //     if (frame.y+frame.h > gridHeight*minimapScale) {
-    //         frame.y = ((frame.y+frame.h) - (gridHeight*minimapScale)); 
-    //     }
-        
-    //     if (frame.x<0) {
-    //         frame.x = 0;
-    //     }
-    //     if (frame.y<0) {
-    //         frame.y = 0;
-    //     }
-
-    // }
-    // scope.x += getX() - frame.x;
-    // scope.y += getY() - frame.y;
-
 }
+
+////////////////
+
+// void Minimap::render(State* state) {
+//     if (!visible) {
+//         return;
+//     }
+
+//     SDL_RenderCopyF(renderer, background, &frame, getPosition());
+//     renderRectBorder(getPosition(), 102, 5, 51, 255);
+
+//     if (objectPositionModified && cooldown->isReady()) {
+
+
+//         if (mapTerrainModified) {
+//             resetBackgroundTexture();
+//         }
+
+//         SDL_LockTextureToSurface(foreground, NULL, &foregroundSurface);
+//         SDL_FillRect(foregroundSurface, NULL, 0); 
+
+//         std::vector<SDL_Rect> blackBorders;
+//         std::unordered_map<Uint32, std::vector<SDL_Rect>> rects;
+
+//         // int xCellFrom = frame.x / minimapScale - 2;
+//         // int xCellTo = xCellFrom + frame.w / minimapScale + 4;
+//         // int yCellFrom = frame.y / minimapScale - 2;
+//         // int yCellTo = frame.h / minimapScale + yCellFrom + 4;
+//         // if (xCellFrom<0) xCellFrom = 0;
+//         // if (yCellFrom<0) yCellFrom = 0;
+//         // if (xCellTo>gridWidth) xCellTo = gridWidth;
+//         // if (yCellTo>gridHeight) yCellTo = gridHeight;
+        
+//         const int xCellFrom = std::max(0, int(frame.x / minimapScale) - 2);
+//         const int xCellTo = std::min(gridWidth, int(xCellFrom + frame.w / minimapScale) + 4);
+//         const int yCellFrom = std::max(0, int(frame.y / minimapScale) - 2);
+//         const int yCellTo = std::min(gridHeight, int(yCellFrom + frame.h / minimapScale) + 4);
+
+//         const float widthFactor = minimapScale / cellWidth;
+//         const float heightFactor = minimapScale / cellHeight;
+
+//         // Iterate over cells within the frame
+//         for (int i = xCellFrom; i < xCellTo; i++) {
+//             for (int j = yCellFrom; j < yCellTo; j++) {
+//                 // Make sure indices are in bounds
+//                 // if(i >= 0 && j >= 0 && i < grid->size() && j < (*grid)[0].size()){
+//                     // Get cell
+//                     Cell* cell = (*grid)[i][j];
+
+//                     // Iterate over units in the cell
+//                     for(auto& unitList : cell->units){
+//                         for(Unit* unit : unitList){
+//                             // Original rectangle
+//                             SDL_Rect rect = {
+//                                 // int((unit->getX() / cellWidth) * minimapScale), 
+//                                 // int((unit->getY() / cellHeight) * minimapScale),
+//                                 // int((unit->getWidth() / cellWidth) * minimapScale),
+//                                 // int((unit->getHeight() / cellHeight) * minimapScale)
+//                                 int(unit->getX() * widthFactor), 
+//                                 int(unit->getY() * heightFactor),
+//                                 std::max(2, int(unit->getWidth() * widthFactor)),
+//                                 std::max(2, int(unit->getHeight() * heightFactor))
+//                             };
+                            
+//                             // Black rectangle
+//                             // rect.h = rect.h<2?2:rect.h;
+//                             // rect.w = rect.w<2?2:rect.w;
+//                             //if (isVisible(&rect)) {
+//                                 translate(&rect);
+//                                 // rects[SDL_MapRGB(backgroundSurface->format,0,0,0)].push_back(rect); 
+//                                 // Foreground
+//                                 rects[unit->getMinimapColor(foregroundSurface->format)].push_back(rect);
+
+//                                 // Border
+//                                 rect.x -= 1;
+//                                 rect.y -= 1;
+//                                 rect.w += 2;
+//                                 rect.h += 2;
+//                                 blackBorders.push_back(rect); 
+//                             //}
+//                         }
+//                     }
+//                 // }
+//             }
+//         }
+
+//         // First render the black border effect
+//         Uint32 blackColor = SDL_MapRGB(foregroundSurface->format, 0, 0, 0);
+//         SDL_FillRects(foregroundSurface, blackBorders.data(), blackBorders.size(), blackColor);
+
+//         // Then render unit colors
+//         for (auto& [color, items] : rects) {
+//             SDL_FillRects(foregroundSurface, items.data(), items.size(), color);
+//         }       
+//         SDL_UnlockTexture(foreground);
+//         cooldown->reset();
+//         objectPositionModified = false;
+//     }
+
+//     SDL_RenderCopyF(renderer, foreground, NULL, getPosition());
+
+//     // Render scope rectangle        
+//     renderRectColor(&scope, 255, 255, 255, 70);
+//     renderRectBorder(&scope, 102, 5, 51, 255);
+
+//     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+// }
+
+
+///////////////
 
 void Minimap::render(State* state) {
     if (!visible) {
         return;
     }
-    Camera* camera = state->camera;
 
     SDL_RenderCopyF(renderer, background, &frame, getPosition());
     renderRectBorder(getPosition(), 102, 5, 51, 255);
@@ -164,66 +257,59 @@ void Minimap::render(State* state) {
             resetBackgroundTexture();
         }
 
-        // SDL_Rect mapFrame = getMapFrame();
-        // Render backgroundSurface
-
-        // Lock foreground texture and resetBackgroundTexture forground surface
         SDL_LockTextureToSurface(foreground, NULL, &foregroundSurface);
-        // Clear old texture
         SDL_FillRect(foregroundSurface, NULL, 0); 
 
-        std::map<Uint32, std::vector<SDL_Rect>> rects;
+        std::vector<SDL_Rect> blackBorders;
+        std::unordered_map<Uint32, std::vector<SDL_Rect>> rects;
 
-        int xCellFrom = frame.x / minimapScale - 2;
-        int xCellTo = xCellFrom + frame.w / minimapScale + 4;
-        int yCellFrom = frame.y / minimapScale - 2;
-        int yCellTo = frame.h / minimapScale + yCellFrom + 4;
-        if (xCellFrom<0) xCellFrom = 0;
-        if (yCellFrom<0) yCellFrom = 0;
-        if (xCellTo>gridWidth) xCellTo = gridWidth;
-        if (yCellTo>gridHeight) yCellTo = gridHeight;
+        const int xCellFrom = std::max(0, int(frame.x / minimapScale) - 2);
+        const int xCellTo = std::min(gridWidth, int(xCellFrom + frame.w / minimapScale) + 4);
+        const int yCellFrom = std::max(0, int(frame.y / minimapScale) - 2);
+        const int yCellTo = std::min(gridHeight, int(yCellFrom + frame.h / minimapScale) + 4);
+
+        const float widthFactor = minimapScale / cellWidth;
+        const float heightFactor = minimapScale / cellHeight;
 
         // Iterate over cells within the frame
         for (int i = xCellFrom; i < xCellTo; i++) {
             for (int j = yCellFrom; j < yCellTo; j++) {
-                // Make sure indices are in bounds
-                if(i >= 0 && j >= 0 && i < grid->size() && j < (*grid)[0].size()){
-                    // Get cell
-                    Cell* cell = (*grid)[i][j];
 
-                    // Iterate over units in the cell
-                    for(auto& unitList : cell->units){
-                        for(Unit* unit : unitList){
-                            SDL_Rect rect = {
-                                int((unit->getX() / cellWidth) * minimapScale), 
-                                int((unit->getY() / cellHeight) * minimapScale),
-                                int((unit->getWidth() / cellWidth) * minimapScale),
-                                int((unit->getHeight() / cellHeight) * minimapScale)
-                            };
+                Cell* cell = (*grid)[i][j];
 
-                            rect.h = rect.h<2?2:rect.h;
-                            rect.w = rect.w<2?2:rect.w;
-                            if (isVisible(&rect)) {
-                                translate(&rect);
-                                rects[SDL_MapRGB(backgroundSurface->format,0,0,0)].push_back(rect); 
-                                rects[unit->getMinimapColor(foregroundSurface->format)].push_back(rect);
-                                rect.x -= 1;
-                                rect.y -= 1;
-                                rect.w += 2;
-                                rect.h += 2;
-                                rects[SDL_MapRGB(backgroundSurface->format,0,0,0)].push_back(rect); 
-                            }
-                        }
+                for(auto& unitList : cell->units){
+                    for(Unit* unit : unitList){
+
+                        // Original rectangle
+                        SDL_Rect rect = {
+                            int(unit->getX() * widthFactor) - frame.x,
+                            int(unit->getY() * heightFactor) - frame.y,
+                            std::max(2, int(unit->getWidth() * widthFactor)),
+                            std::max(2, int(unit->getHeight() * heightFactor))
+                        };
+                        
+                        // Original rectangle
+                        rects[unit->getMinimapColor(foregroundSurface->format)].push_back(rect);
+
+                        // Black border rectangle
+                        rect.x -= 1;
+                        rect.y -= 1;
+                        rect.w += 2;
+                        rect.h += 2;
+                        blackBorders.push_back(rect); 
                     }
                 }
             }
         }
 
-        // Render marked rectangles
-        for (auto const& [color, items] : rects)
-        {
+        // First render the black border effect
+        Uint32 blackColor = SDL_MapRGB(foregroundSurface->format, 0, 0, 0);
+        SDL_FillRects(foregroundSurface, blackBorders.data(), blackBorders.size(), blackColor);
+
+        // Then render unit colors
+        for (auto& [color, items] : rects) {
             SDL_FillRects(foregroundSurface, items.data(), items.size(), color);
-        }        
+        }       
         SDL_UnlockTexture(foreground);
         cooldown->reset();
         objectPositionModified = false;
@@ -237,6 +323,80 @@ void Minimap::render(State* state) {
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 }
+
+// void Minimap::render(State* state) {
+//     if (!visible) return;
+
+//     SDL_RenderCopyF(renderer, background, &frame, getPosition());
+//     renderRectBorder(getPosition(), 102, 5, 51, 255);
+
+//     if (objectPositionModified || cooldown->isReady()) {
+//         if (mapTerrainModified) {
+//             resetBackgroundTexture();
+//         }
+
+//         SDL_LockTextureToSurface(foreground, NULL, &foregroundSurface);
+//         SDL_FillRect(foregroundSurface, NULL, 0);  
+
+//         std::unordered_map<Uint32, std::vector<SDL_Rect>> rects;
+//         std::vector<SDL_Rect> blackBorders;  // 🔥 Separate list for black border rectangles
+
+//         const int xCellFrom = std::max(0, int(frame.x / minimapScale) - 2);
+//         const int xCellTo = std::min(gridWidth, int(xCellFrom + frame.w / minimapScale) + 4);
+//         const int yCellFrom = std::max(0, int(frame.y / minimapScale) - 2);
+//         const int yCellTo = std::min(gridHeight, int(yCellFrom + frame.h / minimapScale) + 4);
+
+//         const float invCellWidth = minimapScale / cellWidth;
+//         const float invCellHeight = minimapScale / cellHeight;
+
+//         for (int i = xCellFrom; i < xCellTo; i++) {
+//             for (int j = yCellFrom; j < yCellTo; j++) {
+//                 Cell* cell = (*grid)[i][j];
+
+//                 for (auto& unitList : cell->units) {
+//                     for (Unit* unit : unitList) {
+//                         SDL_Rect rect = {
+//                             int((unit->getX() * invCellWidth) - frame.x), 
+//                             int((unit->getY() * invCellHeight) - frame.y),
+//                             std::max(2, int(unit->getWidth() * invCellWidth)),
+//                             std::max(2, int(unit->getHeight() * invCellHeight))
+//                         };
+
+//                         Uint32 color = unit->getMinimapColor(foregroundSurface->format);
+//                         translate(&rect);
+//                         rects[color].push_back(rect);
+
+//                         // 🔥 Add black border effect
+//                         SDL_Rect borderRect = rect;
+//                         borderRect.x -= 1;
+//                         borderRect.y -= 1;
+//                         borderRect.w += 2;
+//                         borderRect.h += 2;
+//                         blackBorders.push_back(borderRect);
+//                     }
+//                 }
+//             }
+//         }
+
+//         // 🔥 First render the black border effect
+//         Uint32 blackColor = SDL_MapRGB(foregroundSurface->format, 0, 0, 0);
+//         SDL_FillRects(foregroundSurface, blackBorders.data(), blackBorders.size(), blackColor);
+
+//         // 🔥 Then render unit colors
+//         for (auto& [color, items] : rects) {
+//             SDL_FillRects(foregroundSurface, items.data(), items.size(), color);
+//         }
+
+//         SDL_UnlockTexture(foreground);
+//         cooldown->reset();
+//         objectPositionModified = false;
+//     }
+
+//     SDL_RenderCopyF(renderer, foreground, NULL, getPosition());
+
+//     renderRectColor(&scope, 255, 255, 255, 70);
+//     renderRectBorder(&scope, 102, 5, 51, 255);
+// }
 
 void Minimap::renderRectColor(SDL_FRect* rect, int red, int green, int blue, int alpha) {
     SDL_SetRenderDrawColor(renderer, red, blue, green, alpha);
