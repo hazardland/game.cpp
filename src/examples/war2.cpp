@@ -11,6 +11,7 @@ void Warcraft::prepare() {
     font = TTF_OpenFont("assets/fonts/titillium.ttf", 20);
     fontSmall = TTF_OpenFont("assets/fonts/titillium.ttf", 12);
     fps = (new Fps(font))->setPositionFixed(true);
+    fps->setColor({255, 220, 0, 255});
             
     printf("Creating map\n");
 
@@ -25,13 +26,14 @@ void Warcraft::prepare() {
 
     minimap = new Minimap(
         renderer, 
-        300, 300, 
+        500, 500, 
         WIDTH, HEIGHT, 2
     );
 
     printf("Setting minimap\n");
 
     map->setMinimap(minimap);
+
     // map->setDebug(true);
     // map->debug = false;
     // objects.insert({map->getId(), map});
@@ -232,7 +234,6 @@ void Warcraft::update(State* state) {
     }
 
     if (keyboard->alt && keyboard->enter) {
-        printf("Fullscreen requested\n");
         window->toggleFullscreen();
     }
 

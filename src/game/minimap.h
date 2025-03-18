@@ -8,6 +8,7 @@
 #include <SDL2/SDL_image.h>
 
 #include "game/unit.h"
+#include "game/cooldown.h"
 
 class Drag;
 class Cell;
@@ -27,7 +28,7 @@ public:
     void setUnit(SDL_Rect* rect, int red, int blue, int green);
     void addUnit(Unit* unit);
     void clearUnits();
-    void prepare();
+    void resetBackgroundTexture();
     void setMapData(std::vector<std::vector<Cell*>>& grid, int cellWidth, int cellHeight);
     virtual void update(State* state) override;
     virtual void render(State* state) override;
@@ -39,8 +40,10 @@ public:
     void translate(SDL_Rect* position);
     virtual bool isVisible(State* state) override;
     void toggleVisible();
+    void markObjectPositionModified();
     
     private:
+    bool objectPositionModified = true;
     SDL_Renderer* renderer;
     SDL_Surface* backgroundSurface;
     SDL_Texture* background = NULL;
@@ -54,13 +57,14 @@ public:
     float minimapScale;
     int scopeWidth = 2;
     SDL_Color scopeColor = {50, 205, 50};
-    bool modified = false;
+    bool mapTerrainModified = false;
     Drag* drag;
     // float widthRatio;
     // float heightRatio;
     float cellWidth;
     float cellHeight;
     std::vector<std::vector<Cell*>>* grid;
+    Cooldown* cooldown;
     bool visible = true;
 };
 

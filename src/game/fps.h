@@ -4,6 +4,7 @@
 #include <SDL2/SDL_timer.h>
 
 #include "game/text.h"
+#include <game/cooldown.h>
 
 class State;
 
@@ -17,6 +18,7 @@ class State;
 class Fps: public Text {
 public:
     using Text::Text;  ///< Inherit the constructors of the Text class.
+    Cooldown* cooldown = new Cooldown(500);
 
     /// Destructor
     virtual ~Fps() = default;

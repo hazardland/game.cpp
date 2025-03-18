@@ -21,7 +21,7 @@ Uint32 Farm::getMinimapColor(SDL_PixelFormat* format) {
 void Farm::render(State* state) {
     Camera* camera = state->camera;
     if (camera->isVisible(getRenderPosition())) {
-        drawPosition(state);
+        // drawPosition(state);
         // renderPosition->draw(state);
         body->image->render(body->getRect(), camera->translate(getRenderPosition()));
     }

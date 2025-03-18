@@ -106,7 +106,7 @@ Position* Object::createChildPosition(float x, float y, float width, float heigh
 Position* Object::createChildPosition(float x, float y) {
     Position* pos =  new Position(
                         x, y, 
-                        1, 1,
+                        0, 0,
                         &position->rect.x,
                         &position->rect.y
                     );

@@ -33,12 +33,13 @@ Minimap::Minimap(SDL_Renderer* renderer,
     
     backgroundSurface = SDL_CreateRGBSurfaceWithFormat(0, gridWidth * minimapScale, gridHeight * minimapScale, 0, SDL_PIXELFORMAT_RGBA32);
     
-    prepare();
+    resetBackgroundTexture();
 
     foreground = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, frame.w, frame.h);
     SDL_SetTextureBlendMode(foreground, SDL_BLENDMODE_BLEND);
 
     drag = new Drag(getPosition(), false, true);
+    cooldown = new Cooldown(100);
 
 }
 
@@ -58,7 +59,7 @@ void Minimap::setTerrain(int cell, int row, int red, int blue, int green) {
 
 
     SDL_FillRect(backgroundSurface, &rect, SDL_MapRGB(backgroundSurface->format, red, blue, green));
-    modified = true;
+    mapTerrainModified = true;
 }
 
 void Minimap::setUnit(SDL_Rect* rect, int red, int blue, int green) {
@@ -73,13 +74,13 @@ void Minimap::clearUnits() {
     units.clear();
 }
 
-void Minimap::prepare() {
+void Minimap::resetBackgroundTexture() {
     if (background!=NULL) {
         printf("Destroyed minimap background\n");
         SDL_DestroyTexture(background);
     }
     background = SDL_CreateTextureFromSurface(renderer, backgroundSurface);
-    modified = false;
+    mapTerrainModified = false;
 }
 
 void Minimap::setMapData(std::vector<std::vector<Cell*>>& grid, int cellWidth, int cellHeight) {
@@ -107,7 +108,7 @@ void Minimap::update(State* state) {
         manualPick = true;
     }
 
-    // Prepare scope rectangle
+    // resetBackgroundTexture scope rectangle
     scope.x = (camera->getX()/cellWidth) * minimapScale - frame.x + getX();
     scope.y = (camera->getY()/cellHeight) * minimapScale - frame.y + getY();
     scope.w = ((screen->getWidth()/cellWidth) * minimapScale) / camera->getZoom();
@@ -151,76 +152,83 @@ void Minimap::render(State* state) {
     if (!visible) {
         return;
     }
-
     Camera* camera = state->camera;
 
-    if (modified) {
-        prepare();
-    }
-
-    // SDL_Rect mapFrame = getMapFrame();
-    // Render backgroundSurface
     SDL_RenderCopyF(renderer, background, &frame, getPosition());
     renderRectBorder(getPosition(), 102, 5, 51, 255);
 
-    // Lock foreground texture and prepare forground surface
-    SDL_LockTextureToSurface(foreground, NULL, &foregroundSurface);
-    // Clear old texture
-    SDL_FillRect(foregroundSurface, NULL, 0); 
+    if (objectPositionModified && cooldown->isReady()) {
 
-    std::map<Uint32, std::vector<SDL_Rect>> rects;
 
-    int xCellFrom = frame.x / minimapScale - 2;
-    int xCellTo = xCellFrom + frame.w / minimapScale + 4;
-    int yCellFrom = frame.y / minimapScale - 2;
-    int yCellTo = frame.h / minimapScale + yCellFrom + 4;
-    if (xCellFrom<0) xCellFrom = 0;
-    if (yCellFrom<0) yCellFrom = 0;
-    if (xCellTo>gridWidth) xCellTo = gridWidth;
-    if (yCellTo>gridHeight) yCellTo = gridHeight;
+        if (mapTerrainModified) {
+            resetBackgroundTexture();
+        }
 
-    // Iterate over cells within the frame
-    for (int i = xCellFrom; i < xCellTo; i++) {
-        for (int j = yCellFrom; j < yCellTo; j++) {
-            // Make sure indices are in bounds
-            if(i >= 0 && j >= 0 && i < grid->size() && j < (*grid)[0].size()){
-                // Get cell
-                Cell* cell = (*grid)[i][j];
+        // SDL_Rect mapFrame = getMapFrame();
+        // Render backgroundSurface
 
-                // Iterate over units in the cell
-                for(auto& unitList : cell->units){
-                    for(Unit* unit : unitList){
-                        SDL_Rect rect = {
-                            int((unit->getX() / cellWidth) * minimapScale), 
-                            int((unit->getY() / cellHeight) * minimapScale),
-                            int((unit->getWidth() / cellWidth) * minimapScale),
-                            int((unit->getHeight() / cellHeight) * minimapScale)
-                        };
+        // Lock foreground texture and resetBackgroundTexture forground surface
+        SDL_LockTextureToSurface(foreground, NULL, &foregroundSurface);
+        // Clear old texture
+        SDL_FillRect(foregroundSurface, NULL, 0); 
 
-                        rect.h = rect.h<2?2:rect.h;
-                        rect.w = rect.w<2?2:rect.w;
-                        if (isVisible(&rect)) {
-                            translate(&rect);
-                            rects[SDL_MapRGB(backgroundSurface->format,0,0,0)].push_back(rect); 
-                            rects[unit->getMinimapColor(foregroundSurface->format)].push_back(rect);
-                            rect.x -= 1;
-                            rect.y -= 1;
-                            rect.w += 2;
-                            rect.h += 2;
-                            rects[SDL_MapRGB(backgroundSurface->format,0,0,0)].push_back(rect); 
+        std::map<Uint32, std::vector<SDL_Rect>> rects;
+
+        int xCellFrom = frame.x / minimapScale - 2;
+        int xCellTo = xCellFrom + frame.w / minimapScale + 4;
+        int yCellFrom = frame.y / minimapScale - 2;
+        int yCellTo = frame.h / minimapScale + yCellFrom + 4;
+        if (xCellFrom<0) xCellFrom = 0;
+        if (yCellFrom<0) yCellFrom = 0;
+        if (xCellTo>gridWidth) xCellTo = gridWidth;
+        if (yCellTo>gridHeight) yCellTo = gridHeight;
+
+        // Iterate over cells within the frame
+        for (int i = xCellFrom; i < xCellTo; i++) {
+            for (int j = yCellFrom; j < yCellTo; j++) {
+                // Make sure indices are in bounds
+                if(i >= 0 && j >= 0 && i < grid->size() && j < (*grid)[0].size()){
+                    // Get cell
+                    Cell* cell = (*grid)[i][j];
+
+                    // Iterate over units in the cell
+                    for(auto& unitList : cell->units){
+                        for(Unit* unit : unitList){
+                            SDL_Rect rect = {
+                                int((unit->getX() / cellWidth) * minimapScale), 
+                                int((unit->getY() / cellHeight) * minimapScale),
+                                int((unit->getWidth() / cellWidth) * minimapScale),
+                                int((unit->getHeight() / cellHeight) * minimapScale)
+                            };
+
+                            rect.h = rect.h<2?2:rect.h;
+                            rect.w = rect.w<2?2:rect.w;
+                            if (isVisible(&rect)) {
+                                translate(&rect);
+                                rects[SDL_MapRGB(backgroundSurface->format,0,0,0)].push_back(rect); 
+                                rects[unit->getMinimapColor(foregroundSurface->format)].push_back(rect);
+                                rect.x -= 1;
+                                rect.y -= 1;
+                                rect.w += 2;
+                                rect.h += 2;
+                                rects[SDL_MapRGB(backgroundSurface->format,0,0,0)].push_back(rect); 
+                            }
                         }
                     }
                 }
             }
         }
+
+        // Render marked rectangles
+        for (auto const& [color, items] : rects)
+        {
+            SDL_FillRects(foregroundSurface, items.data(), items.size(), color);
+        }        
+        SDL_UnlockTexture(foreground);
+        cooldown->reset();
+        objectPositionModified = false;
     }
 
-    // Render marked rectangles
-    for (auto const& [color, items] : rects)
-    {
-        SDL_FillRects(foregroundSurface, items.data(), items.size(), color);
-    }        
-    SDL_UnlockTexture(foreground);
     SDL_RenderCopyF(renderer, foreground, NULL, getPosition());
 
     // Render scope rectangle        
@@ -281,4 +289,7 @@ bool Minimap::isVisible(State* state) {
 
 void Minimap::toggleVisible() {
     visible = !visible;
+}
+void Minimap::markObjectPositionModified() {
+    objectPositionModified = true;
 }

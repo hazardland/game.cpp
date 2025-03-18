@@ -61,6 +61,6 @@ class MyScene : public Scene {
 
 int main(int argc, char** argv){
     Window* window = new Window("Hello World", 800, 600);
-    window->setScene(new MyScene(window->window));
+    window->setScene(new MyScene(window));
     return window->run();
 }

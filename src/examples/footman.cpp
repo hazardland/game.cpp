@@ -28,8 +28,13 @@ void Footman::rotate(float directionX, float directionY) {
     }
 }
 
-// Safe movement function
-bool Footman::safeMove(float byX, float byY) {
+
+// Move based on deltaTime and direction if possible
+bool Footman::move(int deltaTime, float directionX, float directionY) {
+
+    float byX = (directionX * deltaTime) / (maxSpeed + 1 - speed);
+    float byY = (directionY * deltaTime) / (maxSpeed + 1 - speed);
+
     if (byX!=0 && byY!=0 && canMove(byX, byY)) {
         addPosition(byX, byY);
         updateGrid();
@@ -47,12 +52,6 @@ bool Footman::safeMove(float byX, float byY) {
         return true;
     }
     return false;
-}
-
-// Move based on deltaTime and direction
-bool Footman::move(int deltaTime, float directionX, float directionY) {
-    return safeMove((directionX * deltaTime) / (maxSpeed + 1 - speed),
-                    (directionY * deltaTime) / (maxSpeed + 1 - speed));
 }
 
 // Update function
@@ -95,13 +94,13 @@ void Footman::update(State* state) {
     }
 
     // mode = 0;
-    text->setText(std::to_string(mode));
+    // text->setText(std::to_string(mode));
     // text->setText(std::to_string(getX())+","+std::to_string(getY()));
     body->play(mode + modeX + modeY);
 
-    if (isSelected()) {
-        text->appendText(" SEL");
-    }
+    // if (isSelected()) {
+    //     text->appendText(" SEL");
+    // }
 
     body->update(state->clock->delta);
 }
@@ -117,7 +116,7 @@ void Footman::cameraFollow(Camera* camera) {
 void Footman::render(State* state) {
     Camera* camera = state->camera;
     if (camera->isVisible(getRenderPosition())) {
-        drawPosition(state);
+        // drawPosition(state);
         body->render(camera->translate(getRenderPosition()));
         // text->render(state);
     }

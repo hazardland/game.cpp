@@ -33,8 +33,8 @@ private:
 
 public:
     // Constants
-    static constexpr int WIDTH = 500;
-    static constexpr int HEIGHT = 500;
+    static constexpr int WIDTH = 2000;
+    static constexpr int HEIGHT = 2000;
     static constexpr int SPRITE_FOOTMAN_RED = 1;
     static constexpr int SPRITE_HUMAN_FARM = 2;
 

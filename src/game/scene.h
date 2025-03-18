@@ -47,7 +47,7 @@ public:
     Map* map;
 
     // Pointer to a Minimap object, which provides a simplified overview of the game's world map
-    Minimap* minimap;
+    Minimap* minimap = nullptr;
 
     /**
      * @brief Constructor that initializes the Scene object

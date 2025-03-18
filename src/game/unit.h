@@ -15,6 +15,7 @@ class State;
 class Position;
 class Cell;
 class Terrain;
+class Minimap;
 
 /* Class 'Unit' extends the 'Object' class and represents a unit in a game. 
    It includes methods for rendering the unit, updating its map cells, 

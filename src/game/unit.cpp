@@ -5,6 +5,7 @@
 #include "game/cell.h"
 #include "game/terrain.h"
 #include "game/camera.h"
+#include "game/minimap.h"
 
 
 // Destructor
@@ -41,6 +42,10 @@ void Unit::select() {
 }
 
 bool Unit::canMove(float deltaX, float deltaY) {
+    if (map==nullptr) {
+        return true;
+    }
+
     if (deltaX==0 && deltaY==0){
         return false;
     }
@@ -54,79 +59,29 @@ bool Unit::canMove(float deltaX, float deltaY) {
     return canOccupy(targetX, targetY, targetWidth, targetHeight);
 }
 
-
-// bool Unit::canOccupy (float newX, float newY, float newWidth, float newHeight) {
-
-//     // std::cout << "Checking farm can exist " << newX << "," << newY << std::endl;
-
-//     // Check if the new position would be outside the map's bounds
-//     if (newX < 0 || newX + newWidth > map->gridWidth * map->cellWidth ||
-//         newY < 0 || newY + newHeight > map->gridHeight * map->cellHeight) {
-//         return false;
-//     }
-
-//     // Calculate the cells this object would occupy after moving
-//     int newGridFromX = static_cast<int>(newX / map->cellWidth);
-//     int newGridFromY = static_cast<int>(newY / map->cellHeight);
-//     int newGridToX = static_cast<int>((newX + newWidth) / map->cellWidth);
-//     int newGridToY = static_cast<int>((newY + newHeight) / map->cellHeight);
-
-//     // Correct the boundaries if they are out of the map's bounds
-//     newGridFromX = std::max(0, newGridFromX);
-//     newGridFromY = std::max(0, newGridFromY);
-//     newGridToX = std::min(map->gridWidth - 1, newGridToX);
-//     newGridToY = std::min(map->gridHeight - 1, newGridToY);
-
-//     // Check every cell this object would occupy after moving
-//     for (int i = newGridFromX; i <= newGridToX; i++) {
-//         for (int j = newGridFromY; j <= newGridToY; j++) {
-
-//             if (map->grid[i][j]->terrain->layer != getLayer() && getLayer() != 0) {
-//                 return false;
-//             }
-//             if (!ignoresTerrain && !isTerrainAllowed(map->grid[i][j]->terrain->id)) {
-//                 return false;
-//             }
-
-//             // Get the objects in the current cell
-//             auto& objects = map->grid[i][j]->units[getLayer()];
-
-//             // Check every object in the cell
-//             for (const auto& object : objects) {
-//                 // If the object is not the same as this one and they overlap, return false
-//                 if (object != this && 
-//                     newX < object->getX() + object->getWidth() &&
-//                     newX + newWidth > object->getX() &&
-//                     newY < object->getY() + object->getHeight() &&
-//                     newY + newHeight > object->getY()) {
-//                     return false;
-//                 }
-//             }
-//         }
-//     }
-
-//     // No collisions were found, so return true
-//     return true;
-// }
-
 bool Unit::canOccupy(float newX, float newY, float newWidth, float newHeight) {
-    // ✅ Fail fast if out of map bounds
+
+    if (map==nullptr) {
+        return true;
+    }
+
+    // Fail fast if out of map bounds
     if (newX < 0 || (newX + newWidth) > map->gridWidth * map->cellWidth ||
         newY < 0 || (newY + newHeight) > map->gridHeight * map->cellHeight) {
         return false;
     }
 
-    // ✅ Compute occupied grid cells
+    // Compute occupied grid cells
     int newGridFromX = std::clamp(static_cast<int>(newX / map->cellWidth), 0, map->gridWidth - 1);
     int newGridFromY = std::clamp(static_cast<int>(newY / map->cellHeight), 0, map->gridHeight - 1);
     int newGridToX = std::clamp(static_cast<int>((newX + newWidth) / map->cellWidth), 0, map->gridWidth - 1);
     int newGridToY = std::clamp(static_cast<int>((newY + newHeight) / map->cellHeight), 0, map->gridHeight - 1);
 
-    // ✅ First check terrain (Fail fast)
+    // First check terrain (Fail fast)
     for (int i = newGridFromX; i <= newGridToX; i++) {
         for (int j = newGridFromY; j <= newGridToY; j++) {
             Cell* cell = map->grid[i][j];
-            if (!cell) continue;  // ✅ Avoid null pointer crash
+            // if (!cell) continue;  // Avoid null pointer crash
 
             if (cell->terrain->layer != getLayer() && getLayer() != 0) {
                 return false;
@@ -137,18 +92,18 @@ bool Unit::canOccupy(float newX, float newY, float newWidth, float newHeight) {
         }
     }
 
-    // ✅ Now check for unit collisions only if terrain check passed
+    // Now check for unit collisions only if terrain check passed
     for (int i = newGridFromX; i <= newGridToX; i++) {
         for (int j = newGridFromY; j <= newGridToY; j++) {
             Cell* cell = map->grid[i][j];
-            if (!cell) continue;  // ✅ Prevent null pointer crash
+            // if (!cell) continue;  // Prevent null pointer crash
 
             auto& objects = cell->units[getLayer()];
             for (const auto& object : objects) {
-                // ✅ Skip self-check
+                // Skip self-check
                 if (object == this) continue;
 
-                // ✅ More readable collision check
+                // Now do collision check inside cell
                 if (newX < object->getX() + object->getWidth() &&
                     newX + newWidth > object->getX() &&
                     newY < object->getY() + object->getHeight() &&
@@ -159,16 +114,17 @@ bool Unit::canOccupy(float newX, float newY, float newWidth, float newHeight) {
             }
         }
     }
-
-    return true;  // ✅ No collisions, valid move!
+    
+    // No collisions
+    return true;  
 }
 
 void Unit::updateGrid() {
-    if (!map || !position->isReady()) {
+    if (map==nullptr || !position->isReady()) {
         return;
     }
 
-    // ✅ Calculate the new cells this object should occupy
+    // Calculate the new cells this object should occupy
     int newGridFromX = std::clamp(static_cast<int>(getX() / map->cellWidth), 0, map->gridWidth - 1);
     int newGridFromY = std::clamp(static_cast<int>(getY() / map->cellHeight), 0, map->gridHeight - 1);
     int newGridToX = std::clamp(static_cast<int>((getX() + getWidth()) / map->cellWidth), 0, map->gridWidth - 1);
@@ -208,22 +164,7 @@ void Unit::updateGrid() {
         }
     }
 
-
-    // Old approach kind was done in a hurry for a proof of concept
-
-    // Remove object from its current cells
-    // for (const auto& cell : cells) {
-    //     map->grid[cell.first][cell.second]->units[getLayer()].remove(this);
-    // }
-    // cells.clear();
-
-    // // Add object to the new cells
-    // for (int i = newGridFromX; i <= newGridToX; i++) {
-    //     for (int j = newGridFromY; j <= newGridToY; j++) {
-    //         map->grid[i][j]->units[getLayer()].push_back(this);
-    //         cells.push_back(std::make_pair(i, j));
-    //     }
-    // }
+    map->markObjectPositionModified();
 
     gridFromX = newGridFromX;
     gridFromY = newGridFromY;

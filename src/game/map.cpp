@@ -128,7 +128,7 @@ void Map::render(State* state) {
 void Map::setTerrain(int x, int y, int type) {
     Terrain* terrain = terrains[type];
     grid[x][y]->terrain = terrain;
-    if (minimap!=NULL) {
+    if (minimap!=nullptr) {
         minimap->setTerrain(x, y, terrain->color[0], terrain->color[1], terrain->color[2]);
     }
 }
@@ -311,6 +311,12 @@ void Map::setDebug (bool value) {
 
 void Map::toggleDebug () {
     debug = !debug;
+}
+
+void Map::markObjectPositionModified() {
+    if (minimap!=nullptr){
+        this->minimap->markObjectPositionModified();
+    }
 }
 
 Map::~Map() {

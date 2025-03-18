@@ -25,7 +25,7 @@ private:
     Image* image;
     Clip* clip;
     Text* text;
-    Minimap* minimap;
+    Minimap* minimap = nullptr;
     
     int random(int min, int max);
     void setTerrain(int x, int y, int type);
@@ -55,6 +55,7 @@ public:
     void generate(int seed, float intensity, std::vector<float> ranges);
     void setDebug(bool value);
     void toggleDebug();
+    void markObjectPositionModified();
     ~Map();
     
 private:

@@ -8,12 +8,17 @@
 #include <game/camera.h>
 #include <game/screen.h>
 
+// Fps::Fps() {
+//     cooldown = new Cooldown(200);
+// }
+
 void Fps::update(State* state) {
-    if (SDL_GetTicks() - ticks > 500) {
-        setText(std::to_string(state->clock->fps) + " FPS / DELTA " + std::to_string(state->clock->delta));
-        setX(static_cast<float>(state->screen->getWidth() - getWidth() - 5));
-        ticks = SDL_GetTicks();
-    }
+        if (cooldown->isReady()) {
+            setText(std::to_string(state->clock->fps) + " FPS / DELTA " + std::to_string(state->clock->delta));
+            setX(static_cast<float>(state->screen->getWidth() - getWidth() - 5));
+            cooldown->reset();
+        }
+
 }
 
 bool Fps::isVisible(State* /* state */) {

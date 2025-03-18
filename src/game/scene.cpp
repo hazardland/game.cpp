@@ -58,7 +58,7 @@ void Scene::prepare() {
 }
 
 void Scene::update(State* state) {
-    if (map) {
+    if (map!=nullptr) {
         map->update(state);
     }
     visibleObjects.clear();
@@ -69,7 +69,7 @@ void Scene::update(State* state) {
             visibleObjects.push_back(object);
         }
     }
-    if (minimap) {
+    if (minimap!=nullptr) {
         minimap->update(state);
     }
 }
@@ -85,14 +85,14 @@ void Scene::clear() {
 }
 
 void Scene::build(State* state) {
-    if (map) {
+    if (map!=nullptr) {
        map->render(state);
     }
     for (Object* object : visibleObjects)
     {
         object->render(state);
     }
-    if (minimap){
+    if (minimap!=nullptr){
         minimap->render(state);
     }
 }
