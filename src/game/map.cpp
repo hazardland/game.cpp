@@ -156,34 +156,70 @@ void Map::import(std::vector<std::vector<int>> data) {
 }
 
 void Map::generate(
-                int seed, 
-                float intensity,
-                std::vector<float> ranges) {
+    int seed, 
+    float intensity,
+    std::vector<float> ranges) {
 
     OpenSimplexNoise::Noise noise{seed};
-    for (int x=0; x<gridWidth; x+=2) {
-        for (int y=0; y<gridHeight; y+=2)
-        {
-            // alpha = (noise.eval(x*0.01, y*0.01) + 1) / 2.0  * 255.0;
-            // minimap->setPixel(x, y, 255, 255, 255, alpha);       
-            float depth = (noise.eval(x*intensity, y*intensity) + 1) / 2.0;
-            for (int terrain=0; terrain<terrains.size(); terrain++){
-                if (depth<=ranges[terrain]) {
-                    setTerrain(x, y, terrain);
-                    setTerrain(x+1, y, terrain);
-                    setTerrain(x, y+1, terrain);
-                    setTerrain(x+1, y+1, terrain);
+    
+    for (int x = 0; x < gridWidth / 2; x++) {
+        for (int y = 0; y < gridHeight / 2; y++) {
+            
+            // Compute noise value at scaled coordinates
+            float depth = (noise.eval(x * intensity, y * intensity) + 1) / 2.0;
+            int terrain = 0; // Default terrain type
+
+            // Determine terrain type based on depth value
+            for (int t = 0; t < terrains.size(); t++) {
+                if (depth <= ranges[t]) {
+                    terrain = t;
                     break;
                 }
             }
+
+            // Map the smaller grid space to a 2x2 block in the full grid
+            int realX = x * 2;
+            int realY = y * 2;
+            setTerrain(realX, realY, terrain);
+            setTerrain(realX + 1, realY, terrain);
+            setTerrain(realX, realY + 1, terrain);
+            setTerrain(realX + 1, realY + 1, terrain);
         }
     }
-    // fillMap2();
-    // map->grid = this->grid;
-    printf("generated map 2\n");
-    fillMap();
 
-}  
+    printf("Generated map with 2x2 terrain blocks\n");
+    fillMap();
+}
+
+// void Map::generate(
+//                 int seed, 
+//                 float intensity,
+//                 std::vector<float> ranges) {
+
+//     OpenSimplexNoise::Noise noise{seed};
+//     for (int x=0; x<gridWidth; x+=2) {
+//         for (int y=0; y<gridHeight; y+=2)
+//         {
+//             // alpha = (noise.eval(x*0.01, y*0.01) + 1) / 2.0  * 255.0;
+//             // minimap->setPixel(x, y, 255, 255, 255, alpha);       
+//             float depth = (noise.eval(x*intensity, y*intensity) + 1) / 2.0;
+//             for (int terrain=0; terrain<terrains.size(); terrain++){
+//                 if (depth<=ranges[terrain]) {
+//                     setTerrain(x, y, terrain);
+//                     setTerrain(x+1, y, terrain);
+//                     setTerrain(x, y+1, terrain);
+//                     setTerrain(x+1, y+1, terrain);
+//                     break;
+//                 }
+//             }
+//         }
+//     }
+//     // fillMap2();
+//     // map->grid = this->grid;
+//     printf("generated map 2\n");
+//     fillMap();
+
+// }  
 
 void Map::fillMap() {
     
