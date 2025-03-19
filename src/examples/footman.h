@@ -1,15 +1,10 @@
 #ifndef WAR2_FOOTMAN_H
 #define WAR2_FOOTMAN_H
 
-#include <iostream>
-
 #include "game/unit.h"
 #include "game/animation.h"
-#include "game/position.h"
 #include "game/state.h"
-#include "game/input.h"
 #include "game/camera.h"
-#include "game/clock.h"
 #include "game/text.h"
 
 #include "examples/enum.h"
@@ -38,7 +33,7 @@ public:
     // Update and rendering functions
     virtual void update(State* state) override;
     virtual void cameraFollow(Camera* camera);
-    virtual void render(State* state);
+    virtual void render(State* state) override;
     // virtual Uint32 getMinimapColor(SDL_PixelFormat* format);
 
     // Destructor

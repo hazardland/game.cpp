@@ -1,4 +1,13 @@
+// #include <iostream>
+
+#include "game/input.h"
+#include "game/terrain.h"
+#include "game/image.h"
+
 #include "examples/war2.h"
+#include "examples/enum.h"
+#include "examples/footman.h"
+#include "examples/farm.h"
 
 // Prepare function
 void Warcraft::prepare() {
@@ -12,12 +21,12 @@ void Warcraft::prepare() {
     fontSmall = TTF_OpenFont("assets/fonts/titillium.ttf", 12);
     fps = (new Fps(font))->setPositionFixed(true);
     fps->setColor({255, 220, 0, 255});
-            
+
     printf("Creating map\n");
 
     map = new Map(
-        new Image(renderer, "assets/sprites/winter.png"), 
-        32, 32, 
+        new Image(renderer, "assets/sprites/winter.png"),
+        32, 32,
         WIDTH, HEIGHT, 3,
         fontSmall
     );
@@ -25,8 +34,8 @@ void Warcraft::prepare() {
     printf("Creating minimap\n");
 
     minimap = new Minimap(
-        renderer, 
-        250, 250, 
+        renderer,
+        250, 250,
         WIDTH, HEIGHT, 2
     );
 
@@ -48,11 +57,11 @@ void Warcraft::prepare() {
         // Ground
         new Terrain(TERRAIN_GROUND, LAYER_GROUND, {255, 255, 255}),
         // Forest
-        new Terrain(TERRAIN_FOREST, LAYER_GROUND, {34, 139, 34}) // Dark green for forests            
+        new Terrain(TERRAIN_FOREST, LAYER_GROUND, {34, 139, 34}) // Dark green for forests
     };
 
     map->tiles = {
-        
+
         {   0, {319, 320, 321, 319, 320, 321, 319, 320, 321, 319, 320, 321 , 322, 323, 324}}, // Base water
         {1111, {331, 332, 333, 334, 331, 332, 333, 334, 331, 332, 333, 334, 331, 332, 333, 334, 331, 332, 333, 334 , 335, 336, 337, 338, 339}},
         { 111, {199, 200}}, // Ice crossing water
@@ -82,7 +91,7 @@ void Warcraft::prepare() {
         {1211, {287, 288}},
         {2111, {289, 290}},
         {2112, {174}}, //271
-        {1221, {278}}, //271, 
+        {1221, {278}}, //271,
         {3333, {108, 109, 111, 112, 113, 114, 119, 120}}, // Base forest
         {2333, {108, 109, 111, 112, 113, 114, 119, 120}}, // {129, 104}}, // Forest crossing ground
         {3233, {108, 109, 111, 112, 113, 114, 119, 120}}, // {107, 131}},
@@ -101,7 +110,6 @@ void Warcraft::prepare() {
 
     };
 
-    std::cout << "Checkpoint" << std::endl;
 
     generate();
 
@@ -149,7 +157,7 @@ void Warcraft::prepare() {
             Farm* farm = new Farm(sprites[SPRITE_HUMAN_FARM]);
             farm->setMap(map);
             if (farm->canOccupy(x-20, y-20, 64+20, 64+20)) {
-                farm->setPosition(x, y); 
+                farm->setPosition(x, y);
                 addObject(farm);
             }
 
@@ -219,7 +227,7 @@ void Warcraft::generate() {
 // Update function
 void Warcraft::update(State* state) {
 
-    Keyboard* keyboard = state->input->keyboard; 
+    Keyboard* keyboard = state->input->keyboard;
 
     if (keyboard->plus) {
         state->camera->zoomIn();

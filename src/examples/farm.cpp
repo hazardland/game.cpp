@@ -1,3 +1,5 @@
+#include "game/camera.h"
+#include "game/image.h"
 #include "examples/farm.h"
 
 // Constructor

@@ -1,24 +1,15 @@
 #ifndef WAR2_SCENE_H
 #define WAR2_SCENE_H
 
-#include <vector>
-#include <map>
-#include <iostream>
-
 #include "game/scene.h"
 #include "game/text.h"
 #include "game/fps.h"
 #include "game/map.h"
 #include "game/minimap.h"
-#include "game/terrain.h"
-#include "game/image.h"
 #include "game/select.h"
 #include "game/window.h"
 #include "game/cooldown.h"
 
-#include "examples/enum.h"
-#include "examples/footman.h"
-#include "examples/farm.h"
 
 class Warcraft : public Scene {
     using Scene::Scene;
@@ -48,7 +39,7 @@ public:
     static constexpr int TERRAIN_FOREST = 3;
 
     // Methods
-    virtual void prepare();
+    virtual void prepare() override;
     void generate();
     virtual void update(State* state) override;
 };

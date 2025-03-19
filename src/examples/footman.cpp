@@ -1,3 +1,6 @@
+#include "game/input.h"
+#include "game/clock.h"
+
 #include "examples/footman.h"
 
 // Constructor
