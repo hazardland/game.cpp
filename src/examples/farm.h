@@ -7,7 +7,7 @@
 #include "game/minimap.h"
 #include "game/image.h"
 #include "game/camera.h"
-#include "game/event.h"
+#include "game/input.h"
 #include "game/state.h"
 
 class Farm : public Unit {

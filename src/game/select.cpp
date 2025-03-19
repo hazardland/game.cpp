@@ -3,11 +3,11 @@
 #include "game/select.h"
 
 #include "game/state.h"
-#include "game/event.h"
+#include "game/input.h"
 
 
 void Select::update(State* state) {
-    Mouse* mouse = state->event->mouse; 
+    Mouse* mouse = state->input->mouse; 
     if (mouse->leftDragActive) {
         show();
         if (mouse->x > mouse->leftDragStartX) {

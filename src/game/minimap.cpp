@@ -6,7 +6,7 @@
 #include "game/drag.h"
 #include "game/cell.h"
 #include "game/camera.h"
-#include "game/event.h"
+#include "game/input.h"
 #include "game/screen.h"
 #include "game/position.h"
 
@@ -93,7 +93,7 @@ void Minimap::setMapData(std::vector<std::vector<Cell*>>& grid, int cellWidth, i
 
 void Minimap::update(State* state) {
 
-    Mouse* mouse = state->event->mouse;
+    Mouse* mouse = state->input->mouse;
     Camera* camera = state->camera;
     Screen* screen = state->screen;
 
@@ -413,21 +413,21 @@ void Minimap::renderRectBorder(SDL_Rect* rect, int red, int green, int blue, int
     SDL_RenderDrawRect(renderer, rect);
 }
 
-bool Minimap::isVisible(SDL_Rect* position) {
-    return position->x + position->w > frame.x &&
-        position->y + position->h > frame.y &&
-        position->x < frame.x + frame.w &&
-        position->y < frame.y + frame.h;        
-    // if (position->x + position->w  > frame.x && 
-    //     position->y + position->h > frame.y &&
-    //     position->x < frame.x + frame.w && 
-    //     position->y < frame.y + frame.h
-    // ) {
-    //     return true;
-    // }
-    // return false;
+// bool Minimap::isVisible(SDL_Rect* position) {
+//     return position->x + position->w > frame.x &&
+//         position->y + position->h > frame.y &&
+//         position->x < frame.x + frame.w &&
+//         position->y < frame.y + frame.h;        
+//     // if (position->x + position->w  > frame.x && 
+//     //     position->y + position->h > frame.y &&
+//     //     position->x < frame.x + frame.w && 
+//     //     position->y < frame.y + frame.h
+//     // ) {
+//     //     return true;
+//     // }
+//     // return false;
 
-}
+// }
 
 // SDL_Rect Minimap::getMapFrame() {
 //     return {

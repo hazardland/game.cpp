@@ -7,7 +7,7 @@
 #include "game/animation.h"
 #include "game/position.h"
 #include "game/state.h"
-#include "game/event.h"
+#include "game/input.h"
 #include "game/camera.h"
 #include "game/clock.h"
 #include "game/text.h"

@@ -35,7 +35,7 @@ public:
     void renderRectColor(SDL_FRect* rect, int red, int green, int blue, int alpha=255);
     void renderRectBorder(SDL_FRect* rect, int red, int green, int blue, int alpha=255);
     void renderRectBorder(SDL_Rect* rect, int red, int green, int blue, int alpha=255);
-    virtual bool isVisible(SDL_Rect* position);
+    // virtual bool isVisible(SDL_Rect* position);
     // SDL_Rect getMapFrame();
     void translate(SDL_Rect* position);
     virtual bool isVisible(State* state) override;

@@ -6,7 +6,7 @@
 #include <SDL2/SDL_image.h>
 
 class Clock;
-class Event;
+class Input;
 class Camera;
 class Screen;
 
@@ -23,7 +23,7 @@ public:
     ~State();  // Add a destructor
 
     Clock* clock;
-    Event* event;
+    Input* input;
     Camera* camera;
     Screen* screen;
     SDL_Renderer* renderer;

@@ -9,7 +9,7 @@
 #include "game/scene.h"
 #include "game/state.h"
 #include "game/state.h"
-#include "game/event.h"
+#include "game/input.h"
 #include "game/clock.h"
 #include "game/camera.h"
 #include "game/screen.h"
@@ -42,7 +42,7 @@ Window::Window(const char* title, const int width, const int height, State* stat
         std::cout << "Creating state\n";
         this->state = new State();
     }
-    this->state->event->setWindow(this);
+    this->state->input->setWindow(this);
     SDL_GetWindowSize(window, &this->state->screen->width, &this->state->screen->height);
     // SDL_GetWindowSize(window, &this->state->camera->width, &this->state->camera->height);
     this->state->camera->setSize(this->state->screen->width, this->state->screen->height);
@@ -125,9 +125,9 @@ int Window::run() {
 
     bool running = true;
 
-    while (!state->event->close) {
+    while (!state->input->close) {
         state->clock->tick();
-        state->event->fetch();
+        state->input->fetch();
 
 
         // SDL_Event event;
@@ -150,9 +150,9 @@ int Window::run() {
     //     SDL_Delay(100);
     // }
 
-    // while(!state->event->close){
+    // while(!state->input->close){
     //     state->clock->tick();
-    //     state->event->fetch();
+    //     state->input->fetch();
     //     scene->update(state);
     //     scene->render(state);
     //     SDL_Delay(100);

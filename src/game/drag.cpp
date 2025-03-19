@@ -1,7 +1,7 @@
 #include "game/drag.h"
 
 #include <game/state.h>
-#include <game/event.h>
+#include <game/input.h>
 
 
 Drag::Drag(SDL_FRect* position, bool dragLeft, bool dragRight) {
@@ -12,7 +12,7 @@ Drag::Drag(SDL_FRect* position, bool dragLeft, bool dragRight) {
 
 void Drag::update(State* state) {
     if (enabled) {
-        Mouse* mouse = state->event->mouse;
+        Mouse* mouse = state->input->mouse;
         if (dragRight && !dragging && mouse->rightDragActive && mouse->inside(position)) {
             dragging = true;
             dragStartX = mouse->x - position->x;

@@ -1,39 +1,11 @@
-// File: game/event.cpp
-#include "game/event.h"
+#include "game/input.h"
+class Window;
 
-#include <iostream>
-
-#include <game/window.h>
-// #include <game/screen.h>
-
-void Keyboard::reset() {
-    up = down = left = right = space = plus = minus = enter = alt = w = s = d = a = f5 = f11 = f12 = tab = false;
-}
-
-void Mouse::reset() {
-    rightClick = leftClick =  false;
-}
-
-bool Mouse::inside(SDL_FRect* position) {
-    if (x>=position->x &&
-        y>=position->y &&
-        x<=position->x+position->w && 
-        y<=position->y+position->h) {
-            return true;
-        } 
-    return false;
-}
-
-// void Event::setScreen(Screen* screen) {
-//     this->screen = screen;
-// }
-
-void Event::setWindow(Window* window) {
+void Input::setWindow(Window* window) {
     this->window = window;
 }
 
-
-void Event::fetch() {
+void Input::fetch() {
     keyboard->reset();
     mouse->reset();
 
@@ -271,7 +243,7 @@ void Event::fetch() {
     
 }
 
-Event::~Event() {
+Input::~Input() {
     delete keyboard;
     delete mouse;
 }

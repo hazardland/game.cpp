@@ -11,7 +11,7 @@
 #include "game/noise.h"
 #include "game/frame.h"
 #include "game/camera.h"
-#include "game/event.h"
+#include "game/input.h"
 #include "game/noise.h"
 
 Map::Map(Image* image, 
@@ -139,10 +139,6 @@ void Map::setMinimap(Minimap* minimap) {
     // minimap->updateMapSize(getWidth(), getHeight(), tileScale);
 }
 
-int Map::getTile(std::string key) {
-    // cout << "requested tile " << key << "\n";        
-    return tiles[key][random(0, tiles[key].size()-1)];        
-}
 
 // void Map::import(std::vector<std::vector<int>> data) {
 
@@ -200,20 +196,20 @@ void Map::fillMap() {
     printf("filled map 2\n");
 }
 
+int Map::getTile(const std::array<int, 4>& corners) {
+    int key = corners[0] * 1000 + corners[1] * 100 + corners[2] * 10 + corners[3];
+    // std::cout << "tile: " << corners[0] << corners[1] << corners[2] << corners[3] << std::endl;
+    return tiles[key][random(0, tiles[key].size() - 1)];
+}
+
 int Map::calculateTile(int x, int y) {
-
     std::array<int, 4> borders = getTileBorders(x, y);
+    // std::cout << "bord: " << borders[0] << borders[1] << borders[2] << borders[3] << std::endl;
 
-    std::string result = 
-        std::to_string(borders[0]) + "." +
-        std::to_string(borders[1]) + "." +
-        std::to_string(borders[2]) + "." +
-        std::to_string(borders[3]);
-    
-    if (result.compare("1.1.1.1")==0) {
-        return getTile("1.1.1.1");
+    if (borders == std::array<int, 4>{1, 1, 1, 1}) {
+        return getTile(borders);
     }
-    return getTile(result);
+    return getTile(borders);
 }
 
 // In a cold winter I made this algorithm on a paper

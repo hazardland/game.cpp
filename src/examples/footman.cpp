@@ -57,7 +57,7 @@ bool Footman::move(int deltaTime, float directionX, float directionY) {
 
 // Update function
 void Footman::update(State* state) {
-    Keyboard* key = state->event->keyboard;
+    Keyboard* key = state->input->keyboard;
     float directionX = 0;
     float directionY = 0;
 

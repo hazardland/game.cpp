@@ -29,7 +29,7 @@ private:
     
     int random(int min, int max);
     void setTerrain(int x, int y, int type);
-    int getTile(std::string key);
+    int getTile(const std::array<int, 4>& corners);
     std::array<int, 4> getTileBorders(int x, int y);    
     int calculateTile(int x, int y);
     void fillMap();
@@ -44,7 +44,7 @@ public:
     // std::vector<std::vector<std::unique_ptr<Cell>>> grid;
 
     std::vector<Terrain*> terrains;
-    std::map<std::string, std::vector<int>> tiles;
+    std::map<int, std::vector<int>> tiles;
 
     Map(Image* image, int cellWidth, int cellHeight, int gridWidth, int gridHeight, int layerCount=3, TTF_Font* font = NULL);
     virtual void render(State* state);
