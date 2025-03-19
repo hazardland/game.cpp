@@ -1,16 +1,14 @@
 #ifndef GAME_CLIP_H
 #define GAME_CLIP_H
 
-#include <iostream>
-
 class Frame;
 class Image;
 
 /**
  * @brief The Clip class encapsulates a collection of frames from a sprite sheet.
- * 
+ *
  * This class is used to group a set of frames that can be played as an animation. Each clip
- * includes the frame data, frame count and frame pause time. 
+ * includes the frame data, frame count and frame pause time.
  */
 class Clip {
 public:

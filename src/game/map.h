@@ -1,11 +1,9 @@
 #ifndef GAME_MAP_H
 #define GAME_MAP_H
 
-#include <list>
 #include <stdio.h>
 #include <vector>
 #include <map>
-#include <string>
 
 #include "game/object.h"
 #include "game/text.h"
@@ -26,16 +24,16 @@ private:
     Clip* clip;
     Text* text;
     Minimap* minimap = nullptr;
-    
+
     int random(int min, int max);
     void setTerrain(int x, int y, int type);
     int getTile(const std::array<int, 4>& corners);
-    std::array<int, 4> getTileBorders(int x, int y);    
+    std::array<int, 4> getTileBorders(int x, int y);
     int calculateTile(int x, int y);
     void fillMap();
-    
+
 public:
-    
+
     int cellWidth;
     int cellHeight;
     int gridWidth;
@@ -57,7 +55,7 @@ public:
     void toggleDebug();
     void markObjectPositionModified();
     ~Map();
-    
+
 private:
 
 };

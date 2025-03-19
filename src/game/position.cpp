@@ -1,7 +1,4 @@
 // File: position.cpp
-
-#include <iostream>
-
 #include "game/position.h"
 
 #include "game/camera.h"
@@ -131,7 +128,7 @@ void Position::setSize(float width, float height) {
     } else {
         rect.w = width;
     };
- 
+
     if (parentHeight!=nullptr) {
         this->height = height;
         needsUpdate = true;
@@ -165,7 +162,7 @@ void Position::setHeight(float height) {
         needsUpdate = true;
     } else {
         rect.h = height;
-    }    
+    }
 }
 
 void Position::setWidth(float width) {
@@ -174,7 +171,7 @@ void Position::setWidth(float width) {
         needsUpdate = true;
     } else {
         rect.w = width;
-    }    
+    }
 }
 
 void Position::recalculateIfNeeded() {
@@ -212,4 +209,3 @@ void Position::draw(State* state) {
 bool Position::isReady() {
     return ready;
 }
-

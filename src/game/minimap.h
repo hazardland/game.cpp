@@ -1,8 +1,6 @@
 #ifndef GAME_MINIMAP_H
 #define GAME_MINIMAP_H
 
-#include <iostream>
-#include <map>
 #include <vector>
 
 #include <SDL2/SDL_image.h>
@@ -16,11 +14,11 @@ class State;
 
 class Minimap: public Unit {
 public:
-    Minimap(SDL_Renderer* renderer, 
+    Minimap(SDL_Renderer* renderer,
            int minimapWidth,
            int minimapHeight,
            int gridWidth,
-           int gridHeight, 
+           int gridHeight,
            float minimapScale
     );
 
@@ -41,7 +39,7 @@ public:
     virtual bool isVisible(State* state) override;
     void toggleVisible();
     void markObjectPositionModified();
-    
+
     private:
     bool objectPositionModified = true;
     SDL_Renderer* renderer;

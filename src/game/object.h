@@ -1,7 +1,6 @@
 #ifndef GAME_OBJECT_H
 #define GAME_OBJECT_H
 
-#include <iostream>
 #include <vector>
 #include <SDL2/SDL_image.h>
 
@@ -24,7 +23,7 @@ class Object {
     private:
         int id = 0;   // Object ID
         std::vector<Position*> childPositions; // Track child positions
-        
+
     protected:
         Position* position;   // Object's position and size
 

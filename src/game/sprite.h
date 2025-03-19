@@ -4,7 +4,6 @@
 #define GAME_SPRITE_H
 
 #include <map>
-#include <string>
 #include <SDL2/SDL_image.h>
 
 class Image;
@@ -14,9 +13,9 @@ class Clip;
 /**
  * @brief The Sprite class encapsulates a sprite, which is a graphic that can have
  * multiple animations, represented by Clips. Each Clip is a set of frames of the Sprite.
- * 
- * This class manages and renders these clips. It contains details about frame size, 
- * pause between frames, reading direction and the actual image data. It also keeps a map 
+ *
+ * This class manages and renders these clips. It contains details about frame size,
+ * pause between frames, reading direction and the actual image data. It also keeps a map
  * of different Clips.
  */
 class Sprite {

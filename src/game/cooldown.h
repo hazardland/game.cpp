@@ -7,7 +7,7 @@ class Cooldown {
 public:
     Cooldown(int cooldownMs);  // Regular constructor
 
-    bool isReady();  
+    bool isReady();
     void reset();
 
 private:

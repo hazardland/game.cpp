@@ -4,7 +4,6 @@
 #include "game/state.h"
 #include "game/position.h"
 #include "game/scene.h"
-#include "game/camera.h"
 
 
 int Object::count = 0;
@@ -92,26 +91,26 @@ SDL_FRect* Object::getPosition() {
 // This is kind of not correct but I need ch
 Position* Object::createChildPosition(float x, float y, float width, float height) {
     Position* pos =  new Position(
-                        x, y, 
-                        width, height, 
+                        x, y,
+                        width, height,
                         &position->rect.x,
-                        &position->rect.y, 
-                        &position->rect.w, 
+                        &position->rect.y,
+                        &position->rect.w,
                         &position->rect.h
                     );
     childPositions.push_back(pos);
-    return pos;                    
+    return pos;
 }
 
 Position* Object::createChildPosition(float x, float y) {
     Position* pos =  new Position(
-                        x, y, 
+                        x, y,
                         0, 0,
                         &position->rect.x,
                         &position->rect.y
                     );
     childPositions.push_back(pos);
-    return pos;                    
+    return pos;
 }
 
 bool Object::isVisible(State* state) {

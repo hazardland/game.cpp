@@ -17,9 +17,9 @@ void Camera::setSize(int width, int height) {
 
 // Check if the given object is visible within the camera viewport
 bool Camera::isVisible(SDL_FRect* position) {
-    if (position->x + position->w > x  && 
+    if (position->x + position->w > x  &&
         position->y + position->h > y  &&
-        position->x < x + width / zoom && 
+        position->x < x + width / zoom &&
         position->y < y + height / zoom) {
         return true;
     }
@@ -28,11 +28,11 @@ bool Camera::isVisible(SDL_FRect* position) {
 
 // Translate world coordinates to camera coordinates, applying zoom
 SDL_FRect* Camera::translate(SDL_FRect* position) {
-    result.x = (position->x - x) * zoom; 
+    result.x = (position->x - x) * zoom;
     result.y = (position->y - y) * zoom;
     result.w = position->w * zoom;
     result.h = position->h * zoom;
-    return &result; 
+    return &result;
 }
 
 int Camera::getX() {
@@ -53,11 +53,11 @@ int Camera::getHeight() {
 }
 
 void Camera::setX(int newX) {
-    x = newX; 
+    x = newX;
 }
 
 void Camera::addX(int value) {
-    x += value; 
+    x += value;
 }
 
 void Camera::setY(int newY) {
@@ -65,7 +65,7 @@ void Camera::setY(int newY) {
 }
 
 void Camera::addY(int value) {
-    y += value; 
+    y += value;
 }
 
 
@@ -88,10 +88,10 @@ void Camera::zoomIn() {
         int lastWidth = getWidth();
         int lastHeight = getHeight();
         zoom = std::min(zoom + zoomStep, maxZoom);
-        
+
         x += (lastWidth-getWidth())/2;
         y += (lastHeight-getHeight())/2;
-        
+
         zoomCooldown->reset();
     }
 }
@@ -99,15 +99,15 @@ void Camera::zoomIn() {
 void Camera::zoomOut() {
     auto now = std::chrono::steady_clock::now();
     if (zoomCooldown->isReady()) {
-        
+
         int lastWidth = getWidth();
         int lastHeight = getHeight();
-        
+
         zoom = std::max(zoom - zoomStep, minZoom);
-        
+
         x += (lastWidth-getWidth())/2;
         y += (lastHeight-getHeight())/2;
-        
+
         zoomCooldown->reset();
 
     }

@@ -1,7 +1,6 @@
 #ifndef GAME_CELL_H
 #define GAME_CELL_H
 
-#include <iostream>
 #include <list>
 #include <vector>
 

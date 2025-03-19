@@ -6,6 +6,7 @@
 #include "game/terrain.h"
 #include "game/camera.h"
 #include "game/minimap.h"
+#include <algorithm>
 
 
 // Destructor
@@ -54,7 +55,7 @@ bool Unit::canMove(float deltaX, float deltaY) {
     float targetY = getY() + deltaY;
     float targetWidth = getWidth();
     float targetHeight = getHeight();
-    
+
     // Check if the unit can legally occupy the target position
     return canOccupy(targetX, targetY, targetWidth, targetHeight);
 }
@@ -110,13 +111,13 @@ bool Unit::canOccupy(float newX, float newY, float newWidth, float newHeight) {
                     newY + newHeight > object->getY()) {
                 return false;
             }
-            
+
             }
         }
     }
-    
+
     // No collisions
-    return true;  
+    return true;
 }
 
 void Unit::updateGrid() {
@@ -135,7 +136,7 @@ void Unit::updateGrid() {
         if(newGridFromX == gridFromX && newGridFromY == gridFromY && newGridToX == gridToX && newGridToY == gridToY){
             return;
         }
-    
+
         // If old grid cells does not intersect new grid cells remove them from grid
         // Aka we moved from there
         for (int i = gridFromX; i<=gridToX; i++) {
@@ -146,12 +147,12 @@ void Unit::updateGrid() {
                     // printf("Remove gridToX:%d, %d,%d ", gridToX, i , j);
 
                     map->grid[i][j]->units[getLayer()].remove(this);
-                }            
+                }
             }
         }
     }
 
-    
+
     // If new grid cells does not intersect new grid cells add them from grind
     for (int i = newGridFromX; i<=newGridToX; i++) {
         for (int j = newGridFromY; j<=newGridToY; j++) {
@@ -160,7 +161,7 @@ void Unit::updateGrid() {
                 // Add new cells to grid cell
                 // printf("Add %d,%d ", i , j);
                 map->grid[i][j]->units[getLayer()].push_back(this);
-            }            
+            }
         }
     }
 
@@ -170,9 +171,9 @@ void Unit::updateGrid() {
     gridFromY = newGridFromY;
     gridToX = newGridToX;
     gridToY = newGridToY;
-    gridSet = true;       
+    gridSet = true;
 
-    
+
 }
 
 void Unit::drawPosition(State* state) {

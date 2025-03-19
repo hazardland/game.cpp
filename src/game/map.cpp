@@ -11,15 +11,14 @@
 #include "game/noise.h"
 #include "game/frame.h"
 #include "game/camera.h"
-#include "game/input.h"
 #include "game/noise.h"
 
-Map::Map(Image* image, 
-         int cellWidth, 
-         int cellHeight, 
-         int gridWidth, 
-         int gridHeight, 
-         int layerCount, 
+Map::Map(Image* image,
+         int cellWidth,
+         int cellHeight,
+         int gridWidth,
+         int gridHeight,
+         int layerCount,
          TTF_Font* font) {
 
     this->image = image;
@@ -27,12 +26,12 @@ Map::Map(Image* image,
     this->cellHeight = cellHeight;
     this->gridWidth = gridWidth;
     this->gridHeight = gridHeight;
-    clip = new Clip(image, 
-                        cellWidth, 
-                        cellHeight, 
-                        1, 1, 
+    clip = new Clip(image,
+                        cellWidth,
+                        cellHeight,
+                        1, 1,
                         (image->getWidth()/cellWidth)*(image->getHeight()/cellHeight));
-    
+
    grid.resize(gridWidth, std::vector<Cell*>(gridHeight, nullptr));
     // grid.resize(gridWidth, std::vector<std::unique_ptr<Cell>>(gridHeight));
 
@@ -43,7 +42,7 @@ Map::Map(Image* image,
             //grid[x].push_back(new Cell(layerCount));
             grid[x][y] = new Cell(layerCount);
             // grid[x][y] = std::make_unique<Cell>(layerCount);
- 
+
 
         }
     }
@@ -92,7 +91,7 @@ void Map::render(State* state) {
             if (state->camera->isVisible(&location)) {
                 position = state->camera->translate(&location);
                 image->render(grid[x][y]->rect, position);
-                
+
                 // Debug
                 if (debug){
 
@@ -145,26 +144,27 @@ void Map::setMinimap(Minimap* minimap) {
 void Map::import(std::vector<std::vector<int>> data) {
     int height = data.size();
     int width = data[0].size();
-    for (int y=0; y<height; y++)
-    for (int x=0; x<width; x++)
-    {
-        setTerrain(x, y, data[y][x]);
+    for (int y=0; y<height; y++){
+        for (int x=0; x<width; x++)
+        {
+            setTerrain(x, y, data[y][x]);
+        }
     }
     //map->grid = this->grid;
-    printf("imported custom map\n");
+    // printf("imported custom map\n");
     fillMap();
 }
 
 void Map::generate(
-    int seed, 
+    int seed,
     float intensity,
     std::vector<float> ranges) {
 
     OpenSimplexNoise::Noise noise{seed};
-    
+
     for (int x = 0; x < gridWidth / 2; x++) {
         for (int y = 0; y < gridHeight / 2; y++) {
-            
+
             // Compute noise value at scaled coordinates
             float depth = (noise.eval(x * intensity, y * intensity) + 1) / 2.0;
             int terrain = 0; // Default terrain type
@@ -192,7 +192,7 @@ void Map::generate(
 }
 
 // void Map::generate(
-//                 int seed, 
+//                 int seed,
 //                 float intensity,
 //                 std::vector<float> ranges) {
 
@@ -201,7 +201,7 @@ void Map::generate(
 //         for (int y=0; y<gridHeight; y+=2)
 //         {
 //             // alpha = (noise.eval(x*0.01, y*0.01) + 1) / 2.0  * 255.0;
-//             // minimap->setPixel(x, y, 255, 255, 255, alpha);       
+//             // minimap->setPixel(x, y, 255, 255, 255, alpha);
 //             float depth = (noise.eval(x*intensity, y*intensity) + 1) / 2.0;
 //             for (int terrain=0; terrain<terrains.size(); terrain++){
 //                 if (depth<=ranges[terrain]) {
@@ -219,10 +219,10 @@ void Map::generate(
 //     printf("generated map 2\n");
 //     fillMap();
 
-// }  
+// }
 
 void Map::fillMap() {
-    
+
     for (int x=0; x<gridWidth; x++) {
         for (int y=0; y<gridHeight; y++) {
             grid[x][y]->tile = calculateTile(x, y);
@@ -250,12 +250,12 @@ int Map::calculateTile(int x, int y) {
 
 // In a cold winter I made this algorithm on a paper
 // Everybody had fever at home
-// This scans neigboars and genrates an array [*,*,*,*] 
+// This scans neigboars and genrates an array [*,*,*,*]
 // Where each element encoded terrain type for 4 corners of tile (from top left clockwise)
 // This is for smooth terrain transitions
 std::array<int, 4> Map::getTileBorders(int x, int y) {
     // Get corner sum
-    Cell* cell = this->grid[x][y]; 
+    Cell* cell = this->grid[x][y];
     int type = cell->terrain->id;
     // Terrain* terrain = cell->terrain;
 
@@ -267,7 +267,7 @@ std::array<int, 4> Map::getTileBorders(int x, int y) {
     // y 0 0 0
     // y 0 0 0
     int borders[] = {
-        type, type, type, // 0 1 2 
+        type, type, type, // 0 1 2
         type, type, type, // 3 4 5
         type, type, type  // 6 7 8
     };
@@ -301,9 +301,9 @@ std::array<int, 4> Map::getTileBorders(int x, int y) {
         borders[8] = this->grid[x+1][y+1]->terrain->id < type ? type-1 : type;
     }
 
-    corners[0] = borders[3] + borders[0] + borders[1];  
-    corners[1] = borders[1] + borders[2] + borders[5];  
-    corners[2] = borders[3] + borders[6] + borders[7];  
+    corners[0] = borders[3] + borders[0] + borders[1];
+    corners[1] = borders[1] + borders[2] + borders[5];
+    corners[2] = borders[3] + borders[6] + borders[7];
     corners[3] = borders[7] + borders[8] + borders[5];
 
     int corner = 0;
@@ -330,11 +330,11 @@ std::array<int, 4> Map::getTileBorders(int x, int y) {
             return {borders[4], borders[5], borders[7], borders[8]};
     }
 
-    return {0, 0, 0, 0}; // Fallback (should never be reached)    
+    return {0, 0, 0, 0}; // Fallback (should never be reached)
 }
 
 int Map::random(int min, int max) {
-    return rand() % (max-min+1) + min;   
+    return rand() % (max-min+1) + min;
 }
 
 void Map::setDebug (bool value) {

@@ -11,9 +11,9 @@
 
 State::State() {
     clock = new Clock();
-    input = new Input();    
-    camera = new Camera();    
-    screen = new Screen();    
+    input = new Input();
+    camera = new Camera();
+    screen = new Screen();
 }
 
 State::~State() {

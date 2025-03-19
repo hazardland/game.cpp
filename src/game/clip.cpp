@@ -13,7 +13,7 @@ Clip::Clip(Image* image, int frameWidth, int frameHeight, int startCell, int sta
     int rowCount = image->getHeight()/frameHeight;
     int cell = startCell;
     int row = startRow;
-    
+
     // Create frames
     for (int i = 0; i < frameCount; i++)
     {

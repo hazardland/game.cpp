@@ -114,7 +114,7 @@ void Window::toggleFullscreen() {
         // Update state dimensions after toggling fullscreen
         SDL_GetWindowSize(window, &this->state->screen->width, &this->state->screen->height);
         this->state->camera->setSize(this->state->screen->width, this->state->screen->height);
-        
+
         fullscreenCooldown->reset();
     }
 }
@@ -141,7 +141,7 @@ int Window::run() {
         // }
 
         scene->update(state);
-        scene->render(state);        
+        scene->render(state);
     }
     // while (true) {
     //     state->clock->tick();

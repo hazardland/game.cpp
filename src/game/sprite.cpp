@@ -1,7 +1,6 @@
 #include "game/sprite.h"
 
 #include <map>
-#include <string>
 #include <SDL2/SDL_image.h>
 
 #include "game/clip.h"
@@ -11,9 +10,9 @@
 /**
  * @brief The Sprite class encapsulates a sprite, which is a graphic that can have
  * multiple animations, represented by Clips. Each Clip is a set of frames of the Sprite.
- * 
- * This class manages and renders these clips. It contains details about frame size, 
- * pause between frames, reading direction and the actual image data. It also keeps a map 
+ *
+ * This class manages and renders these clips. It contains details about frame size,
+ * pause between frames, reading direction and the actual image data. It also keeps a map
  * of different Clips.
  */
 
@@ -22,7 +21,7 @@ Sprite::Sprite (Image* image,
             int frameHeight,
             int framePause,
             bool readVertically
-            ) 
+            )
 {
         this->frameWidth = frameWidth;
         this->frameHeight = frameHeight;
@@ -38,12 +37,12 @@ Sprite* Sprite::addClip(int clipId,
                         int frameCount,
                         bool flipX,
                         bool flipY) {
-    clips[clipId] = new Clip(image, 
-                             frameWidth, 
-                             frameHeight, 
-                             startRow, startCell, 
-                             frameCount, 
-                             framePause, 
+    clips[clipId] = new Clip(image,
+                             frameWidth,
+                             frameHeight,
+                             startRow, startCell,
+                             frameCount,
+                             framePause,
                              flipX, flipY, readVertically);
     return this;
 }

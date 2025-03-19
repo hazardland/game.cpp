@@ -1,7 +1,6 @@
 #ifndef GAME_IMAGE_H
 #define GAME_IMAGE_H
 
-#include <stdio.h>
 #include <SDL2/SDL_image.h>
 
 /**

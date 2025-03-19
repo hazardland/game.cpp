@@ -20,7 +20,7 @@ public:
              float* parentWidth, float* parentHeight);
 
     Position(float x, float y, float width, float height,
-             float* parentX, float* parentY);             
+             float* parentX, float* parentY);
 
     Position(float x, float y, float width, float height);
     Position(float width, float height);
@@ -39,7 +39,7 @@ public:
     void setY(float y);
     void setHeight(float height);
     void setWidth(float width);
-    
+
     void setRequiresUpdate();  // Mark that recalculation is needed
     SDL_FRect* getPosition();
     void draw(State* state);
@@ -50,7 +50,7 @@ public:
 private:
     void recalculateIfNeeded();
     bool parent = false;
-    bool needsUpdate = true;    
+    bool needsUpdate = true;
     float* parentX;
     float* parentY;
     float* parentWidth;

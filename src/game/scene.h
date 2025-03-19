@@ -4,7 +4,6 @@
 #define GAME_SCENE_H
 
 #include <map>
-#include <list>
 #include <vector>
 
 #include <SDL2/SDL.h>
@@ -25,7 +24,7 @@ class Window;
 class Scene {
     // A list of objects that are currently visible in the scene
     std::vector<Object*> visibleObjects;
-    
+
 public:
     Window* window;
 

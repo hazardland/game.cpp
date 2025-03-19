@@ -1,8 +1,6 @@
 #ifndef GAME_ANIMATION_H
 #define GAME_ANIMATION_H
 
-#include <stdio.h>
-
 #include <SDL2/SDL_image.h>
 
 class Clip;

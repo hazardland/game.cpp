@@ -5,7 +5,6 @@
 #include "game/scene.h"
 
 #include "game/object.h"
-#include "game/sprite.h"
 #include "game/state.h"
 #include "game/map.h"
 #include "game/minimap.h"

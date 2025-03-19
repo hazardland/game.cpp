@@ -23,7 +23,7 @@ class Input {
         ~Input();  ///< Destructor to properly delete resources.
     private:
         Window* window;  ///< Screen object for window-related operations.
-        
+
     };
-    
+
 #endif

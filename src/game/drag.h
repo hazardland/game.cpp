@@ -7,7 +7,7 @@ class State;
 
 /**
  * @brief Provides drag functionality for an SDL_FRect object.
- * 
+ *
  * It checks mouse state for drag activity and updates the position of the SDL_FRect object accordingly.
  */
 class Drag {
@@ -24,7 +24,7 @@ class Drag {
 
         /**
          * @brief Constructs a Drag object.
-         * 
+         *
          * @param position The position of the object that can be dragged.
          * @param dragLeft Specifies if the object can be dragged with the left mouse button.
          * @param dragRight Specifies if the object can be dragged with the right mouse button.
@@ -33,7 +33,7 @@ class Drag {
 
         /**
          * @brief Updates the position of the object based on mouse activity.
-         * 
+         *
          * @param state The game state, used to get the current mouse state.
          */
         void update(State* state);

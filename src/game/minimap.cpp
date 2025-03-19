@@ -10,11 +10,11 @@
 #include "game/screen.h"
 #include "game/position.h"
 
-Minimap::Minimap(SDL_Renderer* renderer, 
+Minimap::Minimap(SDL_Renderer* renderer,
         int minimapWidth,
         int minimapHeight,
         int gridWidth,
-        int gridHeight, 
+        int gridHeight,
         float minimapScale
         ) {
 
@@ -28,13 +28,13 @@ Minimap::Minimap(SDL_Renderer* renderer,
     frame.y = 0;
     frame.w = minimapWidth;
     frame.h = minimapHeight;
-    
+
     position = new Position(0,0);
-    
+
     setSize(minimapWidth, minimapHeight);
-    
+
     backgroundSurface = SDL_CreateRGBSurfaceWithFormat(0, gridWidth * minimapScale, gridHeight * minimapScale, 0, SDL_PIXELFORMAT_RGBA32);
-    
+
     resetBackgroundTexture();
 
     foreground = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, frame.w, frame.h);
@@ -48,7 +48,7 @@ Minimap::Minimap(SDL_Renderer* renderer,
 // This is called per every tile in map
 void Minimap::setTerrain(int cell, int row, int red, int blue, int green) {
     SDL_Rect rect;
-    
+
     rect.x = cell*minimapScale;
     rect.y = row*minimapScale;
     rect.h = minimapScale;
@@ -87,7 +87,7 @@ void Minimap::resetBackgroundTexture() {
 
 void Minimap::setMapData(std::vector<std::vector<Cell*>>& grid, int cellWidth, int cellHeight) {
     this->grid = &grid;
-    this->cellWidth = cellWidth; 
+    this->cellWidth = cellWidth;
     this->cellHeight = cellHeight;
 }
 
@@ -150,7 +150,7 @@ void Minimap::update(State* state) {
 //         }
 
 //         SDL_LockTextureToSurface(foreground, NULL, &foregroundSurface);
-//         SDL_FillRect(foregroundSurface, NULL, 0); 
+//         SDL_FillRect(foregroundSurface, NULL, 0);
 
 //         std::vector<SDL_Rect> blackBorders;
 //         std::unordered_map<Uint32, std::vector<SDL_Rect>> rects;
@@ -163,7 +163,7 @@ void Minimap::update(State* state) {
 //         // if (yCellFrom<0) yCellFrom = 0;
 //         // if (xCellTo>gridWidth) xCellTo = gridWidth;
 //         // if (yCellTo>gridHeight) yCellTo = gridHeight;
-        
+
 //         const int xCellFrom = std::max(0, int(frame.x / minimapScale) - 2);
 //         const int xCellTo = std::min(gridWidth, int(xCellFrom + frame.w / minimapScale) + 4);
 //         const int yCellFrom = std::max(0, int(frame.y / minimapScale) - 2);
@@ -185,22 +185,22 @@ void Minimap::update(State* state) {
 //                         for(Unit* unit : unitList){
 //                             // Original rectangle
 //                             SDL_Rect rect = {
-//                                 // int((unit->getX() / cellWidth) * minimapScale), 
+//                                 // int((unit->getX() / cellWidth) * minimapScale),
 //                                 // int((unit->getY() / cellHeight) * minimapScale),
 //                                 // int((unit->getWidth() / cellWidth) * minimapScale),
 //                                 // int((unit->getHeight() / cellHeight) * minimapScale)
-//                                 int(unit->getX() * widthFactor), 
+//                                 int(unit->getX() * widthFactor),
 //                                 int(unit->getY() * heightFactor),
 //                                 std::max(2, int(unit->getWidth() * widthFactor)),
 //                                 std::max(2, int(unit->getHeight() * heightFactor))
 //                             };
-                            
+
 //                             // Black rectangle
 //                             // rect.h = rect.h<2?2:rect.h;
 //                             // rect.w = rect.w<2?2:rect.w;
 //                             //if (isVisible(&rect)) {
 //                                 translate(&rect);
-//                                 // rects[SDL_MapRGB(backgroundSurface->format,0,0,0)].push_back(rect); 
+//                                 // rects[SDL_MapRGB(backgroundSurface->format,0,0,0)].push_back(rect);
 //                                 // Foreground
 //                                 rects[unit->getMinimapColor(foregroundSurface->format)].push_back(rect);
 
@@ -209,7 +209,7 @@ void Minimap::update(State* state) {
 //                                 rect.y -= 1;
 //                                 rect.w += 2;
 //                                 rect.h += 2;
-//                                 blackBorders.push_back(rect); 
+//                                 blackBorders.push_back(rect);
 //                             //}
 //                         }
 //                     }
@@ -224,7 +224,7 @@ void Minimap::update(State* state) {
 //         // Then render unit colors
 //         for (auto& [color, items] : rects) {
 //             SDL_FillRects(foregroundSurface, items.data(), items.size(), color);
-//         }       
+//         }
 //         SDL_UnlockTexture(foreground);
 //         cooldown->reset();
 //         objectPositionModified = false;
@@ -232,7 +232,7 @@ void Minimap::update(State* state) {
 
 //     SDL_RenderCopyF(renderer, foreground, NULL, getPosition());
 
-//     // Render scope rectangle        
+//     // Render scope rectangle
 //     renderRectColor(&scope, 255, 255, 255, 70);
 //     renderRectBorder(&scope, 102, 5, 51, 255);
 
@@ -258,7 +258,7 @@ void Minimap::render(State* state) {
         }
 
         SDL_LockTextureToSurface(foreground, NULL, &foregroundSurface);
-        SDL_FillRect(foregroundSurface, NULL, 0); 
+        SDL_FillRect(foregroundSurface, NULL, 0);
 
         std::vector<SDL_Rect> blackBorders;
         std::unordered_map<Uint32, std::vector<SDL_Rect>> rects;
@@ -287,7 +287,7 @@ void Minimap::render(State* state) {
                             std::max(2, int(unit->getWidth() * widthFactor)),
                             std::max(2, int(unit->getHeight() * heightFactor))
                         };
-                        
+
                         // Original rectangle
                         rects[unit->getMinimapColor(foregroundSurface->format)].push_back(rect);
 
@@ -296,7 +296,7 @@ void Minimap::render(State* state) {
                         rect.y -= 1;
                         rect.w += 2;
                         rect.h += 2;
-                        blackBorders.push_back(rect); 
+                        blackBorders.push_back(rect);
                     }
                 }
             }
@@ -309,7 +309,7 @@ void Minimap::render(State* state) {
         // Then render unit colors
         for (auto& [color, items] : rects) {
             SDL_FillRects(foregroundSurface, items.data(), items.size(), color);
-        }       
+        }
         SDL_UnlockTexture(foreground);
         cooldown->reset();
         objectPositionModified = false;
@@ -317,7 +317,7 @@ void Minimap::render(State* state) {
 
     SDL_RenderCopyF(renderer, foreground, NULL, getPosition());
 
-    // Render scope rectangle        
+    // Render scope rectangle
     renderRectColor(&scope, 255, 255, 255, 70);
     renderRectBorder(&scope, 102, 5, 51, 255);
 
@@ -336,7 +336,7 @@ void Minimap::render(State* state) {
 //         }
 
 //         SDL_LockTextureToSurface(foreground, NULL, &foregroundSurface);
-//         SDL_FillRect(foregroundSurface, NULL, 0);  
+//         SDL_FillRect(foregroundSurface, NULL, 0);
 
 //         std::unordered_map<Uint32, std::vector<SDL_Rect>> rects;
 //         std::vector<SDL_Rect> blackBorders;  // 🔥 Separate list for black border rectangles
@@ -356,7 +356,7 @@ void Minimap::render(State* state) {
 //                 for (auto& unitList : cell->units) {
 //                     for (Unit* unit : unitList) {
 //                         SDL_Rect rect = {
-//                             int((unit->getX() * invCellWidth) - frame.x), 
+//                             int((unit->getX() * invCellWidth) - frame.x),
 //                             int((unit->getY() * invCellHeight) - frame.y),
 //                             std::max(2, int(unit->getWidth() * invCellWidth)),
 //                             std::max(2, int(unit->getHeight() * invCellHeight))
@@ -417,10 +417,10 @@ void Minimap::renderRectBorder(SDL_Rect* rect, int red, int green, int blue, int
 //     return position->x + position->w > frame.x &&
 //         position->y + position->h > frame.y &&
 //         position->x < frame.x + frame.w &&
-//         position->y < frame.y + frame.h;        
-//     // if (position->x + position->w  > frame.x && 
+//         position->y < frame.y + frame.h;
+//     // if (position->x + position->w  > frame.x &&
 //     //     position->y + position->h > frame.y &&
-//     //     position->x < frame.x + frame.w && 
+//     //     position->x < frame.x + frame.w &&
 //     //     position->y < frame.y + frame.h
 //     // ) {
 //     //     return true;
@@ -431,7 +431,7 @@ void Minimap::renderRectBorder(SDL_Rect* rect, int red, int green, int blue, int
 
 // SDL_Rect Minimap::getMapFrame() {
 //     return {
-//             frame.x * widthRatio, 
+//             frame.x * widthRatio,
 //             frame.y * heightRatio,
 //             frame.w * widthRatio,
 //             frame.h * heightRatio
@@ -439,7 +439,7 @@ void Minimap::renderRectBorder(SDL_Rect* rect, int red, int green, int blue, int
 // }
 
 void Minimap::translate(SDL_Rect* position) {
-    position->x += - frame.x; 
+    position->x += - frame.x;
     position->y += - frame.y;
 }
 

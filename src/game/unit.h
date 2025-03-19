@@ -1,7 +1,6 @@
 #ifndef GAME_UNIT
 #define GAME_UNIT
 
-#include <vector>
 #include <SDL2/SDL_image.h>
 
 #include "game/object.h"
@@ -17,8 +16,8 @@ class Cell;
 class Terrain;
 class Minimap;
 
-/* Class 'Unit' extends the 'Object' class and represents a unit in a game. 
-   It includes methods for rendering the unit, updating its map cells, 
+/* Class 'Unit' extends the 'Object' class and represents a unit in a game.
+   It includes methods for rendering the unit, updating its map cells,
    determining its ability to move, and managing its selection state.
 */
 class Unit: public Object {
@@ -29,19 +28,19 @@ protected:
     int gridToY;
     bool gridSet = false;
 private:
-  
+
     // int lastCellLeft, lastCellTop, lastCellRight, lastCellBottom;
     bool selected;
-  
+
     int layer = 0;    // Layer where the unit exists in map
-  
+
     uint16_t allowedTerrains = 0;  // Default: No terrain allowed
     bool ignoresTerrain = true;   // If true, unit ignores terrain checks
     // std::vector<std::pair<int, int>> cells; // Cells where unit exist in map
 
     SDL_Color minimapColor;
     Uint32 minimapColorCache = 0;
-    
+
     public:
     bool moved;
     Map* map;
@@ -61,7 +60,7 @@ private:
     //virtual Unit* setScene(Map* map);
 
     // Render methods
-    virtual void render(State* state);
+    virtual void render(State* state) override;
     virtual SDL_FRect* getRenderPosition();
 
     //virtual void renderHitbox(State* state);
@@ -94,7 +93,7 @@ private:
     virtual bool hasMinimap();
     virtual Uint32 getMinimapColor(SDL_PixelFormat* format);
     virtual void setMinimapColor(SDL_Color color);
-    
+
     // Denig related
     virtual void drawPosition(State* state);
 

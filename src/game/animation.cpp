@@ -26,7 +26,7 @@ void Animation::play(int clipName, float slow) {
     if (clipIter == sprite->clips.end()) {
         std::cout << "Unknown clip " << clipName << "\n";
         return;
-    } 
+    }
 
     clip = clipIter->second;
     timer = 0;

@@ -10,9 +10,9 @@ class State;
 
 /**
  * @class Fps
- * @brief A class that extends the Text class to provide a FPS (Frames Per Second) counter display. 
+ * @brief A class that extends the Text class to provide a FPS (Frames Per Second) counter display.
  *
- * The FPS display is updated every half a second to show the current FPS and Delta time. 
+ * The FPS display is updated every half a second to show the current FPS and Delta time.
  * The position of this display is always at the top right corner of the screen.
  */
 class Fps: public Text {

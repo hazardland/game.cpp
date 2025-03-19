@@ -7,9 +7,9 @@ void Mouse::reset() {
 bool Mouse::inside(SDL_FRect* position) {
     if (x>=position->x &&
         y>=position->y &&
-        x<=position->x+position->w && 
+        x<=position->x+position->w &&
         y<=position->y+position->h) {
             return true;
-        } 
+        }
     return false;
 }

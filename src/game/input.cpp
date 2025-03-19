@@ -152,7 +152,7 @@ void Input::fetch() {
             }
 
         }
-   
+
     // update keyboard state here
     keyboard->keys = SDL_GetKeyboardState(nullptr);
     if (keyboard->keys[SDL_SCANCODE_UP]) {
@@ -184,63 +184,63 @@ void Input::fetch() {
         keyboard->plus = true;
     } else {
         keyboard->plus = false;
-    }    
+    }
     if (keyboard->keys[SDL_SCANCODE_MINUS]) {
         keyboard->minus = true;
     } else {
         keyboard->minus = false;
-    }    
+    }
     if (keyboard->keys[SDL_SCANCODE_LALT] || keyboard->keys[SDL_SCANCODE_RALT]) {
         keyboard->alt = true;
     } else {
         keyboard->alt = false;
-    }    
+    }
     if (keyboard->keys[SDL_SCANCODE_RETURN]) {
         keyboard->enter = true;
     } else {
         keyboard->enter = false;
-    }    
+    }
     if (keyboard->keys[SDL_SCANCODE_A]) {
         keyboard->a = true;
     } else {
         keyboard->a = false;
-    }    
+    }
     if (keyboard->keys[SDL_SCANCODE_W]) {
         keyboard->w = true;
     } else {
         keyboard->w = false;
-    }    
+    }
     if (keyboard->keys[SDL_SCANCODE_S]) {
         keyboard->s = true;
     } else {
         keyboard->s = false;
-    }    
+    }
     if (keyboard->keys[SDL_SCANCODE_D]) {
         keyboard->d = true;
     } else {
         keyboard->d = false;
-    }    
+    }
     if (keyboard->keys[SDL_SCANCODE_F5]) {
         keyboard->f5 = true;
     } else {
         keyboard->f5 = false;
-    }    
+    }
     if (keyboard->keys[SDL_SCANCODE_F11]) {
         keyboard->f11 = true;
     } else {
         keyboard->f11 = false;
-    }    
+    }
     if (keyboard->keys[SDL_SCANCODE_F12]) {
         keyboard->f12 = true;
     } else {
         keyboard->f12 = false;
-    }    
+    }
     if (keyboard->keys[SDL_SCANCODE_TAB]) {
         keyboard->tab = true;
     } else {
         keyboard->tab = false;
-    }    
-    
+    }
+
 }
 
 Input::~Input() {

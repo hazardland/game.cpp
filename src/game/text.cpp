@@ -1,7 +1,6 @@
 // File: text.cpp
 
 #include "game/text.h"
-#include <iostream>
 #include <string>
 
 

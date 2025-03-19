@@ -19,19 +19,19 @@
  */
 class Camera {
     private:
-    
+
     int x=0;           ///< The x-coordinate of the camera
     int y=0;           ///< The y-coordinate of the camera
     int width;         ///< The width of the camera view
     int height;        ///< The height of the camera view
-    
+
     SDL_FRect result;  ///< The rectangle representing the resulting camera view after translation
-    
+
     float zoom = 1;
     const float zoomStep = 0.2f;  // Increment for zooming
     const float minZoom = 0.2f;
     const float maxZoom = 10.0f;
-    Cooldown* zoomCooldown; 
+    Cooldown* zoomCooldown;
 
     public:
     Camera();
@@ -49,9 +49,9 @@ class Camera {
     void setZoom(float newZoom);
     void zoomIn();
     void zoomOut();
-    
+
     void setPosition(int x, int y);
-    
+
     /**
      * @brief Sets the size of the camera view.
      * @param width The width of the camera view.
