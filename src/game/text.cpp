@@ -68,12 +68,12 @@ void Text::render(State* state, Position* position) {
         } else {
             SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
             if (surface==NULL) {
-                printf("Failed to render text: %s", SDL_GetError());            
+                printf("Failed to render text: %s", SDL_GetError());
             }
             position->setSize(surface->w, surface->h);
             if (texture!=nullptr) {
                 if (!cacheEnabled) {
-                    SDL_DestroyTexture(texture);            
+                    SDL_DestroyTexture(texture);
                 }
             }
             texture = SDL_CreateTextureFromSurface(state->renderer, surface);

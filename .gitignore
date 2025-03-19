@@ -1,3 +1,5 @@
 .vscode
 _pycache_
 /build
+.vs
+.zed
