@@ -192,6 +192,11 @@ void Warcraft::prepare() {
     addObject(fps);
 
     addObject(new Select({255,255,255,100},{1, 1, 1, 100}));
+    
+    client = new Client();
+    client->connect("ws://localhost:9000");
+    client->enableAutoReconnect(true);
+    // client->send("Hello");
 }
 
 // Generate function

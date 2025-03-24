@@ -57,6 +57,11 @@ void Scene::prepare() {
 }
 
 void Scene::update(State* state) {
+
+    if (client!=nullptr) {
+        client->poll();
+    }
+
     if (map!=nullptr) {
         map->update(state);
     }

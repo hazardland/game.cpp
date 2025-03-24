@@ -3,6 +3,17 @@
 ```
 sudo apt install g++ libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
 ```
+
+Late additions due to websocket
+
+```
+sudo apt install -y \
+  g++ make \
+  libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev \
+  libwebsockets-dev libssl-dev zlib1g-dev
+
+# libpthread-stubs0-dev
+```
 And
 
 ```
@@ -11,6 +22,19 @@ make
 ```
 
 
+Windows
+```
+pacman -S \
+  mingw-w64-ucrt-x86_64-toolchain \
+  mingw-w64-ucrt-x86_64-SDL2 \
+  mingw-w64-ucrt-x86_64-SDL2_image \
+  mingw-w64-ucrt-x86_64-SDL2_ttf \
+  mingw-w64-ucrt-x86_64-libwebsockets \
+  mingw-w64-ucrt-x86_64-openssl \
+  mingw-w64-ucrt-x86_64-zlib
+```
+
+objdump -p main.exe | grep DLL
 
 https://github.com/user-attachments/assets/1ad3bc6a-a406-40e3-a703-9e62ff356ae6
 

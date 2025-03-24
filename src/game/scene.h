@@ -8,6 +8,8 @@
 
 #include <SDL2/SDL.h>
 
+#include "game/client.h"
+
 class Object;
 class Minimap;
 class Map;
@@ -114,6 +116,9 @@ public:
      * @brief Destructor that cleans up the Scene object
      */
     virtual ~Scene();
+
+protected:
+    Client* client = nullptr;
 };
 
 #endif // GAME_SCENE_H
