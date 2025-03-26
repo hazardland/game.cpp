@@ -39,7 +39,7 @@ public:
     static constexpr int TERRAIN_FOREST = 3;
 
     // Methods
-    virtual void prepare() override;
+    virtual void prepare(State* state) override;
     void generate();
     virtual void update(State* state) override;
 };

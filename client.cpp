@@ -1,40 +1,100 @@
-// client.cpp
-#include <game/client.h>
-#include <iostream>
 #include <thread>
+
+#include <game/client.h>
+#include <game/protocol.h>
+#include <iostream>
 #include <chrono>
 
-int main() {
+// Message struct definition
+#pragma pack(push, 1)
+struct Position {
+    static constexpr uint8_t type = 1;
+    uint32_t client_id;
+    uint32_t message_id;
+};
+#pragma pack(pop)
+
+std::string getColor(uint32_t client_id) {
+    switch (client_id % 6) {
+        case 1: return "\033[34m"; // Blue
+        case 2: return "\033[33m"; // Yellow
+        case 3: return "\033[31m"; // Red
+        case 4: return "\033[32m"; // Green
+        case 5: return "\033[35m"; // Magenta
+        case 6: return "\033[36m"; // Cyan
+        default: return "\033[0m"; // Default
+    }
+}
+
+const std::string COLOR_RESET = "\033[0m";
+
+int main(int argc, char* argv[]) {
+
+    if (argc < 2) {
+        std::cerr << "Usage: ./client <client_id>\n";
+        return 1;
+    }
+
+    uint32_t client_id = std::stoi(argv[1]);
+
     Client client;
 
-    client.setOnMessage([](const std::string& msg) {
-        std::cout << "[Server] " << msg << std::endl;
+    client.setOnMessage([](const std::vector<uint8_t>& data) {
+        if (data.size() < 3) return;
+
+        uint8_t type = Protocol::type(data.data());
+        if (type == Position::type) {
+            Position msg = Protocol::decode<Position>(data.data());
+            if (msg.message_id % 1000 == 0) {
+                std::string color = getColor(msg.client_id);
+                std::cout << color
+                          << "cl_id: " << msg.client_id
+                          << ", msg_id: " << msg.message_id
+                          << COLOR_RESET << "\n";
+            }            
+        }
+        
     });
 
     client.enableAutoReconnect(true);
-    // client.setMaxQueueSize(50);
 
     if (!client.connect("ws://localhost:9000")) {
         return 1;
     }
 
-    int i = 0;
+    const uint32_t totalProtocols = 10000000;
+    const uint32_t batchSize = 100;
+    uint32_t sent = 0;
+
+    client.wait();
     auto start = std::chrono::steady_clock::now();
-    
-    while (true) {
-        client.poll();
-        // std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+    while (sent < totalProtocols) {
+        // client.poll();
+       
+        for (int i = 0; i < 10; ++i) {
+            client.poll();
+        }    
+       
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+       
+        for (int i = 0; i < 100; ++i) {
+            Position msg {
+                .client_id = client_id,
+                .message_id = ++sent,
+            };
+            auto encoded = Protocol::encode(msg);
+            client.send(encoded);
+        }
+        client.flush();
+    }
     
 
-        auto now = std::chrono::steady_clock::now();
-        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start);
-    
-        if (true || elapsed.count() >= 5) { 
-            std::string msg = "Message " + std::to_string(i++);
-            client.send(msg);
-            start = now;
-        }
-    }
+    auto end = std::chrono::steady_clock::now();
+    auto elapsedMs = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+    std::cout << "Sent " << sent << " messages in " << elapsedMs << " ms\n";
+    std::cout << "Average: " << (elapsedMs / static_cast<float>(totalProtocols)) << " ms/message\n";
 
     return 0;
 }

@@ -6,7 +6,7 @@
 #include "game/scene.h"
 
 
-int Object::count = 0;
+uint32_t Object::count = 0;
 
 Object::Object() : position(new Position()) {}
 
@@ -21,21 +21,30 @@ void Object::setId() {
     }
 }
 
-int Object::getId() {
+uint32_t Object::getId() {
     setId();
     return id;
+}
+
+bool Object::hasId() {
+    if (id>0) {
+        return true;
+    }
+    return false;
 }
 
 void Object::addPosition(float x, float y) {
     // position.x += x;
     // position.y += y;
     position->addPosition(x, y);
+    updateChildPositions();
 }
 
 void Object::setPosition(float x, float y) {
     // position.x = x;
     // position.y = y;
     position->setPosition(x, y);
+    updateChildPositions();
 }
 
 void Object::setSize(float width, float height) {

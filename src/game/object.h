@@ -21,19 +21,20 @@ class Scene;
 
 class Object {
     private:
-        int id = 0;   // Object ID
+        uint32_t id = 0;   // Object ID
         std::vector<Position*> childPositions; // Track child positions
 
     protected:
         Position* position;   // Object's position and size
 
     public:
-        static int count;    // Keep count of total objects
+        static uint32_t count;    // Keep count of total objects
         Object();  // Declare constructor
         // Object(Position* position);  // Declare constructor
         // Setter and getter methods
         void setId();
-        int getId();
+        uint32_t getId();
+        bool hasId();
         virtual void addPosition(float x, float y);
         virtual void setPosition(float x, float y);
         virtual void setSize(float width, float height);

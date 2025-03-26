@@ -25,7 +25,7 @@ private:
     Text* text;
     Minimap* minimap = nullptr;
 
-    int random(int min, int max);
+    int rand_(int min, int max);
     void setTerrain(int x, int y, int type);
     int getTile(const std::array<int, 4>& corners);
     std::array<int, 4> getTileBorders(int x, int y);

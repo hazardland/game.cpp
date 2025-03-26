@@ -235,7 +235,7 @@ void Map::fillMap() {
 int Map::getTile(const std::array<int, 4>& corners) {
     int key = corners[0] * 1000 + corners[1] * 100 + corners[2] * 10 + corners[3];
     // std::cout << "tile: " << corners[0] << corners[1] << corners[2] << corners[3] << std::endl;
-    return tiles[key][random(0, tiles[key].size() - 1)];
+    return tiles[key][rand_(0, tiles[key].size() - 1)];
 }
 
 int Map::calculateTile(int x, int y) {
@@ -333,7 +333,7 @@ std::array<int, 4> Map::getTileBorders(int x, int y) {
     return {0, 0, 0, 0}; // Fallback (should never be reached)
 }
 
-int Map::random(int min, int max) {
+int Map::rand_(int min, int max) {
     return rand() % (max-min+1) + min;
 }
 

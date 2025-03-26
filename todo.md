@@ -18,6 +18,12 @@ Todo ideas
 . Map - Use tile description in the map instead of strings
 . Investigate minimap further optimization
 . Job system - Introduce job sysem for automated tasks
+. SDL2 from pacman? No need for extra includes, latest version
+. SDL3?
+. Cool text logger, a log is an array of text messages, they fade away
+    we insert in log a text message simply like log(string) and it does a thing
+. 
+
 
 -------------------------------
 

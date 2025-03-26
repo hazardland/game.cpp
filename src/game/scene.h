@@ -26,7 +26,10 @@ class Window;
 class Scene {
     // A list of objects that are currently visible in the scene
     std::vector<Object*> visibleObjects;
-
+    // Vector of all objects in the scene, vectors are fast during iteration
+    std::vector<Object*> objects;
+    // For object lookup by id
+    std::unordered_map<uint32_t, Object*> objectById;
 public:
     Window* window;
 
@@ -41,8 +44,6 @@ public:
     // Map of sprite ID to Sprite object
     std::map<int, Sprite*> sprites;
 
-    // Vector of all objects in the scene
-    std::vector<Object*> objects;
 
     // Pointer to a Map object, which represents the game's world map
     Map* map;
@@ -70,7 +71,7 @@ public:
     /**
      * @brief Virtual function to prepare the Scene
      */
-    virtual void prepare();
+    virtual void prepare(State* state);
 
     /**
      * @brief Updates the state of the Scene
@@ -112,6 +113,36 @@ public:
      */
     void addObject(Object* obj);
 
+    
+    /**
+     * @brief Adds an object to the Scene
+     *
+     * @param obj An Object pointer representing the object to be added to the Scene
+     */
+    void addObject(Object* obj, uint32_t id);
+
+    /**
+     * @brief Get object by id
+     *
+     * @param id Id of the object
+     */
+    Object* getObject(int id);
+
+    /**
+     * @brief Removes object from all places, Note if it is also Unit you should remove it from map by yourself
+     *
+     * @param obj An Object pointer representing the object to be added to the Scene
+     */
+    void removeObject(Object* obj);
+    
+    /**
+     * @brief Removes object from all places, Note if it is also Unit you should remove it from map by yourself
+     *
+     * @param id An Object pointer representing the object to be added to the Scene
+     */
+    void removeObject(int id);
+        
+    
     /**
      * @brief Destructor that cleans up the Scene object
      */

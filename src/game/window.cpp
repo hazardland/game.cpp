@@ -121,7 +121,7 @@ void Window::toggleFullscreen() {
 
 
 int Window::run() {
-    scene->prepare();
+    scene->prepare(state);
 
     bool running = true;
 

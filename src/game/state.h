@@ -4,6 +4,7 @@
 #define GAME_STATE_H
 
 #include <SDL2/SDL_image.h>
+#include "game/client.h"
 
 class Clock;
 class Input;
@@ -26,6 +27,7 @@ public:
     Input* input;
     Camera* camera;
     Screen* screen;
+    Client* client = nullptr;
     SDL_Renderer* renderer;
 };
 

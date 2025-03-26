@@ -114,14 +114,7 @@ bool Client::connect(const std::string& uri) {
         return false;
     }
 
-    // Probably this should be in separate thread?
-    // poll just contains lws_service(context, 0);
-    // So it is like "process socket things" type of a thing
-    int retries = 0;
-    while (!connected && retries++ < 500) {
-        poll();
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    }
+    wait();
 
     if (!connected) {
         std::cerr << "[Client] Connection failed\n";
@@ -142,44 +135,60 @@ void Client::poll() {
     }
 }
 
-void Client::send(const std::string& message) {
-    if (!wsi || !connected) {
-        if (!autoReconnect) {
-            std::cerr << "[Client] No connection and autoReconnect disabled. Message dropped.\n";
-            return;
-        }
-
-        std::cerr << "[Client] Disconnected. Attempting inline reconnect...\n";
-        
-        // Reconnect attempt (retries up to 5s)
-        int retries = 0;
-        while ((!wsi || !connected) && retries++ < 500) {
-            poll();  // process reconnect logic
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        }
-
-        if (!wsi || !connected) {
-            std::cerr << "[Client] Inline reconnect failed. Message dropped.\n";
-            return;
-        }
-
-        std::cerr << "[Client] Reconnected. Proceeding to send message.\n";
-    }
-
-    // if (outgoing.size() >= maxQueueSize) {
-    //     std::cerr << "[Client] Message queue full. Dropping message.\n";
-    //     return;
-    // }
-
-    std::cout << "[Client] Queuing: " << message << std::endl;
-    outgoing.push_back(message);
-    lws_callback_on_writable(wsi);  // trigger LWS_CALLBACK_CLIENT_WRITEABLE
-
-    // Optionally flush immediately
-    while (!outgoing.empty()) {
-        poll();  // or lws_service(context, 0);
+void Client::wait() {
+    int retries = 0;
+    while (!connected && retries++ < 500) {
+        poll();
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }
+
+void Client::send(const std::vector<uint8_t>& message) {
+    outgoing.push_back({ message }); // Just queues the message
+}
+
+void Client::flush() {
+    if (wsi && connected && !outgoing.empty()) {
+        lws_callback_on_writable(wsi);
+        while (!outgoing.empty()) {
+            poll();
+        }        
+    }
+}
+
+// void Client::send(const std::string& message) {
+//     if (!wsi || !connected) {
+//         if (!autoReconnect) {
+//             std::cerr << "[Client] No connection and autoReconnect disabled. Message dropped.\n";
+//             return;
+//         }
+
+//         std::cerr << "[Client] Disconnected. Attempting inline reconnect...\n";
+        
+//         wait();
+
+//         if (!wsi || !connected) {
+//             std::cerr << "[Client] Inline reconnect failed. Message dropped.\n";
+//             return;
+//         }
+
+//         std::cerr << "[Client] Reconnected. Proceeding to send message.\n";
+//     }
+
+//     // if (outgoing.size() >= maxQueueSize) {
+//     //     std::cerr << "[Client] Message queue full. Dropping message.\n";
+//     //     return;
+//     // }
+
+//     std::cout << "[Client] Queuing: " << message << std::endl;
+//     outgoing.push_back(message);
+//     lws_callback_on_writable(wsi);  // trigger LWS_CALLBACK_CLIENT_WRITEABLE
+
+//     // Optionally flush immediately
+//     while (!outgoing.empty()) {
+//         poll();  // or lws_service(context, 0);
+//     }
+// }
 
 
 void Client::setOnMessage(OnMessageCallback cb) {
@@ -208,9 +217,17 @@ int Client::callback(struct lws* wsi, enum lws_callback_reasons reason, void* us
             
             // lws_set_timer_usecs(wsi, 15 * LWS_USEC_PER_SEC);
 
+        // case LWS_CALLBACK_CLIENT_RECEIVE:
+        //     if (self && self->onMessage) {
+        //         self->onMessage(std::string((const char*)in, len));
+        //     }
+        //     break;
+
+
         case LWS_CALLBACK_CLIENT_RECEIVE:
             if (self && self->onMessage) {
-                self->onMessage(std::string((const char*)in, len));
+                std::vector<uint8_t> data((uint8_t*)in, (uint8_t*)in + len);
+                self->onMessage(data);
             }
             break;
 
@@ -226,30 +243,66 @@ int Client::callback(struct lws* wsi, enum lws_callback_reasons reason, void* us
         //     lws_set_timer_usecs(wsi, 15 * LWS_USEC_PER_SEC);
         //     break;        
 
+        // case LWS_CALLBACK_CLIENT_WRITEABLE:
+        //     if (self && !self->outgoing.empty()) {
+        //         std::string msg = self->outgoing.front();
+
+        //         unsigned char buf[LWS_PRE + MAX_PAYLOAD];
+        //         std::memcpy(&buf[LWS_PRE], msg.c_str(), msg.size());
+
+        //         std::cout << "[Client] Sending: " << msg << std::endl;
+        //         int bytes_written = lws_write(wsi, &buf[LWS_PRE], msg.size(), LWS_WRITE_TEXT);
+
+        //         if (bytes_written < 0) {
+        //             std::cerr << "[Client] lws_write failed!\n";
+        //             // Don't erase the message, try again on the next writeable
+        //             return -1;
+        //         }
+
+        //         // Only remove the message if it was successfully written
+        //         self->outgoing.erase(self->outgoing.begin());
+
+        //         if (!self->outgoing.empty()) {
+        //             lws_callback_on_writable(wsi);
+        //         }
+        //     }
+        //     break;
+
+
         case LWS_CALLBACK_CLIENT_WRITEABLE:
-            if (self && !self->outgoing.empty()) {
-                std::string msg = self->outgoing.front();
-
-                unsigned char buf[LWS_PRE + MAX_PAYLOAD];
-                std::memcpy(&buf[LWS_PRE], msg.c_str(), msg.size());
-
-                std::cout << "[Client] Sending: " << msg << std::endl;
-                int bytes_written = lws_write(wsi, &buf[LWS_PRE], msg.size(), LWS_WRITE_TEXT);
-
-                if (bytes_written < 0) {
-                    std::cerr << "[Client] lws_write failed! Will retry on next writeable.\n";
-                    // Don't erase the message, try again on the next writeable
-                    return -1;
-                }
-
-                // ✅ Only remove the message if it was successfully written
-                self->outgoing.erase(self->outgoing.begin());
-
-                if (!self->outgoing.empty()) {
-                    lws_callback_on_writable(wsi);
-                }
+        if (self && !self->outgoing.empty()) {
+            const auto& msg = self->outgoing.front();
+    
+            unsigned char buf[LWS_PRE + MAX_PAYLOAD];
+    
+            if (msg.size() > MAX_PAYLOAD) {
+                std::cerr << "[Client] Binary payload too large!\n";
+                return -1;
             }
-            break;
+    
+            std::memcpy(&buf[LWS_PRE], msg.data(), msg.size());
+    
+            // std::cout << "[Client] Sending binary message (" << msg.size() << " bytes): ";
+            // for (size_t i = 0; i < msg.size(); ++i) {
+            //     printf("%02X ", msg[i]);
+            // }
+            // std::cout << std::endl;
+            int flags = LWS_WRITE_BINARY;// | LWS_WRITE_NO_FIN;
+            int bytes_written = lws_write(wsi, &buf[LWS_PRE], msg.size(), (lws_write_protocol)flags);
+    
+            if (bytes_written < 0) {
+                std::cerr << "[Client] lws_write failed!\n";
+                return -1;
+            }
+    
+            self->outgoing.erase(self->outgoing.begin());
+    
+            if (!self->outgoing.empty()) {
+                lws_callback_on_writable(wsi);
+            }
+        }
+        break;
+          
 
         case LWS_CALLBACK_CLIENT_CLOSED:
         case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:

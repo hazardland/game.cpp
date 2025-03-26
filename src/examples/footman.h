@@ -10,6 +10,8 @@
 #include "examples/enum.h"
 
 class Footman : public Unit {
+private:
+    bool modeSync = false;
 public:
     Animation* body;
     int maxSpeed = 100;
@@ -27,8 +29,8 @@ public:
 
     // Movement functions
     virtual void rotate(float directionX, float directionY);
-    bool safeMove(float byX, float byY);
     virtual bool move(int deltaTime, float directionX, float directionY);
+    virtual void play(uint32_t inMode, uint32_t inModeX, uint32_t inModeY);
 
     // Update and rendering functions
     virtual void update(State* state) override;

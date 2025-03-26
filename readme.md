@@ -20,7 +20,7 @@ And
 make
 ./main
 ```
-
+Currently in order to run main.exe you should also compile and run server.cpp
 
 Windows
 ```

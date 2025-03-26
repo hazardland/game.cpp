@@ -1,35 +1,107 @@
-// server.cpp
 #include <libwebsockets.h>
-
-#include <cstring>
 #include <iostream>
+#include <deque>
+#include <unordered_map>
+#include <algorithm>
+#include <cstring>
+#include <vector>
 
-static int callback_echo(struct lws* wsi, enum lws_callback_reasons reason,
-    void* user, void* in, size_t len)
-    {
-        switch (reason) {
-            case LWS_CALLBACK_ESTABLISHED:
+static constexpr int MAX_PAYLOAD = 4096;
+static constexpr size_t MAX_QUEUE_SIZE = 10000;
+
+struct ClientData {
+    std::deque<std::vector<uint8_t>> outgoing;
+};
+
+static std::vector<lws*> clients;
+static std::unordered_map<lws*, ClientData> clientDataMap;
+
+static int callback_broadcast(struct lws* wsi, enum lws_callback_reasons reason,
+                              void* user, void* in, size_t len) {
+    switch (reason) {
+        case LWS_CALLBACK_ESTABLISHED:
             std::cout << "[Server] Client connected.\n";
+            clients.push_back(wsi);
+            clientDataMap[wsi] = ClientData{};
             break;
-            
-            case LWS_CALLBACK_RECEIVE:
-            std::cout << "[Server] Received: " << std::string((char*)in, len) << "\n";
-            // Echo it back
-            lws_write(wsi, (unsigned char*)in, len, LWS_WRITE_TEXT);
-            break;
-            
-            default:
+
+        case LWS_CALLBACK_RECEIVE: {
+            // Validate message size
+            if (len > MAX_PAYLOAD) {
+                std::cerr << "[Server] Dropping oversized message: " << len << " bytes\n";
+                break;
+            }
+
+            std::vector<uint8_t> msg(reinterpret_cast<uint8_t*>(in),
+                                     reinterpret_cast<uint8_t*>(in) + len);
+
+            // Queue message for all clients except sender
+            for (auto* client : clients) {
+                if (client == wsi)
+                    continue;
+
+                auto& queue = clientDataMap[client].outgoing;
+
+                // if (queue.size() > MAX_QUEUE_SIZE) {
+                //     std::cerr << "[Server] Disconnecting client due to queue overflow\n";
+                //     lws_set_timeout(client, PENDING_TIMEOUT_KILLED_BY_SERVER, LWS_TO_KILL_ASYNC);
+                //     continue;
+                // }
+                // printf("Sending");
+                queue.push_back(msg);  // message is small, so copy is okay
+                lws_callback_on_writable(client);  // Mark for writing
+            }
             break;
         }
-        return 0;
+
+        case LWS_CALLBACK_SERVER_WRITEABLE: {
+            auto& queue = clientDataMap[wsi].outgoing;
+            if (!queue.empty()) {
+                const auto& msg = queue.front();
+
+                if (msg.size() > MAX_PAYLOAD) {
+                    std::cerr << "[Server] Skipping oversized queued message\n";
+                    queue.pop_front();
+                    break;
+                }
+
+                unsigned char buf[LWS_PRE + MAX_PAYLOAD];
+                std::memcpy(&buf[LWS_PRE], msg.data(), msg.size());
+
+                int bytes_written = lws_write(wsi, &buf[LWS_PRE], msg.size(), LWS_WRITE_BINARY);
+                if (bytes_written < 0) {
+                    std::cerr << "[Server] lws_write failed\n";
+                    return -1;
+                }
+
+                queue.pop_front();
+
+                if (!queue.empty()) {
+                    lws_callback_on_writable(wsi);  // More messages to send
+                }
+            }
+            break;
+        }
+
+        case LWS_CALLBACK_CLOSED:
+        case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
+            std::cout << "[Server] Client disconnected.\n";
+            clients.erase(std::remove(clients.begin(), clients.end(), wsi), clients.end());
+            clientDataMap.erase(wsi);
+            break;
+
+        default:
+            break;
     }
-    
+
+    return 0;
+}
+
 int main() {
-    // lws_set_log_level(LLL_ERR, nullptr);  // Only show errors
-    lws_set_log_level(LLL_ERR | LLL_WARN | LLL_NOTICE | LLL_INFO, NULL);
+    lws_set_log_level(LLL_ERR | LLL_WARN | LLL_NOTICE | LLL_INFO, nullptr);
 
     lws_protocols protocols[] = {
-        { "ws", callback_echo, 0, 4096 }, // 👈 change "echo-protocol" to "ws"
+        { "ws", callback_broadcast, 0, MAX_PAYLOAD },
         { nullptr, nullptr, 0, 0 }
     };
 
@@ -48,11 +120,11 @@ int main() {
     std::cout << "[Server] Listening on ws://localhost:9000\n";
 
     while (true) {
-        lws_service(context, 50);
+        lws_service(context, 0); // non-blocking
     }
 
     lws_context_destroy(context);
     return 0;
 }
 
-// g++ server.cpp -o server -lwebsockets 
+// g++ server.cpp -o server -lwebsockets

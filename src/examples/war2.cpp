@@ -3,14 +3,17 @@
 #include "game/input.h"
 #include "game/terrain.h"
 #include "game/image.h"
+#include "game/protocol.h"
+#include "game/state.h"
 
 #include "examples/war2.h"
 #include "examples/enum.h"
 #include "examples/footman.h"
 #include "examples/farm.h"
+#include "examples/messages.h"
 
 // Prepare function
-void Warcraft::prepare() {
+void Warcraft::prepare(State* state) {
 
     cooldown = new Cooldown(200);
 
@@ -35,8 +38,8 @@ void Warcraft::prepare() {
 
     minimap = new Minimap(
         renderer,
-        250, 250,
-        WIDTH, HEIGHT, 2
+        100, 100,
+        WIDTH, HEIGHT, 4
     );
 
     printf("Setting minimap\n");
@@ -170,13 +173,13 @@ void Warcraft::prepare() {
 
     printf("Creating footmans\n");
     Footman* lastFootman = NULL;
-    for (int x=0; x<100*32; x+=32) {
+    for (int x=0; x<10*32; x+=32) {
         for (int y=10; y<100*32; y+=32) {
             Footman* footman = new Footman(sprites[SPRITE_FOOTMAN_RED], fontSmall);
             footman->setMap(map);
             if (footman->canOccupy(x, y, 32, 32)) {
                 footman->setPosition(x, y);
-                addObject(footman);
+                addObject(footman, footman->getId());
                 lastFootman = footman;
             }
         }
@@ -197,12 +200,41 @@ void Warcraft::prepare() {
     client->connect("ws://localhost:9000");
     client->enableAutoReconnect(true);
     // client->send("Hello");
+
+    client->setOnMessage([this](const std::vector<uint8_t>& data) {
+        if (data.size() < 3) return;
+    
+        uint8_t type = Protocol::type(data.data());
+        if (type == FootmanState::type) {
+            FootmanState footmanState = Protocol::decode<FootmanState>(data.data());
+    
+            Object* obj = getObject(footmanState.object_id);
+            if (!obj) return;
+    
+            Footman* footman = dynamic_cast<Footman*>(obj);
+            if (footman) {
+                // printf("Setting %.2f, %.2f\n", footmanState.x, footmanState.y);
+                footman->setPosition(footmanState.x, footmanState.y);
+                footman->play(
+                    footmanState.mode, 
+                    footmanState.modeX,
+                    footmanState.modeY
+                );
+            }
+        }
+    });
+
+    state->client = client;
+    
 }
 
 // Generate function
 void Warcraft::generate() {
-    srand(clock());
-    map->generate(rand(), 0.05, {0.2, 0.45, 0.8, 1});
+    // srand(clock());
+    srand(2657);
+    int seed = rand();
+    printf("Map seed: %d\n", seed);
+    map->generate(seed, 0.05, {0.2, 0.45, 0.8, 1});
     // map->import(
     //     {
     //         {0,1,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0},

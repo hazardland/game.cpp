@@ -52,14 +52,16 @@ void Scene::setSize(int width, int height) {
     this->height = height;
 }
 
-void Scene::prepare() {
+void Scene::prepare(State* state) {
     // Empty in base class, can be overridden by derived classes
 }
 
 void Scene::update(State* state) {
 
     if (client!=nullptr) {
-        client->poll();
+        for (int i = 0; i < 10; ++i) {
+            client->poll();
+        }    
     }
 
     if (map!=nullptr) {
@@ -75,6 +77,10 @@ void Scene::update(State* state) {
     }
     if (minimap!=nullptr) {
         minimap->update(state);
+    }
+
+    if (client!=nullptr) {
+        client->flush();
     }
 }
 
@@ -110,6 +116,43 @@ void Scene::present(int delay) {
 void Scene::addObject(Object* obj) {
     objects.push_back(obj);
 }
+
+void Scene::addObject(Object* obj, uint32_t id) {
+    objects.push_back(obj);
+    objectById[obj->getId()] = obj;    
+}
+
+Object* Scene::getObject(int id) {
+    auto it = objectById.find(id);
+    return it != objectById.end() ? it->second : nullptr;
+}
+
+void Scene::removeObject(Object* obj) {
+    // Remove from map
+    int id = obj->getId();
+    objectById.erase(id);
+
+    // Remove from vector (stable erase, order preserved)
+    auto it = std::find(objects.begin(), objects.end(), obj);
+    if (it != objects.end()) {
+        objects.erase(it);
+    }
+}
+
+void Scene::removeObject(int id) {
+    auto it = objectById.find(id);
+    if (it != objectById.end()) {
+        Object* obj = it->second;
+        objectById.erase(it);
+
+        // Remove from vector
+        auto vit = std::find(objects.begin(), objects.end(), obj);
+        if (vit != objects.end()) {
+            objects.erase(vit);
+        }
+    }
+}
+
 
 Scene::~Scene() {
     SDL_DestroyRenderer(renderer);

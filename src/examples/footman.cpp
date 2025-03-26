@@ -1,7 +1,9 @@
 #include "game/input.h"
 #include "game/clock.h"
+#include "game/protocol.h"
 
 #include "examples/footman.h"
+#include "examples/messages.h"
 
 // Constructor
 Footman::Footman(Sprite* sprite, TTF_Font* font) {
@@ -42,17 +44,14 @@ bool Footman::move(int deltaTime, float directionX, float directionY) {
     if (byX!=0 && byY!=0 && canMove(byX, byY)) {
         addPosition(byX, byY);
         updateGrid();
-        updateChildPositions();
         return true;
     } else if (byX!=0 && canMove(byX, 0)) {
         addPosition(byX, 0);
         updateGrid();
-        updateChildPositions();
         return true;
     } else if (byY!=0 && canMove(0, byY)) {
         addPosition(0, byY);
         updateGrid();
-        updateChildPositions();
         return true;
     }
     return false;
@@ -60,19 +59,30 @@ bool Footman::move(int deltaTime, float directionX, float directionY) {
 
 // Update function
 void Footman::update(State* state) {
+
+    float prevX = getX();
+    float prevY = getY();
+    int prevMode = mode;
+
     Keyboard* key = state->input->keyboard;
     float directionX = 0;
     float directionY = 0;
 
+    int isInput = false;
+
     if (key->w) {
         directionY = -1;
+        isInput = true;
     } else if (key->s) {
         directionY = 1;
+        isInput = true;
     }
     if (key->a) {
         directionX = -1;
+        isInput = true;
     } else if (key->d) {
         directionX = 1;
+        isInput = true;
     }
     // Reduce diagonal movement speed by 40%
     if (directionX!=0 && directionY!=0) {
@@ -84,19 +94,27 @@ void Footman::update(State* state) {
 
     if (key->space) {
         mode = ATTACK;
+        isInput = true;
     } else {
         if (directionX == 0 && directionY == 0) {
-            mode = IDLE;
+            if (!modeSync) {
+                mode = IDLE;
+            }
         } else {
             if (move(state->clock->delta, directionX, directionY)) {
                 mode = MOVE;
             } else {
-                mode = IDLE;
+                if (!modeSync) {
+                    mode = IDLE;
+                }
             }
-            cameraFollow(state->camera);
+            // cameraFollow(state->camera);
         }
     }
 
+    if (isInput) {
+        modeSync = false;
+    }
     // mode = 0;
     // text->setText(std::to_string(mode));
     // text->setText(std::to_string(getX())+","+std::to_string(getY()));
@@ -107,6 +125,31 @@ void Footman::update(State* state) {
     // }
 
     body->update(state->clock->delta);
+
+    if (state->client!=nullptr
+        && (prevX!=getX() || prevY!=getY() || prevMode!=mode)
+    ) {
+        FootmanState msg {
+            .object_id = getId(),
+            .x = getX(),
+            .y = getY(),
+            .mode = (uint32_t) mode,
+            .modeX = (uint32_t) modeX,
+            .modeY = (uint32_t) modeY
+        };
+        // printf("Sending %.2f, %.2f\n", msg.x, msg.y);
+        auto encoded = Protocol::encode(msg);
+        state->client->send(encoded);        
+    }
+}
+
+void Footman::play(uint32_t inMode, uint32_t inModeX, uint32_t inModeY) {
+    mode = (int)inMode;
+    modeX = (int)inModeX;
+    modeY = (int)inModeY;
+    modeSync = true;
+    // body->play((int) mode);
+    // syncMode = true;
 }
 
 // Camera follow function
