@@ -174,7 +174,7 @@ void Warcraft::prepare(State* state) {
     printf("Creating footmans\n");
     Footman* lastFootman = NULL;
     for (int x=0; x<10*32; x+=32) {
-        for (int y=10; y<100*32; y+=32) {
+        for (int y=10; y<10*32; y+=32) {
             Footman* footman = new Footman(sprites[SPRITE_FOOTMAN_RED], fontSmall);
             footman->setMap(map);
             if (footman->canOccupy(x, y, 32, 32)) {
@@ -201,31 +201,20 @@ void Warcraft::prepare(State* state) {
     printf("But first server should be running did you forget to run server executable? -_-\n");
     client->connect("ws://localhost:9000");
     client->enableAutoReconnect(true);
-    // client->send("Hello");
-
-    client->setOnMessage([this](const std::vector<uint8_t>& data) {
-        if (data.size() < 3) return;
+    client->setHandler<FootmanState>([this](const FootmanState& footmanState) {
+        Object* obj = getObject(footmanState.object_id);
+        if (!obj) return;
     
-        uint8_t type = Protocol::type(data.data());
-        if (type == FootmanState::type) {
-            FootmanState footmanState = Protocol::decode<FootmanState>(data.data());
-    
-            Object* obj = getObject(footmanState.object_id);
-            if (!obj) return;
-    
-            Footman* footman = dynamic_cast<Footman*>(obj);
-            if (footman) {
-                // printf("Setting %.2f, %.2f\n", footmanState.x, footmanState.y);
-                footman->setPosition(footmanState.x, footmanState.y);
-                footman->play(
-                    footmanState.mode, 
-                    footmanState.modeX,
-                    footmanState.modeY
-                );
-            }
+        Footman* footman = dynamic_cast<Footman*>(obj);
+        if (footman) {
+            footman->setPosition(footmanState.x, footmanState.y);
+            footman->play(
+                footmanState.mode, 
+                footmanState.modeX,
+                footmanState.modeY
+            );
         }
     });
-
     state->client = client;
     
 }

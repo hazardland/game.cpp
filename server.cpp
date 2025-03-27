@@ -98,7 +98,8 @@ static int callback_broadcast(struct lws* wsi, enum lws_callback_reasons reason,
 }
 
 int main() {
-    lws_set_log_level(LLL_ERR | LLL_WARN | LLL_NOTICE | LLL_INFO, nullptr);
+    lws_set_log_level(LLL_ERR, nullptr);  // Only show errors
+    // lws_set_log_level(LLL_ERR | LLL_WARN | LLL_NOTICE | LLL_INFO, nullptr);
 
     lws_protocols protocols[] = {
         { "ws", callback_broadcast, 0, MAX_PAYLOAD },

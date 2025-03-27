@@ -39,23 +39,16 @@ int main(int argc, char* argv[]) {
 
     Client client;
 
-    client.setOnMessage([](const std::vector<uint8_t>& data) {
-        if (data.size() < 3) return;
-
-        uint8_t type = Protocol::type(data.data());
-        if (type == Position::type) {
-            Position msg = Protocol::decode<Position>(data.data());
-            if (msg.message_id % 1000 == 0) {
-                std::string color = getColor(msg.client_id);
-                std::cout << color
-                          << "cl_id: " << msg.client_id
-                          << ", msg_id: " << msg.message_id
-                          << COLOR_RESET << "\n";
-            }            
+    client.setHandler<Position>([](const Position& pos) {
+        std::string color = getColor(pos.client_id);
+        if (pos.message_id % 1000 == 0) {
+            std::cout << color
+                      << "cl_id: " << pos.client_id
+                      << ", msg_id: " << pos.message_id
+                      << COLOR_RESET << "\n";
         }
-        
     });
-
+    
     client.enableAutoReconnect(true);
 
     if (!client.connect("ws://localhost:9000")) {
@@ -70,22 +63,17 @@ int main(int argc, char* argv[]) {
     auto start = std::chrono::steady_clock::now();
 
     while (sent < totalProtocols) {
-        // client.poll();
-       
+
         for (int i = 0; i < 10; ++i) {
             client.poll();
         }    
        
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
        
-        for (int i = 0; i < 100; ++i) {
-            Position msg {
-                .client_id = client_id,
-                .message_id = ++sent,
-            };
-            auto encoded = Protocol::encode(msg);
-            client.send(encoded);
+        for (int i = 0; i < 1000; ++i) {
+            client.send(Position{ .client_id = client_id, .message_id = ++sent });
         }
+
         client.flush();
     }
     

@@ -138,8 +138,8 @@ void Footman::update(State* state) {
             .modeY = (uint32_t) modeY
         };
         // printf("Sending %.2f, %.2f\n", msg.x, msg.y);
-        auto encoded = Protocol::encode(msg);
-        state->client->send(encoded);        
+        // auto encoded = Protocol::encode(msg);
+        state->client->send(msg);        
     }
 }
 
