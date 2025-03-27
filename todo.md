@@ -12,7 +12,7 @@ Todo ideas
 + Camera zoom cooldown config
 
 . LUA - Try lua scripting
-. Network - Implement network thread
+- Network - Implement network thread
 . If those work can I update objects in another thread?
 
 . Map - Use tile description in the map instead of strings
@@ -22,8 +22,8 @@ Todo ideas
 . SDL3?
 . Cool text logger, a log is an array of text messages, they fade away
     we insert in log a text message simply like log(string) and it does a thing
-. 
-
+. Unit.addPosition with updateGrid()
+. Should aggregate messages in the socket before sending
 
 -------------------------------
 
