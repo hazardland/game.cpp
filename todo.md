@@ -11,6 +11,10 @@ Controls
 - F5 - Regenerate (Lacks object destroy and recreate)
 . Select units with selectbox
 
+UI
+------------------------
+. FontCache
+. Input?
 
 Architecture
 -----------------------
