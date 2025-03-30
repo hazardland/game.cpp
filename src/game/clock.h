@@ -1,7 +1,7 @@
 #ifndef GAME_CLOCK_H
 #define GAME_CLOCK_H
 
-#include <SDL2/SDL_timer.h>
+#include <SDL3/SDL_timer.h>
 
 /**
  * @brief Simple clock for fps tracking.

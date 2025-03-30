@@ -1,7 +1,7 @@
 // File: window.cpp
 
 #include <iostream>
-// #include <SDL2/SDL.h>
+// #include <SDL3/SDL.h>
 
 #include "game/window.h"
 

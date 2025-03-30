@@ -2,7 +2,7 @@
 #define GAME_OBJECT_H
 
 #include <vector>
-#include <SDL2/SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 
 class State;
 class Position;

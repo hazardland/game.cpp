@@ -1,7 +1,7 @@
 #ifndef GAME_KEYBOARD_H
 #define GAME_KEYBOARD_H
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 /**
  * @class Keyboard

@@ -3,7 +3,7 @@
 #ifndef GAME_RECTANGLE_H
 #define GAME_RECTANGLE_H
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 #include "game/object.h"
 

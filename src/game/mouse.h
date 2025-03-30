@@ -1,7 +1,7 @@
 #ifndef GAME_MOUSE_H
 #define GAME_MOUSE_H
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 /**
  * @class Mouse

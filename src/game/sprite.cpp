@@ -1,7 +1,7 @@
 #include "game/sprite.h"
 
 #include <map>
-#include <SDL2/SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 
 #include "game/clip.h"
 #include "game/image.h"

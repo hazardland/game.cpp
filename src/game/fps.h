@@ -1,7 +1,7 @@
 #ifndef GAME_FPS_H
 #define GAME_FPS_H
 
-#include <SDL2/SDL_timer.h>
+#include <SDL3/SDL_timer.h>
 
 #include "game/text.h"
 #include <game/cooldown.h>

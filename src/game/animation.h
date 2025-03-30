@@ -1,7 +1,7 @@
 #ifndef GAME_ANIMATION_H
 #define GAME_ANIMATION_H
 
-#include <SDL2/SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 
 class Clip;
 class Frame;

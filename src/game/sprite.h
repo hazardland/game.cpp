@@ -4,7 +4,7 @@
 #define GAME_SPRITE_H
 
 #include <map>
-#include <SDL2/SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 
 class Image;
 class Frame;

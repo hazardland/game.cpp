@@ -1,7 +1,7 @@
 #ifndef GAME_IMAGE_H
 #define GAME_IMAGE_H
 
-#include <SDL2/SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 
 /**
  * @class Image

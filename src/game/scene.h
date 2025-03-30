@@ -6,7 +6,7 @@
 #include <map>
 #include <vector>
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 #include "game/client.h"
 

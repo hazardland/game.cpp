@@ -1,7 +1,7 @@
 #ifndef GAME_INPUT_H
 #define GAME_INPUT_H
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 #include "game/window.h"
 #include "game/keyboard.h"

@@ -3,7 +3,7 @@
 #ifndef GAME_POSITION_H
 #define GAME_POSITION_H
 
-#include <SDL2/SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 #include <game/state.h>
 
 /**

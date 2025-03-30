@@ -1,7 +1,7 @@
 // File: game/fps.cpp
 #include "game/fps.h"
 
-#include <SDL2/SDL_timer.h>
+#include <SDL3/SDL_timer.h>
 
 #include <game/state.h>
 #include <game/clock.h>

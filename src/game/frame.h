@@ -1,7 +1,7 @@
 #ifndef GAME_FRAME_H
 #define GAME_FRAME_H
 
-#include <SDL2/SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 
 /**
  * @class Frame

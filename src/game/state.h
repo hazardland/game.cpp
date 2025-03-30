@@ -3,7 +3,7 @@
 #ifndef GAME_STATE_H
 #define GAME_STATE_H
 
-#include <SDL2/SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 #include "game/client.h"
 
 class Clock;

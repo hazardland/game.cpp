@@ -3,9 +3,9 @@
 #ifndef GAME_WINDOW_H
 #define GAME_WINDOW_H
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 #include "game/cooldown.h"
 
