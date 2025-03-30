@@ -17,7 +17,7 @@ void Animation::render(SDL_FRect* position) {
     image->render(clip->getFrame(frame)->getRect(), position, clip->getFrame(frame)->getFlip());
 }
 
-void Animation::play(int clipName, float slow) {
+void Animation::play(int clipName, float speed) {
     if (clipName == activeClip) {
         return;
     }
@@ -31,8 +31,8 @@ void Animation::play(int clipName, float slow) {
     clip = clipIter->second;
     timer = 0;
     frame = 0;
-    if (slow > 0) {
-        pause = clip->getFramePause() * slow;
+    if (speed > 0) {
+        pause = clip->getFramePause() / speed;
     } else {
         pause = clip->getFramePause();
     }

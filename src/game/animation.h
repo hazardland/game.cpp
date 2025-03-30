@@ -45,7 +45,7 @@ class Animation {
      * @param clipName ID of the clip to play.
      * @param slow Slowdown factor for the animation. If >0, the animation is slowed down by this factor.
      */
-    virtual void play(int clipName, float slow=0);
+    virtual void play(int clipName, float speed=0);
 
     /**
      * @brief Updates the animation based on the time since the last update.

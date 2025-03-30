@@ -197,25 +197,27 @@ void Warcraft::prepare(State* state) {
     addObject(new Select({255,255,255,100},{1, 1, 1, 100}));
     
     client = new Client();
-    printf("Waiting for connection to server\n");
-    printf("But first server should be running did you forget to run server executable? -_-\n");
-    client->connect("ws://localhost:9000");
-    client->enableAutoReconnect(true);
-    client->setHandler<FootmanState>([this](const FootmanState& footmanState) {
-        Object* obj = getObject(footmanState.object_id);
-        if (!obj) return;
-    
-        Footman* footman = dynamic_cast<Footman*>(obj);
-        if (footman) {
-            footman->setPosition(footmanState.x, footmanState.y);
-            footman->play(
-                footmanState.mode, 
-                footmanState.modeX,
-                footmanState.modeY
-            );
-        }
-    });
-    state->client = client;
+    if (client!=nullptr) {
+        printf("Waiting for connection to server\n");
+        printf("But first server should be running did you forget to run server executable? -_-\n");
+        client->connect("ws://localhost:9000");
+        client->enableAutoReconnect(true);
+        client->setHandler<FootmanState>([this](const FootmanState& footmanState) {
+            Object* obj = getObject(footmanState.object_id);
+            if (!obj) return;
+        
+            Footman* footman = dynamic_cast<Footman*>(obj);
+            if (footman) {
+                footman->setPosition(footmanState.x, footmanState.y);
+                footman->sync(
+                    footmanState.action, 
+                    footmanState.faceX,
+                    footmanState.faceY
+                );
+            }
+        });
+        state->client = client;
+    }
     
 }
 

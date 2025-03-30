@@ -28,6 +28,10 @@ SDL_FRect* Unit::getRenderPosition() {
     return renderPosition->getPosition();
 }
 
+void Unit::addPosition(float x, float y) {
+    Object::addPosition(x, y);
+    updateGrid();
+}
 
 void Unit::setPosition(float x, float y) {
     Object::setPosition(x, y);

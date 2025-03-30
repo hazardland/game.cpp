@@ -3,3 +3,22 @@
 -xc++
 -std=c++20
 -m64
+-Id:/app/msys64/ucrt64/include
+
+
+# System includes (add all relevant MSYS2 UCRT64 paths)
+-isystem
+d:/app/msys64/ucrt64/include
+-isystem
+d:/app/msys64/ucrt64/lib/gcc/x86_64-w64-mingw32/13.2.0/include
+-isystem
+d:/app/msys64/ucrt64/include/c++/13.2.0
+-isystem
+d:/app/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32
+-isystem
+d:/app/msys64/ucrt64/include/c++/13.2.0/backward
+
+# Language and target settings
+-xc++
+-std=c++20
+-m64

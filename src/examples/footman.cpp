@@ -10,8 +10,8 @@ Footman::Footman(Sprite* sprite, TTF_Font* font) {
     setLayer(1);
     allowTerrains({1, 2});
     setSize(24, 24);
-    speed = 95;
-    body = new Animation(sprite, mode + modeX + modeY);
+    speed = 16;
+    body = new Animation(sprite, action + faceX + faceY);
     body->pause = 0;
     renderPosition = createChildPosition(-24, -24, 72, 72);
     text = new Text(font, createChildPosition(-10, -40));
@@ -19,39 +19,39 @@ Footman::Footman(Sprite* sprite, TTF_Font* font) {
 }
 
 // Rotate the footman based on direction
-void Footman::rotate(float directionX, float directionY) {
-    if (directionX != 0 || directionY != 0) {
-        if (directionX != 0) {
-            modeX = (directionX < 0) ? LEFT : RIGHT;
+void Footman::rotate(float moveX, float moveY) {
+    if (moveX != 0 || moveY != 0) {
+        if (moveX != 0) {
+            faceX = (moveX < 0) ? LEFT : RIGHT;
         } else {
-            modeX = 0;
+            faceX = 0;
         }
-        if (directionY != 0) {
-            modeY = (directionY < 0) ? UP : DOWN;
+        if (moveY != 0) {
+            faceY = (moveY < 0) ? UP : DOWN;
         } else {
-            modeY = 0;
+            faceY = 0;
         }
     }
 }
 
 
 // Move based on deltaTime and direction if possible
-bool Footman::move(int deltaTime, float directionX, float directionY) {
+bool Footman::move(int deltaTime, float moveX, float moveY) {
 
-    float byX = (directionX * deltaTime) / (maxSpeed + 1 - speed);
-    float byY = (directionY * deltaTime) / (maxSpeed + 1 - speed);
+    float deltaX = (moveX * deltaTime) * (speed/100);
+    float deltaY = (moveY * deltaTime) * (speed/100);
 
-    if (byX!=0 && byY!=0 && canMove(byX, byY)) {
-        addPosition(byX, byY);
-        updateGrid();
+    
+    if (deltaX!=0 && deltaY!=0 && canMove(deltaX, deltaY)) {
+        addPosition(deltaX, deltaY);
         return true;
-    } else if (byX!=0 && canMove(byX, 0)) {
-        addPosition(byX, 0);
-        updateGrid();
+    } else if (deltaX!=0 && canMove(deltaX, 0)) {
+        faceY  = 0;
+        addPosition(deltaX, 0);
         return true;
-    } else if (byY!=0 && canMove(0, byY)) {
-        addPosition(0, byY);
-        updateGrid();
+    } else if (deltaY!=0 && canMove(0, deltaY)) {
+        faceX  = 0;
+        addPosition(0, deltaY);
         return true;
     }
     return false;
@@ -62,50 +62,50 @@ void Footman::update(State* state) {
 
     float prevX = getX();
     float prevY = getY();
-    int prevMode = mode;
+    int prevAction = action;
 
     Keyboard* key = state->input->keyboard;
-    float directionX = 0;
-    float directionY = 0;
+    float moveX = 0;
+    float moveY = 0;
 
     int isInput = false;
 
     if (key->w) {
-        directionY = -1;
+        moveY = -1;
         isInput = true;
     } else if (key->s) {
-        directionY = 1;
+        moveY = 1;
         isInput = true;
     }
     if (key->a) {
-        directionX = -1;
+        moveX = -1;
         isInput = true;
     } else if (key->d) {
-        directionX = 1;
+        moveX = 1;
         isInput = true;
     }
     // Reduce diagonal movement speed by 40%
-    if (directionX!=0 && directionY!=0) {
-        directionX *= 0.6;
-        directionY *= 0.6;
+    if (moveX!=0 && moveY!=0) {
+        moveX *= 0.6;
+        moveY *= 0.6;
     }
 
-    rotate(directionX, directionY);
+    rotate(moveX, moveY);
 
     if (key->space) {
-        mode = ATTACK;
+        action = ATTACK;
         isInput = true;
     } else {
-        if (directionX == 0 && directionY == 0) {
-            if (!modeSync) {
-                mode = IDLE;
+        if (moveX == 0 && moveY == 0) {
+            if (!syncing) {
+                action = IDLE;
             }
         } else {
-            if (move(state->clock->delta, directionX, directionY)) {
-                mode = MOVE;
+            if (move(state->clock->delta, moveX, moveY)) {
+                action = MOVE;
             } else {
-                if (!modeSync) {
-                    mode = IDLE;
+                if (!syncing) {
+                    action = IDLE;
                 }
             }
             // cameraFollow(state->camera);
@@ -113,12 +113,14 @@ void Footman::update(State* state) {
     }
 
     if (isInput) {
-        modeSync = false;
+        syncing = false;
     }
-    // mode = 0;
-    // text->setText(std::to_string(mode));
+    // action = 0;
+    // text->setText(std::to_string(action));
     // text->setText(std::to_string(getX())+","+std::to_string(getY()));
-    body->play(mode + modeX + modeY);
+    // Here it seems we need to establish some kind of relation
+    // Betwee character speed and animation speed
+    body->play(action + faceX + faceY, (speed/100)*6.25);
 
     // if (isSelected()) {
     //     text->appendText(" SEL");
@@ -127,15 +129,15 @@ void Footman::update(State* state) {
     body->update(state->clock->delta);
 
     if (state->client!=nullptr
-        && (prevX!=getX() || prevY!=getY() || prevMode!=mode)
+        && (prevX!=getX() || prevY!=getY() || prevAction!=action)
     ) {
         FootmanState msg {
             .object_id = getId(),
             .x = getX(),
             .y = getY(),
-            .mode = (uint32_t) mode,
-            .modeX = (uint32_t) modeX,
-            .modeY = (uint32_t) modeY
+            .action = (uint32_t) action,
+            .faceX = (uint32_t) faceX,
+            .faceY = (uint32_t) faceY
         };
         // printf("Sending %.2f, %.2f\n", msg.x, msg.y);
         // auto encoded = Protocol::encode(msg);
@@ -143,12 +145,12 @@ void Footman::update(State* state) {
     }
 }
 
-void Footman::play(uint32_t inMode, uint32_t inModeX, uint32_t inModeY) {
-    mode = (int)inMode;
-    modeX = (int)inModeX;
-    modeY = (int)inModeY;
-    modeSync = true;
-    // body->play((int) mode);
+void Footman::sync(uint32_t inAction, uint32_t inFaceX, uint32_t inFaceY) {
+    action = (int)inAction;
+    faceX = (int)inFaceX;
+    faceY = (int)inFaceY;
+    syncing = true;
+    // body->play((int) action);
     // syncMode = true;
 }
 

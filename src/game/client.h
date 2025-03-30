@@ -59,7 +59,7 @@ private:
     // size_t maxQueueSize = 100;
     std::string reconnectUri;
     std::vector<uint8_t> groupedBuffer;
-    static constexpr uint8_t GROUP_TYPE = 255;        
+    static constexpr uint8_t GROUP_TYPE = 0;        
         
     static constexpr int MAX_PAYLOAD = 4096;
 

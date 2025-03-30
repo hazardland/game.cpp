@@ -1,4 +1,4 @@
-#include "client.h"
+#include "game/client.h"
 #include <cstring>
 #include <iostream>
 #include <thread>
@@ -22,7 +22,7 @@ bool Client::connect(const std::string& uri) {
     int port = 443;
     std::string path = "/";
     bool ssl = false;
-    
+
 
     std::string uri_ = uri;
     if (uri_.rfind("wss://", 0) == 0) {
@@ -38,7 +38,7 @@ bool Client::connect(const std::string& uri) {
         path = uri_.substr(slashPos);
         uri_ = uri_.substr(0, slashPos);
     }
-    
+
     // Extract host and port
     auto colonPos = uri_.find(':');
     if (colonPos != std::string::npos) {
@@ -54,14 +54,14 @@ bool Client::connect(const std::string& uri) {
         address = uri_;
         port = ssl ? 443 : 80;
     }
-    
+
     printf("[Client] uri: %s --> ssl: %s, path: %s, address: %s, port: %d\n",
-            uri.c_str(),   
+            uri.c_str(),
             ssl ? "true" : "false",
             path.c_str(),
             address.c_str(),
             port);
-    
+
 
     lws_protocols protocols[] = {
         { "ws", Client::callback, 0, MAX_PAYLOAD },
@@ -83,7 +83,7 @@ bool Client::connect(const std::string& uri) {
         std::cerr << "[Client] Failed to create lws context\n";
         return false;
     }
-    
+
     lws_client_connect_info connectInfo = {};
     connectInfo.context = context;
     connectInfo.address = address.c_str();
@@ -149,7 +149,7 @@ void Client::dispatchMessage(const std::vector<uint8_t>& data) {
 //         lws_callback_on_writable(wsi);
 //         while (!outgoing.empty()) {
 //             poll();
-//         }        
+//         }
 //     }
 // }
 
@@ -227,7 +227,7 @@ bool Client::isConnected()
 }
 
 int Client::callback(struct lws* wsi, enum lws_callback_reasons reason, void* user, void* in, size_t len) {
-    
+
     Client* self = reinterpret_cast<Client*>(lws_wsi_user(wsi));
 
     switch (reason) {
@@ -235,12 +235,12 @@ int Client::callback(struct lws* wsi, enum lws_callback_reasons reason, void* us
         case LWS_CALLBACK_CLIENT_ESTABLISHED:
             std::cout << "[Client] Connected\n";
             self->connected = true;
-            
+
             if (!self->outgoing.empty()) {
                 lws_callback_on_writable(wsi);
             }
             break;
-            
+
         // case LWS_CALLBACK_CLIENT_RECEIVE:
         //     if (self && self->onMessage) {
         //         std::vector<uint8_t> data((uint8_t*)in, (uint8_t*)in + len);
@@ -252,25 +252,25 @@ int Client::callback(struct lws* wsi, enum lws_callback_reasons reason, void* us
         //     if (self && self->onMessage) {
         //         const uint8_t* buffer = static_cast<const uint8_t*>(in);
         //         size_t totalLen = len;
-        
+
         //         // Message is a group of messages
         //         if (Protocol::type(buffer) == GROUP_TYPE) {
         //             size_t offset = 3;
         //             size_t groupPayloadSize = Protocol::size(buffer);
-        
+
         //             while (offset + 3 <= totalLen) {
         //                 const uint8_t* msgPtr = buffer + offset;
         //                 uint16_t msgSize = Protocol::size(msgPtr);
-        
+
         //                 if (offset + 3 + msgSize > totalLen)
         //                     break;  // corrupt or incomplete
-        
+
         //                 std::vector<uint8_t> singleMsg(msgPtr, msgPtr + 3 + msgSize);
         //                 self->onMessage(singleMsg);
-        
+
         //                 offset += 3 + msgSize;
         //             }
-        //         } 
+        //         }
         //         // Message is a single message
         //         else {
         //             std::vector<uint8_t> singleMsg(buffer, buffer + totalLen);
@@ -282,19 +282,19 @@ int Client::callback(struct lws* wsi, enum lws_callback_reasons reason, void* us
         if (self) {
             const uint8_t* buffer = static_cast<const uint8_t*>(in);
             size_t totalLen = len;
-    
+
             if (Protocol::type(buffer) == GROUP_TYPE) {
                 size_t offset = 3;
                 while (offset + 3 <= totalLen) {
                     const uint8_t* msgPtr = buffer + offset;
                     uint16_t msgSize = Protocol::size(msgPtr);
-    
+
                     if (offset + 3 + msgSize > totalLen)
                         break;
-    
+
                     std::vector<uint8_t> msg(msgPtr, msgPtr + 3 + msgSize);
                     self->dispatchMessage(msg);
-    
+
                     offset += 3 + msgSize;
                 }
             } else {
@@ -303,40 +303,40 @@ int Client::callback(struct lws* wsi, enum lws_callback_reasons reason, void* us
             }
         }
         break;
-        
+
         case LWS_CALLBACK_CLIENT_WRITEABLE:
             if (self && !self->outgoing.empty()) {
                 const auto& msg = self->outgoing.front();
-        
+
                 unsigned char buf[LWS_PRE + MAX_PAYLOAD];
-        
+
                 if (msg.size() > MAX_PAYLOAD) {
                     std::cerr << "[Client] Binary payload too large!\n";
                     return -1;
                 }
-        
+
                 std::memcpy(&buf[LWS_PRE], msg.data(), msg.size());
-        
+
                 // std::cout << "[Client] Sending binary message (" << msg.size() << " bytes): " << std::cout << std::endl;
-                
+
                 int flags = LWS_WRITE_BINARY;// | LWS_WRITE_NO_FIN;
                 int bytes_written = lws_write(wsi, &buf[LWS_PRE], msg.size(), (lws_write_protocol)flags);
-        
+
                 if (bytes_written < 0) {
                     std::cerr << "[Client] lws_write failed!\n";
                     return -1;
                 }
-        
+
                 // self->outgoing.erase(self->outgoing.begin());
                 self->outgoing.pop_front();
 
-        
+
                 if (!self->outgoing.empty()) {
                     lws_callback_on_writable(wsi);
                 }
             }
             break;
-          
+
 
         case LWS_CALLBACK_CLIENT_CLOSED:
         case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
@@ -357,7 +357,7 @@ int Client::callback(struct lws* wsi, enum lws_callback_reasons reason, void* us
                 self->connect(self->reconnectUri);
             }
             break;
-        
+
 
     default:
         break;

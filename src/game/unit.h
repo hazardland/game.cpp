@@ -72,6 +72,7 @@ private:
 
     // Position methods
     void setPosition(float x, float y) override;
+    void addPosition(float x, float y) override;
 
     // Selection methods
     bool isSelected();
