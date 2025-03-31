@@ -46,20 +46,20 @@ void Input::fetch() {
         while(SDL_PollEvent(&event)){
 
             switch(event.type){
-                case SDL_QUIT:
+                case SDL_EVENT_QUIT:
                     close = true;
                     break;
-                case SDL_WINDOWEVENT:
-                    switch (event.window.event){
-                        case SDL_WINDOWEVENT_RESIZED:
+                // case SDL_WINDOWEVENT:
+                    // switch (event.window.event){
+                        case SDL_EVENT_WINDOW_RESIZED:
                             // window->width = event.window.data1;
                             // window->height = event.window.data2;
                             window->onResize(event.window.data1, event.window.data2);
                             //SDL_Log("Window %d resized to %dx%d",
                             //        event.window.windowID, event.window.data1, event.window.data2);
                         break;
-                    }
-                    break;
+                    // }
+                    // break;
                 // case SDL_KEYDOWN:
                 //     keyboard->keys = SDL_GetKeyboardState(nullptr);
                 //     cout << "some key is down\n";
@@ -100,7 +100,7 @@ void Input::fetch() {
                 //         keyboard->space = false;
                 //     }
                 //     break;
-                case SDL_MOUSEBUTTONDOWN:
+                case SDL_EVENT_MOUSE_BUTTON_DOWN:
                     // This could be potential drag start so save x, y
                     // Drag will only be activated on next tick
                     // If mouse moves to another position
@@ -115,7 +115,7 @@ void Input::fetch() {
                         // cout << "Left mouse down\n";
                     }
                     break;
-                case SDL_MOUSEBUTTONUP:
+                case SDL_EVENT_MOUSE_BUTTON_UP:
                     if (event.button.button==SDL_BUTTON_RIGHT) {
                         // So if ever drag activated
                         // We can deactivate drag

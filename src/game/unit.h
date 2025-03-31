@@ -30,7 +30,7 @@ protected:
 private:
 
     // int lastCellLeft, lastCellTop, lastCellRight, lastCellBottom;
-    bool selected;
+    bool selected = false;
 
     int layer = 0;    // Layer where the unit exists in map
 
@@ -38,8 +38,10 @@ private:
     bool ignoresTerrain = true;   // If true, unit ignores terrain checks
     // std::vector<std::pair<int, int>> cells; // Cells where unit exist in map
 
-    SDL_Color minimapColor;
-    Uint32 minimapColorCache = 0;
+    // SDL_Color minimapColor;
+    // Uint32 minimapColorCache = 0;
+
+    SDL_Color color;
 
     public:
     bool moved;
@@ -92,8 +94,10 @@ private:
 
     // Minimap related
     virtual bool hasMinimap();
-    virtual Uint32 getMinimapColor(SDL_PixelFormat* format);
-    virtual void setMinimapColor(SDL_Color color);
+    // virtual Uint32 getMinimapColor(const SDL_PixelFormatDetails* format);
+    // virtual void setMinimapColor(SDL_Color color);
+    virtual void setColor(SDL_Color color);
+    virtual SDL_Color* getColor();
 
     // Denig related
     virtual void drawPosition(State* state);

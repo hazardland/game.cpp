@@ -40,7 +40,7 @@ public:
     Sprite(Image* image, int frameWidth, int frameHeight, int framePause = 60, bool readVertically = false);
     Sprite* addClip(int clipId=1, int startRow=1, int startCell=1, int frameCount=1, bool flipX=false, bool flipY=false);
     Clip* getClip(int clipId);
-    SDL_Rect* getRect(int clipId=1, int frameIndex=0);
+    SDL_FRect* getRect(int clipId=1, int frameIndex=0);
     virtual ~Sprite();
 };
 

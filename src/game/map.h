@@ -53,7 +53,7 @@ public:
     void generate(int seed, float intensity, std::vector<float> ranges);
     void setDebug(bool value);
     void toggleDebug();
-    void markObjectPositionModified();
+    void markModified();
     ~Map();
 
 private:

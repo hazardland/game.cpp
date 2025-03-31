@@ -52,7 +52,7 @@ Clip* Sprite::getClip(int clipId) {
 }
 
 // getRect method
-SDL_Rect* Sprite::getRect(int clipId, int frameIndex) {
+SDL_FRect* Sprite::getRect(int clipId, int frameIndex) {
     return getClip(clipId)->getFrame(frameIndex)->getRect();
 }
 

@@ -35,15 +35,15 @@ public:
      * @brief Render the image.
      * @param frame The portion of the texture to render.
      * @param position The location at which to render the texture.
-     * @param flip The SDL_RendererFlip value to apply to the texture.
+     * @param flip The SDL_FlipMode value to apply to the texture.
      */
-    void render(SDL_Rect* frame, SDL_FRect* position, SDL_RendererFlip flip = SDL_FLIP_NONE);
+    void render(SDL_FRect* frame, SDL_FRect* position, SDL_FlipMode flip = SDL_FLIP_NONE);
 
     SDL_Renderer* renderer;    ///< Pointer to the SDL_Renderer.
 private:
     SDL_Texture* texture;      ///< Pointer to the SDL_Texture.
-    int width;                 ///< Width of the image.
-    int height;                ///< Height of the image.
+    float width;                 ///< Width of the image.
+    float height;                ///< Height of the image.
 };
 
 #endif // GAME_IMAGE_H

@@ -12,7 +12,8 @@ Farm::Farm(Sprite* sprite) {
     allowTerrain(2);
     renderPosition = createChildPosition(0, 0, 64, 64);
     body = sprite;
-    setMinimapColor ({255, 0, 0, 255});
+    // setMinimapColor ({255, 0, 0, 255});
+    setColor ({255, 0, 0, 255});
 }
 
 // Render function

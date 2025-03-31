@@ -5,6 +5,7 @@
 #include "game/image.h"
 #include "game/protocol.h"
 #include "game/state.h"
+#include "game/torch.h"
 
 #include "examples/war2.h"
 #include "examples/enum.h"
@@ -38,7 +39,7 @@ void Warcraft::prepare(State* state) {
 
     minimap = new Minimap(
         renderer,
-        100, 100,
+        250, 250,
         WIDTH, HEIGHT, 4
     );
 
@@ -188,15 +189,17 @@ void Warcraft::prepare(State* state) {
         lastFootman->select();
     }
 
+
+    // addObject(new Torch({0, 0, 0, 255},  100, 320));
+        
     printf("Creating fps\n");
 
     // objects.insert({minimap->getId(), minimap});
     // objects.insert({fps->getId(), fps});
-    addObject(fps);
-
+    
     addObject(new Select({255,255,255,100},{1, 1, 1, 100}));
     
-    client = new Client();
+    // client = new Client();
     if (client!=nullptr) {
         printf("Waiting for connection to server\n");
         printf("But first server should be running did you forget to run server executable? -_-\n");
@@ -205,7 +208,7 @@ void Warcraft::prepare(State* state) {
         client->setHandler<FootmanState>([this](const FootmanState& footmanState) {
             Object* obj = getObject(footmanState.object_id);
             if (!obj) return;
-        
+            
             Footman* footman = dynamic_cast<Footman*>(obj);
             if (footman) {
                 footman->setPosition(footmanState.x, footmanState.y);
@@ -219,6 +222,7 @@ void Warcraft::prepare(State* state) {
         state->client = client;
     }
     
+    addObject(fps);
 }
 
 // Generate function

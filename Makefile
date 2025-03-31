@@ -5,12 +5,13 @@ else
     WINDOWS := 0
 endif
 
-PKGS := sdl3 sdl3-image
+PKGS := sdl3 sdl3-image sdl3-ttf
 
 # Compiler and flags
 CXX := g++
-CXXFLAGS := -std=c++20 -O3 -m64 -Isrc -s -D__STDC_WANT_LIB_EXT1__=1 `pkg-config --cflags $(PKGS)`
-LDFLAGS := `pkg-config --libs $(PKGS)` -lwebsockets -lssl -lcrypto -lz -lpthread
+CXXFLAGS := -std=c++20 -O3 -m64 -Isrc -s `pkg-config --cflags $(PKGS)`
+LDFLAGS := -Wl,--subsystem,console `pkg-config --libs $(PKGS)` -lwebsockets
+# -lssl -lcrypto -lz -lpthread
 
 # Add -lmingw32 first for Windows
 ifeq ($(WINDOWS), 1)

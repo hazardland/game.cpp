@@ -26,7 +26,7 @@ class Keyboard {
         bool f11  = false;
         bool f12  = false;
         bool tab  = false;
-        const Uint8* keys;  ///< SDL key state array for checking specific keys.
+        const bool* keys;  ///< SDL key state array for checking specific keys.
         void reset();  ///< Resets the state of the keys.
     };
 

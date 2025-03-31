@@ -13,7 +13,7 @@ class Cell {
     public:
         int tile;
         Terrain* terrain;
-        SDL_Rect* rect;
+        SDL_FRect* rect;
 
         std::vector<std::list<Unit*>> units;
 

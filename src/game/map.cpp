@@ -97,7 +97,7 @@ void Map::render(State* state) {
 
                     // printf("%d ", clip->getFrame(grid[x][y])->rect.x);
                     SDL_SetRenderDrawColor(image->renderer, 0, 0, 0, 255);
-                    SDL_RenderDrawRectF(image->renderer, position);
+                    SDL_RenderRect(image->renderer, position);
                     SDL_SetRenderDrawColor(image->renderer, 0, 0, 0, 0);
 
                     std::array<int, 4> borders = getTileBorders(x, y);
@@ -345,9 +345,9 @@ void Map::toggleDebug () {
     debug = !debug;
 }
 
-void Map::markObjectPositionModified() {
+void Map::markModified() {
     if (minimap!=nullptr){
-        this->minimap->markObjectPositionModified();
+        this->minimap->markModified();
     }
 }
 

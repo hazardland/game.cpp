@@ -1,5 +1,9 @@
 ## Ubuntu
 
+I moved to SDL3 because of major performance improvements (I can render many rectangles directly into rendere with one call and this is crucial for minimap as minimap rendering is demonic while I like optimized the heck out of it)
+
+Previously with sdl2 I was using this setup, I ll leave sdl2 branch
+
 ```
 sudo apt install g++ libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
 ```
@@ -24,15 +28,21 @@ Currently in order to run main.exe you should also compile and run server.cpp
 
 Windows
 ```
-pacman -S \
-  mingw-w64-ucrt-x86_64-toolchain \
-  mingw-w64-ucrt-x86_64-SDL2 \
-  mingw-w64-ucrt-x86_64-SDL2_image \
-  mingw-w64-ucrt-x86_64-SDL2_ttf \
-  mingw-w64-ucrt-x86_64-libwebsockets \
-  mingw-w64-ucrt-x86_64-openssl \
-  mingw-w64-ucrt-x86_64-zlib
+pacman -Syu
+pacman -Su
+
+pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-pkg-config mingw-w64-x86_64-make mingw-w64-x86_64-sdl3 mingw-w64-x86_64-sdl3-image mingw-w64-x86_64-sdl3-ttf mingw-w64-x86_64-libwebsockets
 ```
+
+Make sure you rename or copy make because by default it is called minigw32-make.exe
+```
+copy D:\app\cpp\mingw64\bin\mingw32-make.exe D:\app\cpp\mingw64\bin\make.exe
+```
+Where D:\app\cpp\mingw64\ is the folder I installed minigw64
+
+If you are using ucrt64 this libs might get mixed with ucrt64 libs and you might get errors
+I made fresh install only with this commands
+But I remember before pacman and mingw-w64-x86_64-gcc things were too complicated
 
 objdump -p main.exe | grep DLL
 

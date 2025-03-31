@@ -169,7 +169,7 @@ void Unit::updateGrid() {
         }
     }
 
-    map->markObjectPositionModified();
+    map->markModified();
 
     gridFromX = newGridFromX;
     gridFromY = newGridFromY;
@@ -182,7 +182,7 @@ void Unit::updateGrid() {
 
 void Unit::drawPosition(State* state) {
     SDL_SetRenderDrawColor(state->renderer, 161, 195, 69, 255);
-    SDL_RenderDrawRectF(state->renderer, state->camera->translate(getPosition()));
+    SDL_RenderRect(state->renderer, state->camera->translate(getPosition()));
     SDL_SetRenderDrawColor(state->renderer, 0, 0, 0, 0);
 }
 
@@ -228,17 +228,27 @@ bool Unit::hasMinimap() {
     return false;
 }
 
-Uint32 Unit::getMinimapColor(SDL_PixelFormat* format) {
-    if (minimapColorCache==0) {
-        minimapColorCache = SDL_MapRGBA(format, minimapColor.r, minimapColor.g, minimapColor.b, minimapColor.a);
-    }
-    return minimapColorCache;
+// Uint32 Unit::getMinimapColor(const SDL_PixelFormatDetails* format) {
+//     if (minimapColorCache==0) {
+//         minimapColorCache = SDL_MapRGBA(format, nullptr, minimapColor.r, minimapColor.g, minimapColor.b, minimapColor.a);
+//     }
+//     return minimapColorCache;
+// }
+
+// void Unit::setMinimapColor(SDL_Color color) {
+//     minimapColorCache = 0;
+//     minimapColor = color;
+// }
+
+
+SDL_Color* Unit::getColor() {
+    return &color;
 }
 
-void Unit::setMinimapColor(SDL_Color color) {
-    minimapColorCache = 0;
-    minimapColor = color;
+void Unit::setColor(SDL_Color color) {
+    this->color = color;
 }
+
 
 
 

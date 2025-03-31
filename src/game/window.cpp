@@ -18,21 +18,20 @@ bool SDL_STARTED = false;  // Define the global variable here.
 
 Window::Window(const char* title, const int width, const int height, State* state) {
 
+    // printf("Starting");
     if (!SDL_STARTED) {
-        if(SDL_Init(SDL_INIT_EVERYTHING)==-1){
+        if(!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS)){
             std::cout << "Failed to SDL: " << SDL_GetError() << std::endl;
         }
-
-        if (TTF_Init()==-1) {
+        if (!TTF_Init()) {
             std::cout << "Failed to TTF: " << SDL_GetError() << std::endl;
         }
-
         SDL_STARTED = true;
     }
 
     std::cout << "Window size " << width << "x" << height << "\n";
 
-    window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_RESIZABLE);
+    window = SDL_CreateWindow(title, width, height, SDL_WINDOW_RESIZABLE);
 
     if(!window){
         std::cout << "Failed to create window: " << SDL_GetError() << std::endl;
@@ -89,9 +88,9 @@ void Window::toggleFullscreen() {
             // Backup original size before switching to fullscreen
             SDL_GetWindowSize(window, &originalWidth, &originalHeight);
 
-            SDL_DisplayMode displayMode;
-            if (SDL_GetCurrentDisplayMode(0, &displayMode) == 0) { // Get current monitor resolution
-                SDL_SetWindowSize(window, displayMode.w, displayMode.h);  // Set window size to match screen
+            const SDL_DisplayMode* displayMode = SDL_GetCurrentDisplayMode(0);
+            if (displayMode == 0) { // Get current monitor resolution
+                SDL_SetWindowSize(window, displayMode->w, displayMode->h);  // Set window size to match screen
             }
 
             SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
@@ -128,35 +127,9 @@ int Window::run() {
     while (!state->input->close) {
         state->clock->tick();
         state->input->fetch();
-
-
-        // SDL_Event event;
-        // while (SDL_PollEvent(&event)) {
-        //     switch (event.type) {
-        //         case SDL_QUIT:
-        //         running = false;
-        //         break;
-        //         // Handle other events such as keyboard, mouse, etc.
-        //     }
-        // }
-
         scene->update(state);
         scene->render(state);
     }
-    // while (true) {
-    //     state->clock->tick();
-    //     scene->update(state);
-    //     scene->render(state);
-    //     SDL_Delay(100);
-    // }
-
-    // while(!state->input->close){
-    //     state->clock->tick();
-    //     state->input->fetch();
-    //     scene->update(state);
-    //     scene->render(state);
-    //     SDL_Delay(100);
-    // }
 
     return 0;
 }

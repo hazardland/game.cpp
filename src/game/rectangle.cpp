@@ -19,12 +19,12 @@ void Rectangle::render(State* state) {
     if (visible) {
         if (background.a>0) {
             SDL_SetRenderDrawColor(state->renderer, background.r, background.g, background.b, background.a);
-            SDL_RenderFillRectF(state->renderer, getPosition());
+            SDL_RenderRect(state->renderer, getPosition());
         }
 
         if (border.a>0){
             SDL_SetRenderDrawColor(state->renderer, border.r, border.g, border.b, border.a);
-            SDL_RenderDrawRectF(state->renderer, getPosition());
+            SDL_RenderRect(state->renderer, getPosition());
         }
 
         if (background.a>0 || border.a>0){

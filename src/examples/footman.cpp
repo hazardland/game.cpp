@@ -15,7 +15,9 @@ Footman::Footman(Sprite* sprite, TTF_Font* font) {
     body->pause = 0;
     renderPosition = createChildPosition(-24, -24, 72, 72);
     text = new Text(font, createChildPosition(-10, -40));
-    setMinimapColor ({255, 255, 0, 255});
+
+    setColor ({255, 255, 0, 255});
+    // setMinimapColor ({255, 255, 0, 255});
 }
 
 // Rotate the footman based on direction
@@ -108,7 +110,7 @@ void Footman::update(State* state) {
                     action = IDLE;
                 }
             }
-            // cameraFollow(state->camera);
+            cameraFollow(state->camera);
         }
     }
 
@@ -159,13 +161,24 @@ void Footman::cameraFollow(Camera* camera) {
     if (!isSelected()) {
         return;
     }
+
+    float targetX = getX() + getWidth() / 2;
+    float targetY = getY() + getHeight() / 2;
+
+    int newCamX = static_cast<int>(targetX - camera->getWidth() / 2);
+    int newCamY = static_cast<int>(targetY - camera->getHeight() / 2);
+
+    camera->setX(newCamX);
+    camera->setY(newCamY);
 }
 
 // Render function
 void Footman::render(State* state) {
     Camera* camera = state->camera;
     if (camera->isVisible(getRenderPosition())) {
-        // drawPosition(state);
+        if (isSelected()) {
+            drawPosition(state);
+        }
         body->render(camera->translate(getRenderPosition()));
         // text->render(state);
     }

@@ -9,8 +9,8 @@
  */
 class Mouse {
     public:
-        int x;  ///< Mouse X position
-        int y;  ///< Mouse Y position
+        float x;  ///< Mouse X position
+        float y;  ///< Mouse Y position
         bool rightDragActive = false;  ///< Boolean representing if right drag is active.
         bool rightDragEnded = false;  ///< Boolean representing if right drag has ended.
         int rightDragStartX = -1;  ///< X position where right drag started.

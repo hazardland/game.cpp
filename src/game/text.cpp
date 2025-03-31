@@ -60,12 +60,12 @@ void Text::render(State* state, Position* position) {
         if (cacheEnabled && cache.contains(text)) {
             //printf("Cache hit %s\n", text);
             texture = cache[text];
-            int width;
-            int height;
-            SDL_QueryTexture(texture, NULL, NULL, &width, &height);
+            float width;
+            float height;
+            SDL_GetTextureSize(texture, &width, &height);
             position->setSize(width, height);
         } else {
-            SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
+            SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), 0,color);
             if (surface==NULL) {
                 printf("Failed to render text: %s", SDL_GetError());
             }
@@ -79,15 +79,15 @@ void Text::render(State* state, Position* position) {
             if (cacheEnabled) {
                 cache[text] = texture;
             }
-            SDL_FreeSurface(surface);
+            SDL_DestroySurface(surface);
         }
         prepared = true;
     }
     // printf("rendering tex");
     if (positionFixed) {
-        SDL_RenderCopyF(state->renderer, texture, NULL, position->getPosition());
+        SDL_RenderTexture(state->renderer, texture, NULL, position->getPosition());
     } else {
-        SDL_RenderCopyF(state->renderer, texture, NULL, state->camera->translate(position->getPosition()));
+        SDL_RenderTexture(state->renderer, texture, NULL, state->camera->translate(position->getPosition()));
     }
 }
 
