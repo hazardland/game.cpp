@@ -22,6 +22,7 @@ void Warcraft::prepare(State* state) {
 
 
     font = TTF_OpenFont("assets/fonts/titillium.ttf", 20);
+    TTF_SetFontOutline(font, 1);
     fontSmall = TTF_OpenFont("assets/fonts/titillium.ttf", 12);
     fps = (new Fps(font))->setPositionFixed(true);
     fps->setColor({255, 220, 0, 255});
@@ -174,8 +175,8 @@ void Warcraft::prepare(State* state) {
 
     printf("Creating footmans\n");
     Footman* lastFootman = NULL;
-    for (int x=0; x<10*32; x+=32) {
-        for (int y=10; y<10*32; y+=32) {
+    for (int x=0; x<100*32; x+=32) {
+        for (int y=10; y<100*32; y+=32) {
             Footman* footman = new Footman(sprites[SPRITE_FOOTMAN_RED], fontSmall);
             footman->setMap(map);
             if (footman->canOccupy(x, y, 32, 32)) {

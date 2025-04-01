@@ -110,7 +110,9 @@ void Footman::update(State* state) {
                     action = IDLE;
                 }
             }
-            cameraFollow(state->camera);
+            if (isSelected()) {
+                cameraFollow(state->camera);
+            }
         }
     }
 
@@ -158,9 +160,6 @@ void Footman::sync(uint32_t inAction, uint32_t inFaceX, uint32_t inFaceY) {
 
 // Camera follow function
 void Footman::cameraFollow(Camera* camera) {
-    if (!isSelected()) {
-        return;
-    }
 
     float targetX = getX() + getWidth() / 2;
     float targetY = getY() + getHeight() / 2;
