@@ -173,8 +173,8 @@ void Warcraft::prepare(State* state) {
 
     printf("Creating footmans\n");
     Footman* lastFootman = NULL;
-    for (int x=0; x<10*32; x+=32) {
-        for (int y=10; y<10*32; y+=32) {
+    for (int x=0; x<100*32; x+=32) {
+        for (int y=10; y<100*32; y+=32) {
             Footman* footman = new Footman(sprites[SPRITE_FOOTMAN_RED], fontSmall);
             footman->setMap(map);
             if (footman->canOccupy(x, y, 32, 32)) {
@@ -196,7 +196,7 @@ void Warcraft::prepare(State* state) {
 
     addObject(new Select({255,255,255,100},{1, 1, 1, 100}));
     
-    client = new Client();
+    // client = new Client();
     if (client!=nullptr) {
         printf("Waiting for connection to server\n");
         printf("But first server should be running did you forget to run server executable? -_-\n");

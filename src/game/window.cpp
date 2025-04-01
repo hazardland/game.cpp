@@ -69,6 +69,7 @@ void Window::onResize(int width, int height) {
     // state->camera->setHeight(height);
     state->camera->setSize(width, height);
     state->screen->setSize(width, height);
+    printf("Screen resize %ix%i\n", width, height);
 }
 
 bool Window::isFullscreen() {
