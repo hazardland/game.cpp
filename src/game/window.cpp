@@ -31,7 +31,7 @@ Window::Window(const char* title, const int width, const int height, State* stat
 
     std::cout << "Window size " << width << "x" << height << "\n";
 
-    window = SDL_CreateWindow(title, width, height, SDL_WINDOW_RESIZABLE);
+    window = SDL_CreateWindow(title, width, height, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY); // 
 
     if(!window){
         std::cout << "Failed to create window: " << SDL_GetError() << std::endl;
@@ -68,6 +68,8 @@ void Window::onResize(int width, int height) {
     // state->camera->setHeight(height);
     state->camera->setSize(width, height);
     state->screen->setSize(width, height);
+    printf("Screen resize %ix%i\n", width, height);
+
 }
 
 bool Window::isFullscreen() {
